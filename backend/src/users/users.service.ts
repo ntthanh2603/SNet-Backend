@@ -48,7 +48,7 @@ export class UsersService {
     });
   }
 
-  async register(dto: RegisterUserDto, file: Express.Multer.File) {
+  async register(dto: RegisterUserDto) {
     try {
       const userDb = await this.usersRepository.findOneBy({ email: dto.email });
 
@@ -58,15 +58,10 @@ export class UsersService {
 
       const hashPassword = this.getHashPassword(dto.password);
 
-      let avatar = '';
-
-      if (!file) avatar = null;
-      else avatar = file.path;
-
       const newUser = {
         email: dto.email,
         password: hashPassword,
-        avatar,
+        avatar: dto.avatar,
         username: dto.username,
         bio: dto.bio,
         website: dto.website,

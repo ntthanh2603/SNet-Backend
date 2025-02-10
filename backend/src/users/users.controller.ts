@@ -94,26 +94,9 @@ export class UsersController {
   @Public()
   @ResponseMessage('Register a new user')
   @Post('/register')
-  @UseInterceptors(FileInterceptor('avatar-user'))
   @ApiBody({ type: RegisterUserDto })
-  handleRegister(
-    @Body() dto: RegisterUserDto,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: /(jpg|jpeg|png|gif)$/,
-        })
-        .addMaxSizeValidator({
-          maxSize: 1000 * 1024,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-          fileIsRequired: false,
-        }),
-    )
-    file: Express.Multer.File,
-  ) {
-    return this.usersService.register(dto, file);
+  handleRegister(@Body() dto: RegisterUserDto) {
+    return this.usersService.register(dto);
   }
 
   @Public()
