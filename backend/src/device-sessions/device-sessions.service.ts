@@ -1,10 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import { DeviceSession } from './entities/device-session.entity';
 import { Repository } from 'typeorm';
 import { IUser } from 'src/users/users.interface';
+import { StatusType } from 'src/helper/helper.enum';
 
+export interface ISession {
+  user_id: string;
+  deviceId: string;
+  ipAddress: string;
+  lastActive: Date;
+  isActive: StatusType;
+  refreshToken: string;
+}
 @Injectable()
 export class DeviceSessionsService {
   constructor(
@@ -31,19 +40,20 @@ export class DeviceSessionsService {
     return await this.repository.findOne({ where: { user_id, deviceId } });
   }
 
-  async save(session: object) {
-    console.log(session);
-    const { deviceId, ...a } = session;
-
+  async saveRefreshToken(session: ISession) {
+    const { deviceId, ...backSession } = session;
     try {
       const sessionDb = await this.repository.findOne({
         where: {
           deviceId,
         },
       });
-      if (sessionDb) throw new 
-    } catch (error) {}
-
-    return await this.repository.save(session);
+      if (sessionDb) {
+        return await this.repository.update({ deviceId }, { ...backSession });
+      }
+      return await this.repository.save(session);
+    } catch {
+      throw new InternalServerErrorException('Lỗi khi lưu phiên đăng nhập');
+    }
   }
 }

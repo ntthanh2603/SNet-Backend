@@ -25,6 +25,8 @@ import { isUUID } from 'class-validator';
 import { RegisterUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 
+import { createHash } from 'crypto';
+
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
@@ -121,8 +123,18 @@ export class UsersController {
   handleLogin(
     @Body() dto: LoginUserDto,
     @Res({ passthrough: true }) response: Response,
+    @Req() req: Request,
   ) {
-    return this.usersService.login(dto, response);
+    const userAgent = req.headers['user-agent'] || '';
+
+    const ipAddress = req.ip || '';
+
+    const acceptLang = req.headers['accept-language'] || '';
+
+    const rawString = `${userAgent}-${ipAddress}-${acceptLang}`;
+    const deviceId = createHash('sha256').update(rawString).digest('hex'); // Mã hóa thành ID duy nhất
+
+    return this.usersService.login(dto, response, deviceId, ipAddress);
   }
 
   @Delete()

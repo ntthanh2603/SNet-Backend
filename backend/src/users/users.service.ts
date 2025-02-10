@@ -173,12 +173,17 @@ export class UsersService {
     }
   }
 
-  async login(dto: LoginUserDto, response: Response) {
+  async login(
+    dto: LoginUserDto,
+    response: Response,
+    deviceId: string,
+    ipAddress: string,
+  ) {
     const user = await this.validateUser(dto.email, dto.password);
 
     const payload = {
       id: user.id,
-      deviceId: dto.deviceId,
+      deviceId: deviceId,
     };
 
     const accessToken = this.jwtService.sign(payload, {
@@ -191,16 +196,16 @@ export class UsersService {
       expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRE'),
     });
 
-    const session: object = {
+    const session = {
       user_id: user.id,
-      deviceId: dto.deviceId,
-      ipAddress: dto.ipAddress,
+      deviceId: deviceId,
+      ipAddress: ipAddress,
       lastActive: new Date(),
       isActive: StatusType.ON,
       refreshToken: refreshToken,
     };
 
-    await this.diviceSessionsService.save(session);
+    await this.diviceSessionsService.saveRefreshToken(session);
 
     response.cookie('refreshToken', refreshToken, {
       httpOnly: true, // Không thể truy cập từ JavaScript

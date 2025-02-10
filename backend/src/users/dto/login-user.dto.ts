@@ -20,14 +20,4 @@ export class LoginUserDto {
   @IsString({ message: 'Type password is string' })
   @ApiProperty({ example: '12345678', description: 'password' })
   password: string;
-
-  @IsNotEmpty({ message: 'deviceId không được trống' })
-  @IsString({ message: 'Type password is string' })
-  @ApiProperty({ example: '12345678', description: 'deviceId' })
-  deviceId: string;
-
-  @IsNotEmpty({ message: 'ipAddress không được trống' })
-  @IsString({ message: 'Type password is string' })
-  @ApiProperty({ example: '12345678', description: 'ipAddress' })
-  ipAddress: string;
 }

@@ -10,6 +10,7 @@ export class DeviceSession {
   @Index()
   user_id: string;
 
+  @Index()
   @Column({ unique: true })
   deviceId: string;
 
