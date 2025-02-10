@@ -128,7 +128,11 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    return await this.usersRepository.delete({ id });
+    await this.redisService.del(`user:${id}`);
+    await this.usersRepository.delete({ id });
+    return {
+      message: 'Xóa người dùng thành công',
+    };
   }
 
   async updateProfile(dto: UpdateUserDto, user: IUser) {
