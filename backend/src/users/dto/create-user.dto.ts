@@ -1,4 +1,3 @@
-import { Avatar } from 'antd';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,

@@ -131,41 +131,13 @@ export class UsersService {
     return await this.usersRepository.delete({ id });
   }
 
-  async updateProfile(
-    dto: UpdateUserDto,
-    user: IUser,
-    file: Express.Multer.File,
-  ) {
-    if (!file) {
-      return await this.usersRepository.update(
-        { id: user.id },
-        {
-          ...dto,
-        },
-      );
-    } else {
-      const findUser = await this.usersRepository.findOne({
-        where: { id: user.id },
-      });
-      const avatar = findUser.avatar;
-
-      if (avatar) {
-        try {
-          if (fs.existsSync(avatar)) {
-            fs.unlinkSync(avatar);
-          }
-        } catch (error) {
-          console.error('Error deleting old avatar:', error);
-        }
-      }
-      return await this.usersRepository.update(
-        { id: user.id },
-        {
-          ...dto,
-          avatar: file.path,
-        },
-      );
-    }
+  async updateProfile(dto: UpdateUserDto, user: IUser) {
+    return await this.usersRepository.update(
+      { id: user.id },
+      {
+        ...dto,
+      },
+    );
   }
 
   async login(
