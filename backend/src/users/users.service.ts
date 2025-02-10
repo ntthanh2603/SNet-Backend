@@ -132,12 +132,22 @@ export class UsersService {
   }
 
   async updateProfile(dto: UpdateUserDto, user: IUser) {
-    return await this.usersRepository.update(
-      { id: user.id },
-      {
-        ...dto,
-      },
-    );
+    try {
+      await this.usersRepository.update(
+        { id: user.id },
+        {
+          ...dto,
+        },
+      );
+
+      await this.redisService.del(`user:${user.id}`);
+
+      return {
+        message: 'Cập nhật thành công',
+      };
+    } catch {
+      throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
+    }
   }
 
   async login(
