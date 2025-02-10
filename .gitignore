@@ -1,0 +1,7 @@
+# backend/.env
+# frontend/.env
+backend/dist/
+backend/node_modules/
+backend/documentation/
+.idea/
+.tmp.driveupload/

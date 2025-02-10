@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  # Database
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: tuanthanh
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: social-network-SNet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Redis
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    environment:
+      - REDIS_PASSWORD=123456
+      - REDIS_DB=0
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass 123456 --maxmemory 200mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+
+  # Backend
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: tuanthanh
+      DATABASE_PASSWORD: 123456
+      DATABASE_NAME: social-network-SNet
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+    # Add explicit network configuration
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+  redis_data:
