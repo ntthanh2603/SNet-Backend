@@ -44,7 +44,22 @@ export class UsersController {
     if (!refreshToken) {
       throw new BadRequestException('Refresh token is missing');
     }
-    return this.usersService.processNewToken(refreshToken, response);
+
+    const userAgent = request.headers['user-agent'] || '';
+
+    const ipAddress = request.ip || '';
+
+    const acceptLang = request.headers['accept-language'] || '';
+
+    const rawString = `${userAgent}-${ipAddress}-${acceptLang}`;
+    const deviceId = createHash('sha256').update(rawString).digest('hex');
+
+    return this.usersService.processNewToken(
+      refreshToken,
+      response,
+      deviceId,
+      ipAddress,
+    );
   }
 
   @Public()
@@ -79,21 +94,23 @@ export class UsersController {
   @ResponseMessage('User login')
   @Post('/login')
   @ApiBody({ type: LoginUserDto })
-  handleLogin(
+  login(
     @Body() dto: LoginUserDto,
     @Res({ passthrough: true }) response: Response,
-    @Req() req: Request,
+    @Req() request: Request,
   ) {
-    const userAgent = req.headers['user-agent'] || '';
+    const userAgent = request.headers['user-agent'] || '';
 
-    const ipAddress = req.ip || '';
+    const ipAddress = request.ip || '';
 
-    const acceptLang = req.headers['accept-language'] || '';
+    const acceptLang = request.headers['accept-language'] || '';
 
     const rawString = `${userAgent}-${ipAddress}-${acceptLang}`;
     const deviceId = createHash('sha256').update(rawString).digest('hex'); // Mã hóa thành ID duy nhất
 
-    return this.usersService.login(dto, response, deviceId, ipAddress);
+    const metaData: LoginMetaData = { deviceId, ipAddress };
+
+    return this.usersService.login(dto, metaData);
   }
 
   @Delete()
@@ -101,4 +118,9 @@ export class UsersController {
   deleteUser(@User() user: IUser) {
     return this.usersService.deleteUser(user.id);
   }
+}
+
+export interface LoginMetaData {
+  deviceId: string;
+  ipAddress: string;
 }

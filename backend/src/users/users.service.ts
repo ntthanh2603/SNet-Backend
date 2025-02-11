@@ -13,13 +13,13 @@ import { compareSync, genSaltSync, hashSync } from 'bcrypt';
 import { RegisterUserDto } from './dto/create-user.dto';
 import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrivacyType, StatusType } from 'src/helper/helper.enum';
-import * as fs from 'fs';
+import { PrivacyType } from 'src/helper/helper.enum';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/redis/redis.service';
+import { LoginMetaData } from './users.controller';
 
 @Injectable()
 export class UsersService {
@@ -128,11 +128,15 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    await this.redisService.del(`user:${id}`);
-    await this.usersRepository.delete({ id });
-    return {
-      message: 'Xóa người dùng thành công',
-    };
+    try {
+      await this.redisService.del(`user:${id}`);
+      await this.usersRepository.delete({ id });
+      return {
+        message: 'Xóa người dùng thành công',
+      };
+    } catch {
+      throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
+    }
   }
 
   async updateProfile(dto: UpdateUserDto, user: IUser) {
@@ -154,55 +158,10 @@ export class UsersService {
     }
   }
 
-  async login(
-    dto: LoginUserDto,
-    response: Response,
-    deviceId: string,
-    ipAddress: string,
-  ) {
+  async login(dto: LoginUserDto, metaData: LoginMetaData) {
     const user = await this.validateUser(dto.email, dto.password);
 
-    const payload = {
-      id: user.id,
-      deviceId: deviceId,
-    };
-
-    const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRE'),
-    });
-
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRE'),
-    });
-
-    const session = {
-      user_id: user.id,
-      deviceId: deviceId,
-      ipAddress: ipAddress,
-      lastActive: new Date(),
-      isActive: StatusType.ON,
-      refreshToken: refreshToken,
-    };
-
-    await this.diviceSessionsService.saveRefreshToken(session);
-
-    response.cookie('refreshToken', refreshToken, {
-      httpOnly: true, // Không thể truy cập từ JavaScript
-      secure: true, // Chỉ gửi qua HTTPS
-      sameSite: 'strict', // Chống CSRF
-      path: '/users/refresh', // Chỉ gửi cookie khi gọi API làm mới token
-    });
-
-    return {
-      accessToken: accessToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-      },
-    };
+    return await this.diviceSessionsService.handleLogin(user.id, metaData);
   }
 
   async validateUser(email: string, password: string): Promise<User> {
@@ -214,7 +173,12 @@ export class UsersService {
     return user;
   }
 
-  async processNewToken(refreshToken: string, response: Response) {
+  async processNewToken(
+    refreshToken: string,
+    response: Response,
+    deviceId: string,
+    ipAddress: string,
+  ) {
     // try {
     //   const payload = this.jwtService.verify(refreshToken, {
     //     secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),

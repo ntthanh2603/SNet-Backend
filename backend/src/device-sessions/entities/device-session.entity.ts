@@ -1,5 +1,11 @@
 import { StatusType } from 'src/helper/helper.enum';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class DeviceSession {
@@ -17,7 +23,7 @@ export class DeviceSession {
   @Column()
   ipAddress: string;
 
-  @Column()
+  @Column({ default: null })
   lastActive: Date;
 
   @Column({ type: 'enum', enum: StatusType, default: StatusType.OFF })
@@ -25,4 +31,13 @@ export class DeviceSession {
 
   @Column()
   refreshToken: string;
+
+  @Column()
+  expiredAt: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
