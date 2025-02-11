@@ -3,9 +3,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  Max,
   MaxLength,
-  Min,
   MinLength,
 } from 'class-validator';
 import { GenderType, PrivacyType } from 'src/helper/helper.enum';
@@ -41,11 +39,12 @@ export class UpdateUserDto {
   @IsOptional()
   website: string;
 
-  @ApiProperty({ example: 20, description: 'age' })
-  @Max(100, { message: 'Tuổi không được lớn hơn 100' })
-  @Min(1, { message: 'Tuổi không được nhỏ hơn 1' })
+  @ApiProperty({
+    example: '2025-02-11 08:14:57.142000',
+    description: 'Birthday',
+  })
   @IsOptional()
-  age: number;
+  birthday: Date;
 
   @ApiProperty({ example: GenderType.MALE, description: 'gender' })
   @IsOptional()

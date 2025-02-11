@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -55,10 +54,12 @@ export class RegisterUserDto {
   @IsOptional()
   website: string;
 
-  @ApiProperty({ example: 20, description: 'age' })
-  @IsNumber()
+  @ApiProperty({
+    example: '2025-02-11 08:14:57.142000',
+    description: 'birthday',
+  })
   @IsOptional()
-  age: number;
+  birthday: Date;
 
   @ApiProperty({ example: GenderType.MALE, description: 'gender' })
   @IsOptional()

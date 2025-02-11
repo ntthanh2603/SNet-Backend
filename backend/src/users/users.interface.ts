@@ -7,7 +7,7 @@ export interface IUser {
   username: string;
   bio: string;
   website: string;
-  age: number;
+  birthday: Date;
   gender: GenderType;
   address: string;
   privacy: PrivacyType;

@@ -27,8 +27,8 @@ export class User {
   @Column({ default: null })
   website: string;
 
-  @Column({ type: 'int', default: null })
-  age: number;
+  @Column({ default: null })
+  birthday: Date;
 
   @Column({ type: 'enum', enum: GenderType, default: null })
   gender: GenderType;
