@@ -7,10 +7,9 @@ import {
   Delete,
   BadRequestException,
   Post,
-  Res,
   Req,
 } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Request } from 'express';
 import { UsersService } from './users.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from './users.interface';
@@ -20,46 +19,20 @@ import { isUUID } from 'class-validator';
 import { RegisterUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { createHash } from 'crypto';
+import { DeviceSessionsService } from 'src/device-sessions/device-sessions.service';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly deviceSessionsService: DeviceSessionsService,
+  ) {}
 
   @Get('/account')
   @ResponseMessage('Get user information')
   handleGetAccount(@User() user: IUser) {
     return user;
-  }
-
-  @Public()
-  @ResponseMessage('Get user by refresh token')
-  @Get('/refresh')
-  handleRefreshToken(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const refreshToken = request.cookies['refresh_token'];
-
-    if (!refreshToken) {
-      throw new BadRequestException('Refresh token is missing');
-    }
-
-    const userAgent = request.headers['user-agent'] || '';
-
-    const ipAddress = request.ip || '';
-
-    const acceptLang = request.headers['accept-language'] || '';
-
-    const rawString = `${userAgent}-${ipAddress}-${acceptLang}`;
-    const deviceId = createHash('sha256').update(rawString).digest('hex');
-
-    return this.usersService.processNewToken(
-      refreshToken,
-      response,
-      deviceId,
-      ipAddress,
-    );
   }
 
   @Public()
@@ -94,11 +67,7 @@ export class UsersController {
   @ResponseMessage('User login')
   @Post('/login')
   @ApiBody({ type: LoginUserDto })
-  login(
-    @Body() dto: LoginUserDto,
-    @Res({ passthrough: true }) response: Response,
-    @Req() request: Request,
-  ) {
+  login(@Body() dto: LoginUserDto, @Req() request: Request) {
     const userAgent = request.headers['user-agent'] || '';
 
     const ipAddress = request.ip || '';

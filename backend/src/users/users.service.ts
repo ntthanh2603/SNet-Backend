@@ -16,7 +16,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrivacyType } from 'src/helper/helper.enum';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/redis/redis.service';
 import { LoginMetaData } from './users.controller';
@@ -171,42 +170,5 @@ export class UsersService {
       throw new UnauthorizedException('Invalid credentials');
     }
     return user;
-  }
-
-  async processNewToken(
-    refreshToken: string,
-    response: Response,
-    deviceId: string,
-    ipAddress: string,
-  ) {
-    // try {
-    //   const payload = this.jwtService.verify(refreshToken, {
-    //     secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-    //   });
-    //   if (!payload || !payload.sub) {
-    //     throw new BadRequestException('Invalid refresh token');
-    //   }
-    //   const user =
-    //     await this.diviceSessionsService.findUserByToken(refreshToken);
-    //   if (!user) {
-    //     throw new BadRequestException('User not found or token invalid');
-    //   }
-    //   const { id, email } = user;
-    //   const newAccessToken = this.jwtService.sign(
-    //     { id, email },
-    //     { expiresIn: '15m' },
-    //   );
-    //   response.cookie('access_token', newAccessToken, { httpOnly: true });
-    //   return {
-    //     access_token: newAccessToken,
-    //     user: {
-    //       id: user.id,
-    //       email: user.email,
-    //       username: user.username,
-    //     },
-    //   };
-    // } catch {
-    //   throw new BadRequestException('Refresh token invalid or expired');
-    // }
   }
 }

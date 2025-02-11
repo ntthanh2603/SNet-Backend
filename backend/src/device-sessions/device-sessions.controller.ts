@@ -1,9 +1,11 @@
-import { Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { DeviceSessionsService } from './device-sessions.service';
-import { ResponseMessage, User } from 'src/decorator/customize';
+import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
-import { Response } from 'express';
+import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
+import { RefreshTokenDto } from 'src/users/dto/refresh-token.dto';
+import { createHash } from 'crypto';
 
 @ApiTags('DeviceSessions')
 @Controller('device-sessions')
@@ -12,10 +14,26 @@ export class DeviceSessionsController {
 
   @Post('/logout')
   @ResponseMessage('Logout user')
-  hendleLogout(
-    @Res({ passthrough: true }) response: Response,
-    @User() user: IUser,
-  ) {
-    return this.deviceSessionsService.logout(response, user);
+  hendleLogout(@Req() request: Request, @User() user: IUser) {
+    const userAgent = request.headers['user-agent'] || '';
+    const ipAddress = request.ip || '';
+    const acceptLang = request.headers['accept-language'] || '';
+    const rawString = `${userAgent}-${ipAddress}-${acceptLang}`;
+    const deviceId = createHash('sha256').update(rawString).digest('hex');
+
+    return this.deviceSessionsService.logout(user, deviceId);
+  }
+
+  @Public()
+  @ResponseMessage('Get user by refresh token')
+  @Get('/refresh-token')
+  reAuth(@Req() request: Request, @Body() dto: RefreshTokenDto) {
+    const userAgent = request.headers['user-agent'] || '';
+    const ipAddress = request.ip || '';
+    const acceptLang = request.headers['accept-language'] || '';
+    const rawString = `${userAgent}-${ipAddress}-${acceptLang}`;
+    const deviceId = createHash('sha256').update(rawString).digest('hex');
+
+    return this.deviceSessionsService.reAuth(dto.refreshToken, deviceId);
   }
 }

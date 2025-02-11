@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Response } from 'express';
 import { DeviceSession } from './entities/device-session.entity';
 import { Repository } from 'typeorm';
 import { IUser } from 'src/users/users.interface';
@@ -8,6 +11,8 @@ import { LoginMetaData } from 'src/users/users.controller';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import addDay from 'src/helper/addDay';
+import { randomUUID } from 'crypto';
+import * as randomatic from 'randomatic';
 
 export interface ISession {
   user_id: string;
@@ -27,17 +32,12 @@ export class DeviceSessionsService {
     private configService: ConfigService,
     private jwtService: JwtService,
   ) {}
-  async logout(response: Response, user: IUser) {
-    await this.repository.update({ user_id: user.id }, { refreshToken: '' });
-    response.clearCookie('refresh_token');
-    return user;
-  }
 
-  findUserByToken = async (refreshToken: string) => {
-    return await this.repository.findOne({
-      where: { refreshToken: refreshToken },
-    });
-  };
+  async logout(user: IUser, deviceId: string) {
+    const result = await this.repository.delete({ user_id: user.id, deviceId });
+    if (result['affected'] != 0) return { message: 'Đăng xuất thành công' };
+    else throw new InternalServerErrorException('Lỗi khi đăng xuất tài khoản');
+  }
 
   async updateToken(user_id: string, refreshToken: string) {
     return await this.repository.update({ user_id }, { refreshToken });
@@ -46,23 +46,6 @@ export class DeviceSessionsService {
   async findOneByUserIdAndDevice(user_id: string, deviceId: string) {
     return await this.repository.findOne({ where: { user_id, deviceId } });
   }
-
-  // async saveRefreshToken(session: ISession) {
-  //   const { deviceId, ...backSession } = session;
-  //   try {
-  //     const sessionDb = await this.repository.findOne({
-  //       where: {
-  //         deviceId,
-  //       },
-  //     });
-  //     if (sessionDb) {
-  //       return await this.repository.update({ deviceId }, { ...backSession });
-  //     }
-  //     return await this.repository.save(session);
-  //   } catch {
-  //     throw new InternalServerErrorException('Lỗi khi lưu phiên đăng nhập');
-  //   }
-  // }
 
   generateToken(user_id: string, deviceId: string) {
     const payload = {
@@ -75,12 +58,35 @@ export class DeviceSessionsService {
       expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRE'),
     });
 
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRE'),
+    return accessToken;
+  }
+
+  async reAuth(_refreshToken: string, deviceId: string) {
+    const session = await this.repository.findOne({
+      where: { deviceId, refreshToken: _refreshToken },
     });
 
-    return { accessToken, refreshToken };
+    if (
+      !session ||
+      new Date(session.expiredAt).valueOf() < new Date().valueOf()
+    ) {
+      throw new UnauthorizedException('Refresh token invalid');
+    }
+
+    const secretKey = randomatic('A0', 16);
+
+    const [accessToken, refreshToken, expiredAt] = [
+      this.generateToken(session.user_id, deviceId),
+      randomatic('Aa0', 64),
+      addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
+    ];
+
+    await this.repository.update(session.id, {
+      refreshToken,
+      expiredAt,
+      secretKey,
+    });
+    return { accessToken, refreshToken, expiredAt };
   }
 
   async handleLogin(user_id: string, metaData: LoginMetaData) {
@@ -90,23 +96,26 @@ export class DeviceSessionsService {
       where: { deviceId },
     });
 
-    const { accessToken, refreshToken } = this.generateToken(user_id, deviceId);
+    const secretKey = randomatic('A0', 16);
 
-    const expiredAt = addDay(
-      this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY'),
-    );
+    const [accessToken, refreshToken, expiredAt] = [
+      this.generateToken(user_id, deviceId),
+      randomatic('Aa0', 64),
+      addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
+    ];
 
     const newDeviceSession = new DeviceSession();
     newDeviceSession.user_id = user_id;
     newDeviceSession.deviceId = deviceId;
     newDeviceSession.ipAddress = ipAddress;
     newDeviceSession.refreshToken = refreshToken;
+    newDeviceSession.secretKey = secretKey;
     newDeviceSession.expiredAt = expiredAt;
     newDeviceSession.createdAt = new Date();
 
     // update or create device session
     await this.repository.save({
-      id: currentDevice?.id,
+      id: currentDevice?.id || randomUUID(),
       ...newDeviceSession,
     });
     return { accessToken, refreshToken, expiredAt };

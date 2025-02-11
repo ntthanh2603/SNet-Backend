@@ -23,6 +23,9 @@ export class DeviceSession {
   @Column()
   ipAddress: string;
 
+  @Column()
+  secretKey: string;
+
   @Column({ default: null })
   lastActive: Date;
 
