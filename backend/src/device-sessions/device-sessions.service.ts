@@ -47,7 +47,7 @@ export class DeviceSessionsService {
     return await this.repository.findOne({ where: { user_id, deviceId } });
   }
 
-  generateToken(user_id: string, deviceId: string) {
+  generateAccessToken(user_id: string, deviceId: string) {
     const payload = {
       id: user_id,
       sub: deviceId,
@@ -76,7 +76,7 @@ export class DeviceSessionsService {
     const secretKey = randomatic('A0', 16);
 
     const [accessToken, refreshToken, expiredAt] = [
-      this.generateToken(session.user_id, deviceId),
+      this.generateAccessToken(session.user_id, deviceId),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];
@@ -99,7 +99,7 @@ export class DeviceSessionsService {
     const secretKey = randomatic('A0', 16);
 
     const [accessToken, refreshToken, expiredAt] = [
-      this.generateToken(user_id, deviceId),
+      this.generateAccessToken(user_id, deviceId),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];

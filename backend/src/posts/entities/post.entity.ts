@@ -1,6 +1,7 @@
 import { PrivacyType } from 'src/helper/helper.enum';
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity()
 export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -11,7 +12,7 @@ export class Post {
   @Column({ default: null })
   content: string;
 
-  @Column({ default: null })
+  @Column('text', { array: true, default: null })
   medias: string[];
 
   @Column({ default: 0 })

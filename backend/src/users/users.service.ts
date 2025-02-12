@@ -15,8 +15,6 @@ import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrivacyType } from 'src/helper/helper.enum';
 import { LoginUserDto } from './dto/login-user.dto';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/redis/redis.service';
 import { LoginMetaData } from './users.controller';
 
@@ -25,8 +23,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private configService: ConfigService,
-    private jwtService: JwtService,
     private redisService: RedisService,
     private diviceSessionsService: DeviceSessionsService,
   ) {}
