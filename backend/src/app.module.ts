@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 import { RelationShipsModule } from './relation-ships/relation-ships.module';
 import { DeviceSessionsModule } from './device-sessions/device-sessions.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DeviceSessionsModule } from './device-sessions/device-sessions.module';
     RedisModule,
     RelationShipsModule,
     DeviceSessionsModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

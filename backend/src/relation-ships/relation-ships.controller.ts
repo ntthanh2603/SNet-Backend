@@ -39,12 +39,18 @@ export class RelationShipsController {
     return this.relationShipsService.listFollowed(id);
   }
 
+  // Quan hệ A và B:
+  // Cập nhật DB: follower, followed của cả A và B, RelationShip: A-B
+  // Cập nhật redis: user:{id_A}, user:{id_B}, list_followed:{id_A}, list_follower:{id_B}
   @Post('follow')
   @ResponseMessage('Follow')
   follow(@User() user: IUser, @Body() dto: RelationShipDto) {
     return this.relationShipsService.follow(user, dto);
   }
 
+  // Quan hệ A và B:
+  // Cập nhật DB: follower, followed của cả A và B, RelationShip: A-B
+  // Cập nhật redis: user:{id_A}, user:{id_B}, list_followed:{id_A}, list_follower:{id_B}
   @ResponseMessage('Unfollow')
   @Delete('unfollow')
   unfollow(@User() user: IUser, @Body() dto: RelationShipDto) {
