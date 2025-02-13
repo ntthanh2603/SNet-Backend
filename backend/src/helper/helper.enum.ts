@@ -23,3 +23,9 @@ export enum ReactionType {
   SAD = 'sad',
   ANGRY = 'angry',
 }
+
+export enum NotificationType {
+  MEMORY = 'memory',
+  BIRTHDAY = 'birthday',
+  OTHER = 'other',
+}

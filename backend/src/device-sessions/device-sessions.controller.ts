@@ -3,7 +3,7 @@ import { DeviceSessionsService } from './device-sessions.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { Request } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RefreshTokenDto } from 'src/users/dto/refresh-token.dto';
 import { createHash } from 'crypto';
 
@@ -13,7 +13,8 @@ export class DeviceSessionsController {
   constructor(private readonly deviceSessionsService: DeviceSessionsService) {}
 
   @Post('/logout')
-  @ResponseMessage('Logout user')
+  @ApiOperation({ summary: 'Đăng xuất tài khoản' })
+  @ResponseMessage('Đăng xuất tài khoản thành công')
   hendleLogout(@Req() request: Request, @User() user: IUser) {
     const userAgent = request.headers['user-agent'] || '';
     const ipAddress = request.ip || '';
@@ -25,7 +26,8 @@ export class DeviceSessionsController {
   }
 
   @Public()
-  @ResponseMessage('Get user by refresh token')
+  @ResponseMessage('Cấp lại access token thành công')
+  @ApiOperation({ summary: 'Cấp lại access token' })
   @Get('/refresh-token')
   reAuth(@Req() request: Request, @Body() dto: RefreshTokenDto) {
     const userAgent = request.headers['user-agent'] || '';

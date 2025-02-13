@@ -15,7 +15,7 @@ import { randomUUID } from 'crypto';
 import * as randomatic from 'randomatic';
 
 export interface ISession {
-  user_id: string;
+  userId: string;
   deviceId: string;
   ipAddress: string;
   lastActive: Date;
@@ -34,22 +34,22 @@ export class DeviceSessionsService {
   ) {}
 
   async logout(user: IUser, deviceId: string) {
-    const result = await this.repository.delete({ user_id: user.id, deviceId });
+    const result = await this.repository.delete({ userId: user.id, deviceId });
     if (result['affected'] != 0) return { message: 'Đăng xuất thành công' };
     else throw new InternalServerErrorException('Lỗi khi đăng xuất tài khoản');
   }
 
-  async updateToken(user_id: string, refreshToken: string) {
-    return await this.repository.update({ user_id }, { refreshToken });
+  async updateToken(userId: string, refreshToken: string) {
+    return await this.repository.update({ userId }, { refreshToken });
   }
 
-  async findOneByUserIdAndDevice(user_id: string, deviceId: string) {
-    return await this.repository.findOne({ where: { user_id, deviceId } });
+  async findOneByUserIdAndDevice(userId: string, deviceId: string) {
+    return await this.repository.findOne({ where: { userId, deviceId } });
   }
 
-  generateAccessToken(user_id: string, deviceId: string) {
+  generateAccessToken(userId: string, deviceId: string) {
     const payload = {
-      id: user_id,
+      id: userId,
       sub: deviceId,
     };
 
@@ -76,7 +76,7 @@ export class DeviceSessionsService {
     const secretKey = randomatic('A0', 16);
 
     const [accessToken, refreshToken, expiredAt] = [
-      this.generateAccessToken(session.user_id, deviceId),
+      this.generateAccessToken(session.userId, deviceId),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];
@@ -89,7 +89,7 @@ export class DeviceSessionsService {
     return { accessToken, refreshToken, expiredAt };
   }
 
-  async handleLogin(user_id: string, metaData: LoginMetaData) {
+  async handleLogin(userId: string, metaData: LoginMetaData) {
     const { deviceId, ipAddress } = metaData;
 
     const currentDevice = await this.repository.findOne({
@@ -99,13 +99,13 @@ export class DeviceSessionsService {
     const secretKey = randomatic('A0', 16);
 
     const [accessToken, refreshToken, expiredAt] = [
-      this.generateAccessToken(user_id, deviceId),
+      this.generateAccessToken(userId, deviceId),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];
 
     const newDeviceSession = new DeviceSession();
-    newDeviceSession.user_id = user_id;
+    newDeviceSession.userId = userId;
     newDeviceSession.deviceId = deviceId;
     newDeviceSession.ipAddress = ipAddress;
     newDeviceSession.refreshToken = refreshToken;

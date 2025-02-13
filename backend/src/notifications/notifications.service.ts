@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { NotificationType } from 'src/helper/helper.enum';
+import { Subject } from 'rxjs';
+import { Notification } from './entities/notification.entity';
 
 @Injectable()
-export class NotificationsService {
-  create(createNotificationDto: CreateNotificationDto) {
-    return 'This action adds a new notification';
+export class NotificationService {
+  private notifications$ = new Subject<Notification>();
+
+  constructor(
+    @InjectRepository(Notification)
+    private notificationRepo: Repository<Notification>,
+  ) {}
+
+  // Thêm thông báo
+  async createNotification(
+    userId: string,
+    title: string,
+    message: string,
+    notificationType: NotificationType,
+  ) {
+    const notification = this.notificationRepo.create({
+      userId,
+      title,
+      message,
+      notificationType,
+    });
+    await this.notificationRepo.save(notification);
+    this.notifications$.next(notification); // Gửi sự kiện SSE
+    return notification;
   }
 
-  findAll() {
-    return `This action returns all notifications`;
+  // Lấy thông báo stream
+  getNotificationsStream() {
+    return this.notifications$.asObservable();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
+  // Đánh dấu là đã đọc
+  async markAsRead(id: string) {
+    await this.notificationRepo.update(id, { isRead: true });
   }
 
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+  // Lấy thông báo với userId
+  async getUserNotifications(userId: string) {
+    return await this.notificationRepo.find({ where: { userId } });
   }
 }

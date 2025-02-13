@@ -35,10 +35,10 @@ export class RelationShipsService {
       }
 
       const temp = await this.relationShipRepository.find({
-        where: { user_id2: id },
+        where: { userId2: id },
       });
 
-      const list_follower_db = temp.map((relation) => relation.user_id1);
+      const list_follower_db = temp.map((relation) => relation.userId1);
 
       await this.redisService.set(`list_follower:${id}`, list_follower_db, 600);
       return list_follower_db;
@@ -64,10 +64,10 @@ export class RelationShipsService {
       }
 
       const temp = await this.relationShipRepository.find({
-        where: { user_id1: id },
+        where: { userId1: id },
       });
 
-      const list_followed_db = temp.map((relation) => relation.user_id2);
+      const list_followed_db = temp.map((relation) => relation.userId2);
 
       await this.redisService.set(`list_followed:${id}`, list_followed_db, 600);
       return list_followed_db;
@@ -80,31 +80,31 @@ export class RelationShipsService {
   }
   async follow(user: IUser, dto: RelationShipDto) {
     try {
-      const user_id1: string = user.id;
-      const user_id2: string = dto.user_id_other;
+      const userId1: string = user.id;
+      const userId2: string = dto.user_id_other;
 
-      const user_other = await this.usersService.findUserById(user_id2);
+      const user_other = await this.usersService.findUserById(userId2);
       if (!user_other)
         throw new NotFoundException(
-          `Người dùng có id là ${user_id2} không tồn tại`,
+          `Người dùng có id là ${userId2} không tồn tại`,
         );
 
       const relation = await this.relationShipRepository.findOne({
-        where: { user_id1, user_id2 },
+        where: { userId1, userId2 },
       });
       if (relation)
         throw new BadRequestException(
-          `Người dùng có id là ${user_id1} đã follow người dùng có id là ${user_id2}`,
+          `Người dùng có id là ${userId1} đã follow người dùng có id là ${userId2}`,
         );
 
       const newRelationShip = {
-        user_id1: user_id1,
-        user_id2: user_id2,
+        userId1: userId1,
+        userId2: userId2,
       };
       await this.relationShipRepository.save(newRelationShip);
 
-      await this.redisService.del(`list_followed:${user_id1}`);
-      await this.redisService.del(`list_follower:${user_id2}`);
+      await this.redisService.del(`list_followed:${userId1}`);
+      await this.redisService.del(`list_follower:${userId2}`);
 
       return 'Theo dõi thành công';
     } catch (error) {
@@ -116,27 +116,27 @@ export class RelationShipsService {
 
   async unfollow(user: IUser, dto: RelationShipDto) {
     try {
-      const user_id1: string = user.id;
-      const user_id2: string = dto.user_id_other;
+      const userId1: string = user.id;
+      const userId2: string = dto.user_id_other;
 
-      const user_other = await this.usersService.findUserById(user_id2);
+      const user_other = await this.usersService.findUserById(userId2);
       if (!user_other)
         throw new NotFoundException(
-          `Người dùng có id là ${user_id2} không tồn tại`,
+          `Người dùng có id là ${userId2} không tồn tại`,
         );
 
       const relation = await this.relationShipRepository.findOne({
-        where: { user_id1, user_id2 },
+        where: { userId1, userId2 },
       });
       if (!relation)
         throw new BadRequestException(
-          `Người dùng có id là ${user_id1} chưa follow người dùng có id là ${user_id2}`,
+          `Người dùng có id là ${userId1} chưa follow người dùng có id là ${userId2}`,
         );
 
-      await this.relationShipRepository.delete({ user_id1, user_id2 });
+      await this.relationShipRepository.delete({ userId1, userId2 });
 
-      await this.redisService.del(`list_followed:${user_id1}`);
-      await this.redisService.del(`list_follower:${user_id2}`);
+      await this.redisService.del(`list_followed:${userId1}`);
+      await this.redisService.del(`list_follower:${userId2}`);
 
       return 'Hủy theo dõi thành công';
     } catch (error) {

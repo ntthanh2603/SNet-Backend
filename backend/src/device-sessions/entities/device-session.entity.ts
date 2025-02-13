@@ -14,7 +14,7 @@ export class DeviceSession {
 
   @Column()
   @Index()
-  user_id: string;
+  userId: string;
 
   @Index()
   @Column({ unique: true })

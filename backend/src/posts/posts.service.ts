@@ -40,7 +40,7 @@ export class PostsService {
   async create(user: IUser, dto: CreatePostDto) {
     try {
       const newPost = new Post();
-      newPost.user_id = user.id;
+      newPost.userId = user.id;
       newPost.content = dto.content;
       newPost.medias = dto.medias;
       newPost.privacy = dto.privacy;

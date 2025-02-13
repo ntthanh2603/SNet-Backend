@@ -40,10 +40,10 @@ export class User {
   privacy: PrivacyType;
 
   @Column({ default: 0 })
-  follower_count: number;
+  followerCount: number;
 
   @Column({ default: 0 })
-  followed_count: number;
+  followedCount: number;
 
   @Column()
   createdAt: Date;

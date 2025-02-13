@@ -7,7 +7,7 @@ export class Post {
   id: string;
 
   @Column('uuid')
-  user_id: string;
+  userId: string;
 
   @Column({ default: null })
   content: string;
