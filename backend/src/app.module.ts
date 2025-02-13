@@ -9,6 +9,10 @@ import { RedisModule } from './redis/redis.module';
 import { RelationShipsModule } from './relation-ships/relation-ships.module';
 import { DeviceSessionsModule } from './device-sessions/device-sessions.module';
 import { PostsModule } from './posts/posts.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ChatMembersModule } from './chat-members/chat-members.module';
+import { ChatRoomsModule } from './chat-rooms/chat-rooms.module';
+import { ChatMessagesModule } from './chat-messages/chat-messages.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { PostsModule } from './posts/posts.module';
     RelationShipsModule,
     DeviceSessionsModule,
     PostsModule,
+    NotificationsModule,
+    ChatMembersModule,
+    ChatRoomsModule,
+    ChatMessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
