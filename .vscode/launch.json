@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug NestJS",
+      "type": "node",
+      "request": "launch",
+      "args": ["${workspaceFolder}/src/main.ts"],
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ],
+      "cwd": "${workspaceFolder}",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Attach Debug NestJS",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "timeout": 10000,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    }
+  ]
+}

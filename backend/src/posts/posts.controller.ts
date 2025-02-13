@@ -6,13 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { IUser } from 'src/users/users.interface';
 import { User } from 'src/decorator/customize';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { isUUID } from 'class-validator';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -34,9 +36,15 @@ export class PostsController {
     return this.postsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  @Patch('all')
+  @ApiBody({ type: UpdatePostDto })
+  update(@User() user: IUser, dto: UpdatePostDto) {
+    // if (!isUUID(dto?.id))
+    //   throw new BadRequestException('Id does not type uuid');
+    console.log('=>> check');
+    console.log(dto);
+
+    return this.postsService.update(user, dto);
   }
 
   @Delete(':id')
