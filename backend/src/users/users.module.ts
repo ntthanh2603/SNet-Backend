@@ -6,6 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { RedisModule } from 'src/redis/redis.module';
 import { DeviceSessionsModule } from 'src/device-sessions/device-sessions.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { BirthdayJob } from './birthday.job';
+import { NotificationModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -13,9 +16,11 @@ import { DeviceSessionsModule } from 'src/device-sessions/device-sessions.module
     RedisModule,
     forwardRef(() => RelationShipsModule),
     forwardRef(() => DeviceSessionsModule),
+    ScheduleModule.forRoot(),
+    NotificationModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, BirthdayJob],
   exports: [UsersService],
 })
 export class UsersModule {}

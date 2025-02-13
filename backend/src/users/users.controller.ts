@@ -20,6 +20,7 @@ import { RegisterUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { createHash } from 'crypto';
 import { DeviceSessionsService } from 'src/device-sessions/device-sessions.service';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 @ApiTags('Users')
 @Controller('users')
@@ -38,6 +39,7 @@ export class UsersController {
 
   @Public()
   @Get(':id')
+  @SkipThrottle() // Không giới hạn reqest
   @ResponseMessage('Tìm kiếm người dùng bằng ID')
   @ApiOperation({ summary: 'Tìm kiếm người dùng bằng ID' })
   async findUserById(@Param('id') id: string) {
@@ -70,6 +72,7 @@ export class UsersController {
   @Public()
   @ResponseMessage('Đăng nhập tài khoản nguời dùng thành công')
   @Post('/login')
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // Giới hạn đăng nhập 3 lần trong 60s
   @ApiOperation({ summary: 'Đăng nhập tài khoản nguời dùng' })
   @ApiBody({ type: LoginUserDto })
   login(@Body() dto: LoginUserDto, @Req() request: Request) {

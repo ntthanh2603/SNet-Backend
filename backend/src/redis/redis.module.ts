@@ -17,6 +17,7 @@ import { Redis } from 'ioredis';
           db: configService.get<number>('REDIS_DB') || 0,
           keyPrefix: configService.get<string>('REDIS_KEY_PREFIX') || '',
           tls: configService.get<boolean>('REDIS_TLS') ? {} : undefined,
+          maxRetriesPerRequest: null,
         });
       },
       inject: [ConfigService],

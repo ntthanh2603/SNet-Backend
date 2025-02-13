@@ -26,7 +26,6 @@ export class NotificationController {
   @Header('Cache-Control', 'no-cache')
   @Header('Connection', 'keep-alive')
   sse() {
-    console.log('check2');
     return this.notificationService
       .getNotificationsStream()
       .pipe(map((notification) => ({ data: notification })));

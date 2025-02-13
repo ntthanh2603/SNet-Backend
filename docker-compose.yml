@@ -1,5 +1,8 @@
 version: "3.8"
 
+# Lệnh xóa tất cả dữ liệu trong docker:
+# sudo docker system prune -a --volumes -f
+
 services:
   # Database
   postgres:
@@ -36,6 +39,7 @@ services:
   # Backend
   backend:
     container_name: backend
+    # image: node:18
     build:
       context: ./backend
       dockerfile: Dockerfile

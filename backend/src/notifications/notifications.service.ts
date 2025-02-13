@@ -32,6 +32,10 @@ export class NotificationService {
     return notification;
   }
 
+  sendNotification(notification: Notification) {
+    this.notifications$.next(notification);
+  }
+
   // Lấy thông báo stream
   getNotificationsStream() {
     return this.notifications$.asObservable();
