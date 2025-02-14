@@ -9,12 +9,10 @@ import { RedisModule } from './redis/redis.module';
 import { RelationShipsModule } from './relation-ships/relation-ships.module';
 import { DeviceSessionsModule } from './device-sessions/device-sessions.module';
 import { PostsModule } from './posts/posts.module';
-import { ChatMembersModule } from './chat-members/chat-members.module';
-import { ChatRoomsModule } from './chat-rooms/chat-rooms.module';
-import { ChatMessagesModule } from './chat-messages/chat-messages.module';
 import { NotificationModule } from './notifications/notifications.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { BullMQModule } from './bullmq/bullmg.module';
 
 @Module({
   imports: [
@@ -44,9 +42,7 @@ import { APP_GUARD } from '@nestjs/core';
     DeviceSessionsModule,
     PostsModule,
     NotificationModule,
-    ChatMembersModule,
-    ChatRoomsModule,
-    ChatMessagesModule,
+    BullMQModule,
   ],
   controllers: [AppController],
   providers: [

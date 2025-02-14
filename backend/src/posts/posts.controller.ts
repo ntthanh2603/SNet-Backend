@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -14,9 +13,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { IUser } from 'src/users/users.interface';
 import { User } from 'src/decorator/customize';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { isUUID } from 'class-validator';
 
-@ApiTags('posts')
+@ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}

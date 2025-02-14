@@ -44,13 +44,26 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
+      # Database
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USERNAME: tuanthanh
       DATABASE_PASSWORD: 123456
       DATABASE_NAME: social-network-SNet
+
+      # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: 123456
+      REDIS_DB: 0
+
+      # BullMQ
+      BULLMQ_HOST: redis
+      BULLMQ_PORT: 6379
+      BULLMQ_PASSWORD: 123456
+      BULLMQ_DB: 1
+
+      # Server
       NODE_ENV: development
       PORT: 3000
     ports:
@@ -71,7 +84,6 @@ services:
 networks:
   app-network:
     driver: bridge
-    # Add explicit network configuration
     ipam:
       driver: default
       config:
