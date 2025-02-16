@@ -1,4 +1,3 @@
-import { StatusType } from 'src/helper/helper.enum';
 import {
   Column,
   Entity,
@@ -28,9 +27,6 @@ export class DeviceSession {
 
   @Column({ default: null })
   lastActive: Date;
-
-  @Column({ type: 'enum', enum: StatusType, default: StatusType.OFF })
-  isActive: StatusType;
 
   @Column()
   refreshToken: string;

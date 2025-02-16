@@ -12,7 +12,7 @@ import { BullMQController } from './bullmq.controller';
     {
       provide: 'BULL_QUEUE',
       useFactory: (configService: ConfigService) => {
-        return new Queue('job-queue', {
+        return new Queue('queue', {
           connection: {
             host: configService.get<string>('BULLMQ_HOST') || 'localhost',
             port: configService.get<number>('BULLMQ_PORT') || 6379,

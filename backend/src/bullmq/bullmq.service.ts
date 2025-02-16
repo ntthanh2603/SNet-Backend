@@ -11,22 +11,35 @@ export class BullMQService {
   }
 
   // Lấy danh sách job đang chờ xử lý
-  async getWaitingJobs(): Promise<any[]> {
+  async getAllJob(): Promise<any[]> {
     return this.queue.getWaiting();
   }
 
   // Xóa tất cả job khỏi hàng đợi
-  async cleanQueue(): Promise<void> {
+  async clean(): Promise<void> {
     await this.queue.drain();
   }
 
   // ❌ Xóa một job theo ID
-  async removeJob(jobId: string): Promise<boolean> {
+  async delJobById(jobId: string): Promise<boolean> {
     const job = await Job.fromId(this.queue, jobId);
     if (job) {
       await job.remove();
       return true;
     }
     return false;
+  }
+
+  // 🆕 Lấy một job đầu tiên ra khỏi hàng đợi và xóa luôn
+  async getJobAndRemote(): Promise<Job | null> {
+    const jobs = await this.queue.getWaiting(); // Lấy danh sách job đang chờ xử lý
+    if (jobs.length === 0) {
+      return null;
+    }
+
+    const job = jobs[0]; // Lấy job đầu tiên
+    await job.remove(); // Xóa job khỏi hàng đợi
+
+    return job; // Trả về job đã xóa (nếu cần xử lý dữ liệu trước khi xóa)
   }
 }

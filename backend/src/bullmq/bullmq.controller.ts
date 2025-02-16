@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { BullMQService } from './bullmq.service';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -17,12 +17,12 @@ export class BullMQController {
 
   @Get('waiting-jobs')
   async getWaitingJobs() {
-    return await this.bullMQService.getWaitingJobs();
+    return await this.bullMQService.getAllJob();
   }
 
-  @Delete(':jobId')
-  async deleteJob(@Param('jobId') jobId: string) {
-    const deleted = await this.bullMQService.removeJob(jobId);
-    return deleted ? { message: 'Job deleted' } : { message: 'Job not found' };
+  @Post()
+  async deleteJob() {
+    const deleted = await this.bullMQService.getJobAndRemote();
+    return deleted;
   }
 }

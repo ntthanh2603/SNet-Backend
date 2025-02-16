@@ -7,12 +7,15 @@ import { TransformInterceptor } from './core/transform.interceptor';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { join } from 'path';
 import helmet from 'helmet';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  app.useWebSocketAdapter(new IoAdapter(app)); // Websocket
 
   app.use(
     helmet({
@@ -43,10 +46,6 @@ async function bootstrap() {
 
   // Interceptor
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
-
-  app.useStaticAssets(join(__dirname, '..', 'public')); // js, css, images
-  app.setBaseViewsDir(join(__dirname, '..', 'views')); // view
-  app.setViewEngine('ejs');
 
   // Config CORS
   app.enableCors({

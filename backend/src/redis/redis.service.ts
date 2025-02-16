@@ -33,4 +33,23 @@ export class RedisService {
   async getAllKeys(pattern = '*'): Promise<string[]> {
     return this.redis.keys(pattern);
   }
+
+  async increment(key: string): Promise<number> {
+    return await this.redis.incr(key);
+  }
+
+  async decrement(key: string): Promise<number> {
+    const value = await this.redis.decr(key);
+    return value >= 0 ? value : 0; // Đảm bảo số lượng không âm
+  }
+
+  // Kiểm tra kết nối Redis
+  async onModuleInit() {
+    try {
+      await this.redis.ping();
+      console.log('Redis connection successful');
+    } catch (error) {
+      console.error('Redis connection failed:', error);
+    }
+  }
 }
