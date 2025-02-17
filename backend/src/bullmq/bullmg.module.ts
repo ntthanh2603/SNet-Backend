@@ -1,31 +1,44 @@
+import { RedisModule } from './../redis/redis.module';
 import { Module, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Queue } from 'bullmq';
-import { BullMQService } from './bullmq.service';
 import { BullMQController } from './bullmq.controller';
+import { BullModule } from '@nestjs/bullmq';
+import { QueueOptions } from 'bullmq';
+import { NotificationProcessor } from './notification.processor';
+import { BullMQService } from './bullmq.service';
 
 @Global()
 @Module({
-  imports: [ConfigModule],
-  controllers: [BullMQController],
-  providers: [
-    {
-      provide: 'BULL_QUEUE',
-      useFactory: (configService: ConfigService) => {
-        return new Queue('queue', {
+  imports: [
+    ConfigModule,
+    BullModule.forRootAsync({
+      imports: [ConfigModule], // Đảm bảo ConfigModule được import vào
+      inject: [ConfigService], // Inject ConfigService
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<QueueOptions> => {
+        const redisHost = configService.get<string>('BULLMQ_HOST');
+        const redisPort = configService.get<number>('BULLMQ_PORT');
+        const redisPassword = configService.get<string>('BULLMQ_PASSWORD');
+        const redisDb = configService.get<number>('BULLMQ_DB', 1);
+
+        return {
           connection: {
-            host: configService.get<string>('BULLMQ_HOST') || 'localhost',
-            port: configService.get<number>('BULLMQ_PORT') || 6379,
-            password: configService.get<string>('BULLMQ_PASSWORD') || undefined,
-            db: configService.get<number>('BULLMQ_DB') || 1,
-            tls: configService.get<boolean>('BULLMQ_TLS') ? {} : undefined,
+            host: redisHost,
+            port: redisPort,
+            password: redisPassword,
+            db: redisDb,
           },
-        });
+        };
       },
-      inject: [ConfigService],
-    },
-    BullMQService,
+    }),
+    RedisModule,
+    BullModule.registerQueue(
+      { name: 'notifications' }, // Queue thông báo
+    ),
   ],
-  exports: ['BULL_QUEUE', BullMQService],
+  controllers: [BullMQController],
+  providers: [NotificationProcessor, BullMQService],
+  exports: [],
 })
 export class BullMQModule {}

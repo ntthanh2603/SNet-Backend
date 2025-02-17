@@ -17,6 +17,7 @@ import { PrivacyType } from 'src/helper/helper.enum';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { LoginMetaData } from './users.controller';
+import { MailerService } from '@nest-modules/mailer';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +26,7 @@ export class UsersService {
     private usersRepository: Repository<User>,
     private redisService: RedisService,
     private diviceSessionsService: DeviceSessionsService,
+    private mailerService: MailerService,
   ) {}
 
   getHashPassword = (password: string) => {
@@ -68,6 +70,15 @@ export class UsersService {
       };
 
       await this.usersRepository.save(newUser);
+
+      await this.mailerService.sendMail({
+        to: dto.email,
+        subject: 'Welcome to my website',
+        template: './welcome',
+        context: {
+          name: dto.username,
+        },
+      });
 
       return { message: 'Đăng kí tài khoản thành công' };
     } catch (error) {

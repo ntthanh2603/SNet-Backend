@@ -63,6 +63,13 @@ services:
       BULLMQ_PASSWORD: 123456
       BULLMQ_DB: 1
 
+      # Mail
+      MAIL_HOST: "smtp.gmail.com"
+      MAIL_USER: tuanthanh2kk4@gmail.com
+      MAIL_PASSWORD: mvbnaxhcfhxyywwo
+      MAIL_FORM: ${MAIL_USER}
+      MAIL_TRANSPORT: smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
+
       # Server
       NODE_ENV: development
       PORT: 3000

@@ -13,6 +13,8 @@ import { NotificationModule } from './notifications/notifications.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { BullMQModule } from './bullmq/bullmg.module';
+import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -34,7 +36,29 @@ import { BullMQModule } from './bullmq/bullmg.module';
         },
       ],
     }),
-
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transports: {
+          host: configService.get('MAIL_HOST'),
+          port: 587,
+          secure: false,
+          auth: {
+            user: configService.get('MAIL_USER'),
+            pass: configService.get('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: `"No Reply" <${configService.get('MAIL_FORM')}>`,
+        },
+        template: {
+          dir: join(__dirname, 'src/templates/email'),
+          adapter: new HandlebarsAdapter(),
+          options: { strict: true },
+        },
+      }),
+      inject: [ConfigService],
+    }),
     UsersModule,
     AuthModule,
     RedisModule,

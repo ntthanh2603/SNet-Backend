@@ -1,28 +1,21 @@
-import { Controller, Get, Post } from '@nestjs/common';
-import { BullMQService } from './bullmq.service';
+import { Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { BullMQService } from './bullmq.service';
 
-@ApiTags('BullMQ')
-@Controller('bullmq')
+@ApiTags('job')
+@Controller('jobs')
 export class BullMQController {
-  constructor(private readonly bullMQService: BullMQService) {}
+  constructor(private bullMQService: BullMQService) {}
 
-  @Post('add-job')
-  async addJob() {
-    await this.bullMQService.addJob('notification', {
-      message: 'Hello BullMQ!',
-    });
-    return 'Job added!';
+  // Endpoint thêm job vào queue thông báo
+  @Post('notification')
+  async addNotificationJob() {
+    await this.bullMQService.addJob('add noti', 'datazfdf '); // Thêm job vào queue thông báo
+    return 'Notification job added!';
   }
 
-  @Get('waiting-jobs')
-  async getWaitingJobs() {
-    return await this.bullMQService.getAllJob();
-  }
-
-  @Post()
-  async deleteJob() {
-    const deleted = await this.bullMQService.getJobAndRemote();
-    return deleted;
+  @Post('del')
+  async delNotificationJob() {
+    return await this.bullMQService.delJobById('20'); // Thêm job vào queue thông báo
   }
 }
