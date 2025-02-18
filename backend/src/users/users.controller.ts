@@ -21,6 +21,7 @@ import { createHash } from 'crypto';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { SendOtpDto } from './dto/send-otp.dto';
+import { AfterDeleteDto } from './dto/after-delete.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -78,22 +79,15 @@ export class UsersController {
     return this.usersService.login(dto, metaData);
   }
 
-  @Delete()
-  @ResponseMessage('Xóa tài khoản người dùng thành công')
-  @ApiOperation({ summary: 'Xóa tài khoản người dùng' })
-  deleteUser(@User() user: IUser) {
-    return this.usersService.deleteUser(user.id);
-  }
-
-  @Post('/sendOtp')
+  @Post('/before-signup')
   @Public()
   @ResponseMessage('Gửi OTP thành công')
   @ApiOperation({
-    summary: 'Kiểm tra tài khoản có hợp lệ không để đăng ký tài khoản',
+    summary: 'Gửi OTP về email',
   })
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 1, ttl: 60000 } })
   beforeSignUp(@Body() dto: SendOtpDto) {
-    return this.usersService.sendOtpEmail(dto.email, dto.username);
+    return this.usersService.beforeSignUp(dto.email, dto.username);
   }
 
   @Post('/after-signup')
@@ -105,6 +99,25 @@ export class UsersController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   afterSignUp(@Body() dto: AfterSignUpDto) {
     return this.usersService.afterSignUp(dto);
+  }
+
+  @Post('/before-delete')
+  @ResponseMessage('Gửi OTP thành công')
+  @ApiOperation({
+    summary: 'Gửi OTP về email',
+  })
+  @Throttle({ default: { limit: 1, ttl: 60000 } })
+  beforeDelete(@User() user: IUser) {
+    return this.usersService.beforeDelete(user);
+  }
+
+  @Delete('/after-delete')
+  @ResponseMessage('Xóa tài khoản người dùng thành công')
+  @ApiOperation({ summary: 'Xóa tài khoản người dùng' })
+  afterDelete(@User() user: IUser, @Body() dto: AfterDeleteDto) {
+    console.log(user);
+
+    return this.usersService.afterDelete(user.id, dto.otp);
   }
 }
 

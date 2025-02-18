@@ -46,7 +46,7 @@ export class UsersService {
     });
   }
 
-  async sendOtpEmail(email: string, username: string) {
+  async beforeSignUp(email: string, username: string) {
     const userDb = await this.usersRepository.findOneBy({ email });
 
     if (userDb) {
@@ -55,21 +55,36 @@ export class UsersService {
 
     const otp = randomInt(100000, 999999).toString();
 
-    const res = await this.emailService.sendOtpSignUp(email, username, otp);
+    const res = await this.emailService.SendOtpSignUp(email, username, otp);
 
     if (res) {
       await this.redisService.set(`otp-code:${email}`, otp, 150);
-
       return;
     }
 
     throw new BadRequestException(`Lỗi khi gửi OTP về email ${email}`);
   }
 
-  async afterSignUp(dto: AfterSignUpDto) {
-    const otp = await this.redisService.get(`otp:${dto.email}`);
+  async beforeDelete(user: IUser) {
+    const userDb = await this.findUserById(user.id);
 
-    await this.redisService.del(`otp-code:${dto.email}`);
+    const otp = randomInt(100000, 999999).toString();
+
+    const res = await this.emailService.SendOtpDelete(
+      userDb.email,
+      userDb.username,
+      otp,
+    );
+
+    if (res) {
+      await this.redisService.set(`otp-code:${userDb.email}`, otp, 150);
+      return;
+    }
+    throw new BadRequestException(`Lỗi khi gửi OTP về email ${userDb.email}`);
+  }
+
+  async afterSignUp(dto: AfterSignUpDto) {
+    const otp = await this.redisService.get(`otp-code:${dto.email}`);
 
     if (otp !== dto.otp)
       throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
@@ -94,7 +109,25 @@ export class UsersService {
 
     await this.emailService.sendSignUpSuccess(dto.email, dto.username);
 
+    await this.redisService.del(`otp-code:${dto.email}`);
+
     return { message: 'Đăng kí tài khoản thành công' };
+  }
+
+  async afterDelete(id: string, otp: string) {
+    const user = await this.findUserById(id);
+    const otpCache = await this.redisService.get(`otp-code:${user.email}`);
+
+    if (otp !== otpCache)
+      throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
+
+    await this.usersRepository.delete({ id });
+
+    await this.redisService.del(`user:${id}`);
+
+    await this.redisService.del(`otp-code:${user.email}`);
+
+    return { message: 'Xóa người dùng thành công' };
   }
 
   async findUserById(id: string): Promise<User> {
@@ -140,18 +173,6 @@ export class UsersService {
       }
       console.error('Error in findUserById:', error);
       throw new Error('Failed to fetch user data');
-    }
-  }
-
-  async deleteUser(id: string) {
-    try {
-      await this.redisService.del(`user:${id}`);
-      await this.usersRepository.delete({ id });
-      return {
-        message: 'Xóa người dùng thành công',
-      };
-    } catch {
-      throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
     }
   }
 

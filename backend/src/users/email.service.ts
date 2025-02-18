@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendOtpSignUp(
+  async SendOtpSignUp(
     email: string,
     username: string,
     otp: string,
@@ -14,6 +14,23 @@ export class EmailService {
       to: email,
       subject: 'Mạng xã hội SNet - Xác nhận đăng ký tài khoản',
       template: './otp-signup-account', // Tên template OTP
+      context: {
+        username: username,
+        otp: otp.toString(),
+      },
+    });
+    return response.accepted.length > 0 ? true : false;
+  }
+
+  async SendOtpDelete(
+    email: string,
+    username: string,
+    otp: string,
+  ): Promise<boolean> {
+    const response = await this.mailerService.sendMail({
+      to: email,
+      subject: 'Mạng xã hội SNet - Xác nhận xóa tài khoản',
+      template: './otp-delete-account', // Tên template OTP
       context: {
         username: username,
         otp: otp.toString(),

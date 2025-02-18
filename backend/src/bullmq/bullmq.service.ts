@@ -21,11 +21,12 @@ export class BullMQService {
 
   async getJobAndRemove(): Promise<Job | null> {
     const jobs = await this.queue.getJobs();
-    if (jobs.length === 0) {
+    const length = jobs.length;
+    if (length === 0) {
       return null;
     }
 
-    const job = jobs[0];
+    const job = jobs[length - 1];
     await job.remove();
 
     return job;

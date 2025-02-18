@@ -16,6 +16,6 @@ export class BullMQController {
 
   @Post('del')
   async delNotificationJob() {
-    return await this.bullMQService.delJobById('20'); // Thêm job vào queue thông báo
+    return await this.bullMQService.getJobAndRemove(); // Thêm job vào queue thông báo
   }
 }

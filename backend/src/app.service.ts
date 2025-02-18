@@ -34,7 +34,6 @@ export class AppService {
     khác, thông báo, đăng bài, thả cảm xúc, bình luận. Bạn hãy trả lời câu hỏi sau:`;
 
     const result = await chatSession.sendMessage(promptBase + prompt);
-    console.log(result.response.text());
 
     return { result: result.response.text() };
   }
