@@ -1,1 +1,6 @@
 .env
+dist/
+node_modules/
+documentation/
+.idea/
+.tmp.driveupload/
