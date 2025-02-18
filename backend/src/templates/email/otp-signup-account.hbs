@@ -1,0 +1,80 @@
+<html lang='vi'>
+
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Welcome to SNet</title>
+    <style>
+      /* Định dạng chung */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7fc;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Căn giữa theo chiều dọc */
+      }
+
+      /* Hộp nội dung */
+      .container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      h3 {
+        color: #007bff;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      /* Mã OTP nổi bật */
+      .otp {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff5722;
+        background: #ffe6e0;
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: inline-block;
+        margin: 10px 0;
+      }
+
+      /* Link */
+      a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class='container'>
+      <h3>Xin chào, {{username}}!</h3>
+      <p>
+        Cảm ơn bạn đã đăng ký tài khoản tại mạng xã hội SNet. Để hoàn tất quá
+        trình xác thực, vui lòng nhập mã OTP dưới đây:
+      </p>
+      <div class='otp'>{{otp}}</div>
+      <p>
+        Lưu ý: Mã này có hiệu lực trong 2 phút và chỉ được sử dụng một lần. Nếu
+        bạn có thắc mắc, hãy truy cập chatbot AI để được hỗ trợ.
+        <a href='https://snet/chatbot/new'>Truy cập Chatbot AI</a></p>
+    </div>
+  </body>
+
+</html>

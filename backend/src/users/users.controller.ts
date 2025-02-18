@@ -16,19 +16,16 @@ import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
-import { RegisterUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { createHash } from 'crypto';
-import { DeviceSessionsService } from 'src/device-sessions/device-sessions.service';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { BeforeSignUpDto } from './dto/before-signup.dto';
+import { AfterSignUpDto } from './dto/after-signup.dto';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly deviceSessionsService: DeviceSessionsService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('/account')
   @ResponseMessage('Lấy thông tin tài khoản')
@@ -61,15 +58,6 @@ export class UsersController {
   }
 
   @Public()
-  @ResponseMessage('Tạo tài khoản người dùng thành công')
-  @Post('/register')
-  @ApiOperation({ summary: 'Tạo tài khoản' })
-  @ApiBody({ type: RegisterUserDto })
-  handleRegister(@Body() dto: RegisterUserDto) {
-    return this.usersService.register(dto);
-  }
-
-  @Public()
   @ResponseMessage('Đăng nhập tài khoản nguời dùng thành công')
   @Post('/login')
   @Throttle({ default: { limit: 3, ttl: 60000 } }) // Giới hạn đăng nhập 3 lần trong 60s
@@ -95,6 +83,28 @@ export class UsersController {
   @ApiOperation({ summary: 'Xóa tài khoản người dùng' })
   deleteUser(@User() user: IUser) {
     return this.usersService.deleteUser(user.id);
+  }
+
+  @Post('/before-signup')
+  @Public()
+  @ResponseMessage('Gửi OTP thành công')
+  @ApiOperation({
+    summary: 'Kiểm tra tài khoản có hợp lệ không để đăng ký tài khoản',
+  })
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  beforeSignUp(@Body() dto: BeforeSignUpDto) {
+    return this.usersService.beforeSignUp(dto);
+  }
+
+  @Post('/after-signup')
+  @Public()
+  @ResponseMessage('Tại tài khoản thành công')
+  @ApiOperation({
+    summary: 'Kiểm tra OTP có hợp lệ không để đăng ký tài khoản',
+  })
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  afterSignUp(@Body() dto: AfterSignUpDto) {
+    return this.usersService.afterSignUp(dto);
   }
 }
 

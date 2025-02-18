@@ -33,7 +33,7 @@ services:
       - REDIS_DB=0
     volumes:
       - redis_data:/data
-    command: redis-server --requirepass 123456 --maxmemory 200mb --maxmemory-policy allkeys-lru
+    command: redis-server --requirepass 123456 --maxmemory 200mb --maxmemory-policy noeviction
     restart: unless-stopped
 
   # Backend
@@ -64,11 +64,13 @@ services:
       BULLMQ_DB: 1
 
       # Mail
-      MAIL_HOST: "smtp.gmail.com"
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
       MAIL_USER: tuanthanh2kk4@gmail.com
-      MAIL_PASSWORD: mvbnaxhcfhxyywwo
-      MAIL_FORM: ${MAIL_USER}
-      MAIL_TRANSPORT: smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
+      MAIL_PASSWORD: "mjgx twhy yzyp oryj"
+      MAIL_FORM: tuanthanh2kk4@gmail.com
+      MAIL_DEFAULT: 22022624@vnu.edu.vn
+      # MAIL_TRANSPORT: smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
 
       # Server
       NODE_ENV: development

@@ -39,9 +39,9 @@ import { join } from 'path';
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        transports: {
+        transport: {
           host: configService.get('MAIL_HOST'),
-          port: 587,
+          port: configService.get('MAIL_POST'),
           secure: false,
           auth: {
             user: configService.get('MAIL_USER'),
@@ -49,7 +49,7 @@ import { join } from 'path';
           },
         },
         defaults: {
-          from: `"No Reply" <${configService.get('MAIL_FORM')}>`,
+          from: `"Mạng xã hội SNet"`,
         },
         template: {
           dir: join(__dirname, 'src/templates/email'),
