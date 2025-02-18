@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Public } from './decorator/customize';
+import { Public, ResponseMessage } from './decorator/customize';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
@@ -8,7 +9,17 @@ export class AppController {
 
   @Get()
   @Public()
+  @ResponseMessage('Trang chủ')
+  @ApiOperation({ summary: 'Trang chủ' })
   home() {
     return this.appService.home();
+  }
+
+  @Post('/chatbot/new')
+  @Public()
+  @ResponseMessage('Tạo prompt thành công')
+  @ApiOperation({ summary: 'Tạo prompt với Chatbot AI' })
+  chatbot(@Body() body: { prompt: string }) {
+    return this.appService.chatbot(body.prompt);
   }
 }

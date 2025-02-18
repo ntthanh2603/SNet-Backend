@@ -19,8 +19,8 @@ import { isUUID } from 'class-validator';
 import { LoginUserDto } from './dto/login-user.dto';
 import { createHash } from 'crypto';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { BeforeSignUpDto } from './dto/before-signup.dto';
 import { AfterSignUpDto } from './dto/after-signup.dto';
+import { SendOtpDto } from './dto/send-otp.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -85,15 +85,15 @@ export class UsersController {
     return this.usersService.deleteUser(user.id);
   }
 
-  @Post('/before-signup')
+  @Post('/sendOtp')
   @Public()
   @ResponseMessage('Gửi OTP thành công')
   @ApiOperation({
     summary: 'Kiểm tra tài khoản có hợp lệ không để đăng ký tài khoản',
   })
   @Throttle({ default: { limit: 3, ttl: 60000 } })
-  beforeSignUp(@Body() dto: BeforeSignUpDto) {
-    return this.usersService.beforeSignUp(dto);
+  beforeSignUp(@Body() dto: SendOtpDto) {
+    return this.usersService.sendOtpEmail(dto.email, dto.username);
   }
 
   @Post('/after-signup')

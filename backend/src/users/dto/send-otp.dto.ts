@@ -7,7 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class BeforeSignUpDto {
+export class SendOtpDto {
   @IsEmail()
   @IsString()
   @IsNotEmpty({ message: 'Email không được trống' })

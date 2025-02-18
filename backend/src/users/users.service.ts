@@ -17,7 +17,6 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { LoginMetaData } from './users.controller';
 import { randomInt } from 'crypto';
-import { BeforeSignUpDto } from './dto/before-signup.dto';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { PrivacyType } from 'src/helper/helper.enum';
 
@@ -47,32 +46,30 @@ export class UsersService {
     });
   }
 
-  async beforeSignUp(dto: BeforeSignUpDto) {
-    const userDb = await this.usersRepository.findOneBy({ email: dto.email });
+  async sendOtpEmail(email: string, username: string) {
+    const userDb = await this.usersRepository.findOneBy({ email });
 
     if (userDb) {
-      throw new BadRequestException(`Email ${dto.email} has existed.`);
+      throw new BadRequestException(`Email ${email} has existed.`);
     }
 
     const otp = randomInt(100000, 999999).toString();
 
-    const res = await this.emailService.sendOtpSignUp(
-      dto.email,
-      dto.username,
-      otp,
-    );
+    const res = await this.emailService.sendOtpSignUp(email, username, otp);
 
     if (res) {
-      await this.redisService.set(`otp:${dto.email}`, otp, 150);
+      await this.redisService.set(`otp-code:${email}`, otp, 150);
 
       return;
     }
 
-    throw new BadRequestException(`Lỗi khi gửi OTP về email ${dto.email}`);
+    throw new BadRequestException(`Lỗi khi gửi OTP về email ${email}`);
   }
 
   async afterSignUp(dto: AfterSignUpDto) {
     const otp = await this.redisService.get(`otp:${dto.email}`);
+
+    await this.redisService.del(`otp-code:${dto.email}`);
 
     if (otp !== dto.otp)
       throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
