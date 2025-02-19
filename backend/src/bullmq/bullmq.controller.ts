@@ -10,12 +10,12 @@ export class BullMQController {
   // Endpoint thêm job vào queue thông báo
   @Post('notification')
   async addNotificationJob() {
-    await this.bullMQService.addJob('add noti', 'datazfdf '); // Thêm job vào queue thông báo
+    await this.bullMQService.push('add noti', 'datazfdf '); // Thêm job vào queue thông báo
     return 'Notification job added!';
   }
 
   @Post('del')
   async delNotificationJob() {
-    return await this.bullMQService.getJobAndRemove(); // Thêm job vào queue thông báo
+    return await this.bullMQService.pop(); // Thêm job vào queue thông báo
   }
 }

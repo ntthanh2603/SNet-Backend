@@ -11,7 +11,7 @@ export class LoginUserDto {
   @IsNotEmpty({ message: 'Email không được trống' })
   @IsEmail({}, { message: 'Email không đúng định dạng' })
   @IsString({ message: 'Type email is string' })
-  @ApiProperty({ example: 'user@gmail.com', description: 'email' })
+  @ApiProperty({ example: '22022624@vnu.edu.vn', description: 'email' })
   email: string;
 
   @IsNotEmpty({ message: 'Mật khẩu không được trống' })
