@@ -1,4 +1,3 @@
-import { EmailService } from './email.service';
 import { DeviceSessionsService } from './../device-sessions/device-sessions.service';
 import {
   BadRequestException,
@@ -13,12 +12,15 @@ import { User } from './entities/user.entity';
 import { compareSync, genSaltSync, hashSync } from 'bcrypt';
 import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { LoginMetaData } from './users.controller';
 import { randomInt } from 'crypto';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { PrivacyType } from 'src/helper/helper.enum';
+import { EmailService } from 'src/notifications/email.service';
+import { ConfigService } from '@nestjs/config';
+import { BeforeLoginDto } from './dto/before-login.dto';
+import { AfterLoginDto } from './dto/after-login.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +30,7 @@ export class UsersService {
     private redisService: RedisService,
     private diviceSessionsService: DeviceSessionsService,
     private readonly emailService: EmailService,
+    private readonly configService: ConfigService,
   ) {}
 
   getHashPassword = (password: string) => {
@@ -55,14 +58,46 @@ export class UsersService {
 
     const otp = randomInt(100000, 999999).toString();
 
-    const res = await this.emailService.SendOtpSignUp(email, username, otp);
+    const res = await this.emailService.SendOTP(
+      email,
+      username,
+      otp,
+      'otp-signup-account',
+    );
 
     if (res) {
-      await this.redisService.set(`otp-code:${email}`, otp, 150);
+      await this.redisService.set(
+        `otp-code:${email}`,
+        otp,
+        this.configService.get('TIME_OTP'),
+      );
       return;
     }
 
     throw new BadRequestException(`Lỗi khi gửi OTP về email ${email}`);
+  }
+
+  async beforeLogin(dto: BeforeLoginDto) {
+    const userDb = await this.validateUser(dto.email, dto.password);
+
+    const otp = randomInt(100000, 999999).toString();
+
+    const res = await this.emailService.SendOTP(
+      userDb.email,
+      userDb.username,
+      otp,
+      'otp-login-account',
+    );
+
+    if (res) {
+      await this.redisService.set(
+        `otp-code:${userDb.email}`,
+        otp,
+        this.configService.get('TIME_OTP'),
+      );
+      return;
+    }
+    throw new BadRequestException(`Lỗi khi gửi OTP về email ${userDb.email}`);
   }
 
   async beforeDelete(user: IUser) {
@@ -70,17 +105,44 @@ export class UsersService {
 
     const otp = randomInt(100000, 999999).toString();
 
-    const res = await this.emailService.SendOtpDelete(
+    const res = await this.emailService.SendOTP(
       userDb.email,
       userDb.username,
       otp,
+      'otp-delete-account',
     );
 
     if (res) {
-      await this.redisService.set(`otp-code:${userDb.email}`, otp, 150);
+      await this.redisService.set(
+        `otp-code:${userDb.email}`,
+        otp,
+        this.configService.get('TIME_OTP'),
+      );
       return;
     }
     throw new BadRequestException(`Lỗi khi gửi OTP về email ${userDb.email}`);
+  }
+
+  async afterlogin(dto: AfterLoginDto, metaData: LoginMetaData) {
+    const user = await this.validateUser(dto.email, dto.password);
+
+    const otp = await this.redisService.get(`otp-code:${dto.email}`);
+
+    if (otp !== dto.otp)
+      throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
+
+    await this.redisService.del(`otp-code:${dto.email}`);
+
+    return await this.diviceSessionsService.handleLogin(user.id, metaData);
+  }
+
+  async validateUser(email: string, password: string): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+
+    if (!user || !this.isValidPassword(password, user.password)) {
+      throw new UnauthorizedException('Thông tin đăng nhập không hợp lệ');
+    }
+    return user;
   }
 
   async afterSignUp(dto: AfterSignUpDto) {
@@ -193,20 +255,5 @@ export class UsersService {
     } catch {
       throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
     }
-  }
-
-  async login(dto: LoginUserDto, metaData: LoginMetaData) {
-    const user = await this.validateUser(dto.email, dto.password);
-
-    return await this.diviceSessionsService.handleLogin(user.id, metaData);
-  }
-
-  async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { email } });
-
-    if (!user || !this.isValidPassword(password, user.password)) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return user;
   }
 }

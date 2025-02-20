@@ -7,7 +7,13 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class LoginUserDto {
+export class AfterLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(6)
+  @MinLength(6)
+  @ApiProperty({ example: '123123', description: 'otp' })
+  otp: string;
   @IsNotEmpty({ message: 'Email không được trống' })
   @IsEmail({}, { message: 'Email không đúng định dạng' })
   @IsString({ message: 'Type email is string' })

@@ -8,6 +8,8 @@ import {
   BadRequestException,
   Post,
   Req,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { UsersService } from './users.service';
@@ -16,12 +18,13 @@ import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
-import { LoginUserDto } from './dto/login-user.dto';
 import { createHash } from 'crypto';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { AfterDeleteDto } from './dto/after-delete.dto';
+import { BeforeLoginDto } from './dto/before-login.dto';
+import { AfterLoginDto } from './dto/after-login.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -58,13 +61,25 @@ export class UsersController {
     return this.usersService.updateProfile(updateUserDto, user);
   }
 
+  @Post('/before-login')
+  @Public()
+  @ResponseMessage('Gửi OTP thành công')
+  @ApiOperation({
+    summary: 'Gửi OTP về email',
+  })
+  @Throttle({ default: { limit: 1, ttl: 60000 } })
+  beforeLogin(@Body() dto: BeforeLoginDto) {
+    return this.usersService.beforeLogin(dto);
+  }
+
   @Public()
   @ResponseMessage('Đăng nhập tài khoản nguời dùng thành công')
-  @Post('/login')
+  @Post('/after-login')
+  @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 3, ttl: 60000 } }) // Giới hạn đăng nhập 3 lần trong 60s
   @ApiOperation({ summary: 'Đăng nhập tài khoản nguời dùng' })
-  @ApiBody({ type: LoginUserDto })
-  login(@Body() dto: LoginUserDto, @Req() request: Request) {
+  @ApiBody({ type: AfterLoginDto })
+  afterlogin(@Body() dto: AfterLoginDto, @Req() request: Request) {
     const userAgent = request.headers['user-agent'] || '';
 
     const ipAddress = request.ip || '';
@@ -76,7 +91,7 @@ export class UsersController {
 
     const metaData: LoginMetaData = { deviceId, ipAddress };
 
-    return this.usersService.login(dto, metaData);
+    return this.usersService.afterlogin(dto, metaData);
   }
 
   @Post('/before-signup')

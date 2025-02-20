@@ -9,7 +9,6 @@ import { DeviceSessionsModule } from 'src/device-sessions/device-sessions.module
 import { ScheduleModule } from '@nestjs/schedule';
 import { BirthdayJob } from './birthday.job';
 import { NotificationModule } from 'src/notifications/notifications.module';
-import { EmailService } from './email.service';
 
 @Module({
   imports: [
@@ -21,7 +20,7 @@ import { EmailService } from './email.service';
     NotificationModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, BirthdayJob, EmailService],
+  providers: [UsersService, BirthdayJob],
   exports: [UsersService],
 })
 export class UsersModule {}

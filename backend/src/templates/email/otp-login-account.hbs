@@ -1,0 +1,139 @@
+<html lang='vi'>
+
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Đăng Nhập SNet</title>
+    <style>
+      /* Định dạng chung */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7fc;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        margin: 0;
+        padding: 20px;
+      }
+
+      /* Hộp nội dung */
+      .container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 100%;
+        width: 100%;
+        height: 250%;
+      }
+
+      h1 {
+        color: #007bff;
+        font-size: 24px;
+      }
+
+      h3 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.8;
+        text-align: justify;
+      }
+
+      /* Mã OTP nổi bật */
+      .otp {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ff5722;
+        background: #ffe6e0;
+        padding: 10px 16px;
+        border-radius: 6px;
+        display: inline-block;
+        margin: 15px 0;
+      }
+
+      /* Link */
+      a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Chân email */
+      .footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class='container'>
+      <h1>🎉 Xin chào, {{username}}! 🎉</h1>
+
+      <p>
+        Chào mừng bạn đến với
+        <strong>SNet</strong>
+        - nơi kết nối bạn bè, chia sẻ khoảnh khắc và khám phá vô số điều thú vị.
+        Chúng tôi rất vui khi bạn chọn SNet để đồng hành trong hành trình trực
+        tuyến của mình.
+      </p>
+
+      <p>
+        Để bảo vệ tài khoản của bạn và đảm bảo tính an toàn khi đăng nhập, vui
+        lòng xác thực tài khoản bằng mã OTP dưới đây. Mã OTP sẽ giúp bảo vệ tài
+        khoản của bạn khỏi truy cập trái phép.
+      </p>
+
+      <div class='otp'>{{otp}}</div>
+
+      <p>
+        <strong>Lưu ý quan trọng:</strong>
+        🔹 Mã OTP này có hiệu lực **trong 2 phút** và chỉ sử dụng được một lần.
+        🔹 Không chia sẻ mã này với ai để bảo vệ tài khoản của bạn. 🔹 Nếu bạn
+        không yêu cầu mã OTP này, có thể ai đó đang cố gắng đăng nhập vào tài
+        khoản của bạn. Hãy **đổi mật khẩu ngay lập tức** để bảo vệ tài khoản.
+      </p>
+
+      <h3>🚀 Các tính năng thú vị trên SNet:</h3>
+      <p>
+        ✨
+        <strong>Kết nối bạn bè</strong>: Dễ dàng kết nối với những người có cùng
+        sở thích.
+        <br />📸
+        <strong>Chia sẻ khoảnh khắc</strong>: Đăng ảnh, video và bài viết để mọi
+        người cùng thưởng thức.
+        <br />📰
+        <strong>Cập nhật xu hướng</strong>: Theo dõi tin tức và khám phá các chủ
+        đề bạn quan tâm.
+        <br />🔐
+        <strong>Bảo mật nâng cao</strong>: Sử dụng xác thực hai lớp và mã hóa dữ
+        liệu giúp tài khoản của bạn luôn an toàn.
+      </p>
+
+      <h3>💬 Cần hỗ trợ?</h3>
+      <p>
+        Nếu bạn gặp bất kỳ vấn đề nào trong quá trình đăng nhập hoặc có thắc mắc
+        khác, đừng ngần ngại liên hệ với chúng tôi qua **Chatbot AI**.
+      </p>
+      <p><a href='https://snet/chatbot/new'>👉 Truy cập Chatbot AI ngay</a></p>
+
+      <p class='footer'>
+        Trân trọng,<br />
+        <strong>Đội ngũ SNet</strong>
+      </p>
+    </div>
+  </body>
+
+</html>
