@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 # Lệnh xóa tất cả dữ liệu trong docker:
 # sudo docker system prune -a --volumes -f
@@ -13,7 +13,7 @@ services:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: social-network-SNet
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -25,7 +25,7 @@ services:
     container_name: redis
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - app-network
     environment:
@@ -41,7 +41,7 @@ services:
     container_name: backend
     # image: node:18
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     environment:
       # Database
@@ -67,7 +67,7 @@ services:
       MAIL_HOST: smtp.gmail.com
       MAIL_PORT: 587
       MAIL_USER: tuanthanh2kk4@gmail.com
-      MAIL_PASSWORD: "mjgx twhy yzyp oryj"
+      MAIL_PASSWORD: 'mjgx twhy yzyp oryj'
       MAIL_FORM: tuanthanh2kk4@gmail.com
       MAIL_DEFAULT: 22022624@vnu.edu.vn
       # MAIL_TRANSPORT: smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
@@ -76,7 +76,7 @@ services:
       NODE_ENV: development
       PORT: 3000
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - postgres
       - redis
@@ -84,8 +84,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/usr/src/app
     networks:
       - app-network
     restart: unless-stopped
