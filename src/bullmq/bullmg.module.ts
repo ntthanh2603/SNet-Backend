@@ -11,27 +11,7 @@ import { BullMQService } from './bullmq.service';
 @Module({
   imports: [
     ConfigModule,
-    BullModule.forRootAsync({
-      imports: [ConfigModule], // Đảm bảo ConfigModule được import vào
-      inject: [ConfigService], // Inject ConfigService
-      useFactory: async (
-        configService: ConfigService,
-      ): Promise<QueueOptions> => {
-        const redisHost = configService.get<string>('BULLMQ_HOST');
-        const redisPort = configService.get<number>('BULLMQ_PORT');
-        const redisPassword = configService.get<string>('BULLMQ_PASSWORD');
-        const redisDb = configService.get<number>('BULLMQ_DB', 1);
-
-        return {
-          connection: {
-            host: redisHost,
-            port: redisPort,
-            password: redisPassword,
-            db: redisDb,
-          },
-        };
-      },
-    }),
+    
     RedisModule,
     BullModule.registerQueue(
       { name: 'notifications' }, // Queue thông báo

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -15,6 +14,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { BullMQModule } from './bullmq/bullmg.module';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { join } from 'path';
+import { BullModule } from '@nestjs/bullmq';
+import { QueueOptions } from 'bullmq';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -35,6 +37,27 @@ import { join } from 'path';
           limit: config.get('THROTTLE_LIMIT'),
         },
       ],
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule], // Đảm bảo ConfigModule được import vào
+      inject: [ConfigService], // Inject ConfigService
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<QueueOptions> => {
+        const redisHost = configService.get<string>('BULLMQ_HOST');
+        const redisPort = configService.get<number>('BULLMQ_PORT');
+        const redisPassword = configService.get<string>('BULLMQ_PASSWORD');
+        const redisDb = configService.get<number>('BULLMQ_DB', 1);
+
+        return {
+          connection: {
+            host: redisHost,
+            port: redisPort,
+            password: redisPassword,
+            db: redisDb,
+          },
+        };
+      },
     }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
