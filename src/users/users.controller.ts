@@ -100,7 +100,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Gửi OTP về email',
   })
-  @Throttle({ default: { limit: 1, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   beforeSignUp(@Body() dto: SendOtpDto) {
     return this.usersService.beforeSignUp(dto.email, dto.username);
   }

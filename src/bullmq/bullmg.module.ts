@@ -1,24 +1,21 @@
 import { RedisModule } from './../redis/redis.module';
 import { Module, Global } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { BullMQController } from './bullmq.controller';
 import { BullModule } from '@nestjs/bullmq';
-import { QueueOptions } from 'bullmq';
-import { NotificationProcessor } from './notification.processor';
 import { BullMQService } from './bullmq.service';
+import { SendEmailProcessor } from './send-email.processor';
 
 @Global()
 @Module({
   imports: [
     ConfigModule,
-    
     RedisModule,
-    BullModule.registerQueue(
-      { name: 'notifications' }, // Queue thông báo
-    ),
+    BullModule.registerQueue({ name: 'sendEmail' }),
+    BullModule.registerQueue({ name: 'notificationBirthdays' }),
   ],
   controllers: [BullMQController],
-  providers: [NotificationProcessor, BullMQService],
+  providers: [BullMQService, SendEmailProcessor],
   exports: [],
 })
 export class BullMQModule {}

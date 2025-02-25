@@ -67,10 +67,12 @@ services:
       MAIL_HOST: smtp.gmail.com
       MAIL_PORT: 587
       MAIL_USER: tuanthanh2kk4@gmail.com
-      MAIL_PASSWORD: 'mjgx twhy yzyp oryj'
+      MAIL_PASSWORD: 'gwti fkzn bfng ngho'
       MAIL_FORM: tuanthanh2kk4@gmail.com
       MAIL_DEFAULT: 22022624@vnu.edu.vn
-      # MAIL_TRANSPORT: smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
+      MAIL_TRANSPORT: smtp://tuanthanh2kk4@gmail.com:gwti fkzn bfng ngho@smtp.gmail.com
+
+      TIME_OTP: 125
 
       # Server
       NODE_ENV: development

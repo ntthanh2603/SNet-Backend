@@ -12,11 +12,11 @@ import { NotificationModule } from './notifications/notifications.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { BullMQModule } from './bullmq/bullmg.module';
-import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { join } from 'path';
 import { BullModule } from '@nestjs/bullmq';
 import { QueueOptions } from 'bullmq';
 import { AppController } from './app.controller';
+import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 
 @Module({
   imports: [
@@ -39,8 +39,7 @@ import { AppController } from './app.controller';
       ],
     }),
     BullModule.forRootAsync({
-      imports: [ConfigModule], // Đảm bảo ConfigModule được import vào
-      inject: [ConfigService], // Inject ConfigService
+      imports: [ConfigModule],
       useFactory: async (
         configService: ConfigService,
       ): Promise<QueueOptions> => {
@@ -58,6 +57,7 @@ import { AppController } from './app.controller';
           },
         };
       },
+      inject: [ConfigService],
     }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
@@ -71,6 +71,7 @@ import { AppController } from './app.controller';
             pass: configService.get('MAIL_PASSWORD'),
           },
         },
+        // transport: configService.get('MAIL_TRANSPORT'),
         defaults: {
           from: `"Mạng xã hội SNet"`,
         },
