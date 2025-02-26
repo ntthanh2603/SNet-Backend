@@ -5,6 +5,7 @@ import { BullMQController } from './bullmq.controller';
 import { BullModule } from '@nestjs/bullmq';
 import { BullMQService } from './bullmq.service';
 import { SendEmailProcessor } from './send-email.processor';
+import { NotiBirthdayProcessor } from './notification-birthday.processor';
 
 @Global()
 @Module({
@@ -15,7 +16,7 @@ import { SendEmailProcessor } from './send-email.processor';
     BullModule.registerQueue({ name: 'notificationBirthdays' }),
   ],
   controllers: [BullMQController],
-  providers: [BullMQService, SendEmailProcessor],
-  exports: [],
+  providers: [BullMQService, SendEmailProcessor, NotiBirthdayProcessor],
+  exports: [NotiBirthdayProcessor],
 })
 export class BullMQModule {}

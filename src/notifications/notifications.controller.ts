@@ -8,7 +8,7 @@ import { interval, map } from 'rxjs';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @Sse('')
+  @Sse('sse')
   sse() {
     return interval(1000).pipe(map(() => ({ data: { hello: 'world' } })));
   }

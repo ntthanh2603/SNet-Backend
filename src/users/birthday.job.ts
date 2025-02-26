@@ -11,24 +11,40 @@ export class BirthdayJob {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectQueue('sendEmail') private sendMail: Queue,
+    @InjectQueue('notificationBirthdays') private notiQueue: Queue,
   ) {}
-  @Cron('0 0 * * *') // Chạy lúc 00:00 mỗi ngày
+
+  // @Cron('0 0 * * *') // Chạy mỗi ngày lúc 00:00
+  @Cron('* * * * *') // Chạy mỗi phút
   async checkBirthdays() {
+    console.log('Checking birthdays...');
     const today = new Date();
     const month = today.getMonth() + 1;
     const day = today.getDate();
+
     const birthdayUsers = await this.userRepository
       .createQueryBuilder('user')
-      .where('DAY(user.birthday) = :day AND MONTH(user.birthday) = :month', {
-        day,
-        month,
-      })
+      .where(
+        'EXTRACT(DAY FROM user.birthday) = :day AND EXTRACT(MONTH FROM user.birthday) = :month',
+        { day, month },
+      )
       .getMany();
+
     if (birthdayUsers.length > 0) {
       birthdayUsers.forEach((user) => {
-        this.sendMail.add('sendEmail', {}, {});
+        this.notiQueue.add(
+          'birthday',
+          {
+            id: user.id,
+            email: user.email,
+            avatar: user.avatar,
+            username: user.username,
+            birthday: user.birthday,
+          },
+          { removeOnComplete: true },
+        );
       });
     }
+    return;
   }
 }

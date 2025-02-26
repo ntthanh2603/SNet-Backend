@@ -5,7 +5,7 @@ import { Job } from 'bullmq';
 @Processor('sendEmail')
 export class SendEmailProcessor extends WorkerHost {
   constructor(private readonly mailerService: MailerService) {
-    super(); // Quan trọng: Gọi super() để kế thừa WorkerHost
+    super();
   }
 
   async process(job: Job<unknown>): Promise<any> {
@@ -14,10 +14,10 @@ export class SendEmailProcessor extends WorkerHost {
       await this.mailerService.sendMail({
         to: job.data['email'],
         subject: 'Mạng xã hội SNet',
-        template: `${job.data['template']}`,
+        template: `./${job.data['template']}`,
         context: {
           username: job.data['username'],
-          otp: job.data['otp'].toString(),
+          otp: job.data['otp'],
         },
       });
     } catch (error) {
@@ -26,13 +26,3 @@ export class SendEmailProcessor extends WorkerHost {
     }
   }
 }
-
-// const response = await this.mailerService.sendMail({
-//   to: email,
-//   subject: 'Mạng xã hội SNet',
-//   template: `./${template}`, // Tên template OTP
-//   context: {
-//     username: username,
-//     otp: otp.toString(),
-//   },
-// });
