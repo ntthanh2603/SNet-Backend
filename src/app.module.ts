@@ -17,6 +17,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { QueueOptions } from 'bullmq';
 import { AppController } from './app.controller';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
+import { ChatMembersModule } from './chat-members/chat-members.module';
+import { ChatRoomsModule } from './chat-rooms/chat-rooms.module';
+import { ChatMessagesModule } from './chat-messages/chat-messages.module';
+import { ReactionPostsModule } from './reaction-posts/reaction-posts.module';
+import { SavePostsModule } from './save-posts/save-posts.module';
+import { ReactionCommentsModule } from './reaction-comments/reaction-comments.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -91,6 +98,13 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
     PostsModule,
     NotificationModule,
     BullMQModule,
+    ChatMembersModule,
+    ChatRoomsModule,
+    ChatMessagesModule,
+    ReactionPostsModule,
+    SavePostsModule,
+    ReactionCommentsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [

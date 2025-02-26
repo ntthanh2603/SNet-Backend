@@ -33,3 +33,9 @@ export enum NotificationType {
   ERROR = 'ERROR',
   SUCCESS = 'SUCCESS',
 }
+
+export enum MemberType {
+  MEMBER = 'member',
+  ADMIN = 'admin',
+  OWNER = 'owner',
+}
