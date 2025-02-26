@@ -1,15 +1,35 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Patch,
+  Post,
+  Get,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
 import { ChatRoomsService } from './chat-rooms.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
+import { isUUID } from 'class-validator';
 
 @ApiTags('Chat Rooms')
 @Controller('chat-rooms')
 export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
+
+  @Get(':id')
+  @ResponseMessage('Tìm kiếm phòng chat thành công')
+  @ApiOperation({ summary: 'Tìm kiếm phòng chat' })
+  find(@Param('id') id: string) {
+    if (!isUUID(id)) throw new NotFoundException('Id does not type uuid');
+    const room = this.chatRoomsService.findRoomChat(id);
+    if (!room) throw new NotFoundException('Không tìm thấy phòng chat');
+
+    return room;
+  }
 
   @Post('')
   @ResponseMessage('Tạo phòng chat thành công')

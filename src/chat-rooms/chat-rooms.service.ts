@@ -20,7 +20,7 @@ export class ChatRoomsService {
     const roomCache: ChatRoom = await this.redisService.get(`chat-romm:${id}`);
     if (roomCache) return roomCache;
 
-    const room = await this.chatRoomsRepository.findOneBy({ id });
+    const room = await this.chatRoomsRepository.findOneBy({ id: id });
 
     if (room) await this.redisService.set(`chat-romm:${id}`, room, 600);
 
