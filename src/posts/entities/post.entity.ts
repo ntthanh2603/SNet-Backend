@@ -15,15 +15,6 @@ export class Post {
   @Column('text', { array: true, default: null })
   medias: string[];
 
-  @Column({ default: 0 })
-  comment_count: number;
-
-  @Column({ default: 0 })
-  reaction_count: number;
-
-  @Column({ default: 0 })
-  share_count: number;
-
   @Column({ default: PrivacyType.PUBLIC, enum: PrivacyType })
   privacy: PrivacyType;
 
