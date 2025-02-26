@@ -11,8 +11,8 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { IUser } from 'src/users/users.interface';
-import { User } from 'src/decorator/customize';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ResponseMessage, User } from 'src/decorator/customize';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -20,21 +20,29 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @ResponseMessage('Tạo bài viết thành công')
+  @ApiOperation({ summary: 'Tạo bài viết' })
   create(@User() user: IUser, @Body() createPostDto: CreatePostDto) {
     return this.postsService.create(user, createPostDto);
   }
 
   @Get()
+  @ResponseMessage('Tìm kiếm tất cả bài viết thành công')
+  @ApiOperation({ summary: 'Tìm kiếm tất cả bài viết' })
   findAll() {
     return this.postsService.findAll();
   }
 
   @Get(':id')
+  @ResponseMessage('Tìm kiếm bài viết thành công')
+  @ApiOperation({ summary: 'Tìm kiếm bài viết' })
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
   }
 
   @Patch('all')
+  @ResponseMessage('Xóa bài viết thành công')
+  @ApiOperation({ summary: 'Cập nhật bài viết' })
   @ApiBody({ type: UpdatePostDto })
   update(@User() user: IUser, dto: UpdatePostDto) {
     // if (!isUUID(dto?.id))
@@ -46,6 +54,8 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @ResponseMessage('Xóa bài viết thành công')
+  @ApiOperation({ summary: 'Xóa bài viết' })
   remove(@Param('id') id: string) {
     return this.postsService.remove(+id);
   }
