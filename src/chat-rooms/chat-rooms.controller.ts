@@ -6,9 +6,10 @@ import {
   Get,
   Param,
   NotFoundException,
+  Delete,
 } from '@nestjs/common';
 import { ChatRoomsService } from './chat-rooms.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
@@ -43,5 +44,25 @@ export class ChatRoomsController {
   @ApiOperation({ summary: 'Cập nhật phòng chat' })
   update(@Body() dto: UpdateChatRoomDto, @User() user: IUser) {
     return this.chatRoomsService.update(dto, user);
+  }
+
+  @Delete()
+  @ResponseMessage('Xóa phòng chat thành công')
+  @ApiOperation({ summary: 'Xóa phòng chat' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', example: 'uuid' },
+      },
+      required: ['body'],
+    },
+  })
+  delete(@Body() body: object, @User() user: IUser) {
+    const id = body['id'];
+    console.log(id);
+    if (!isUUID(id)) throw new NotFoundException('Id does not type uuid');
+
+    return this.chatRoomsService.delete(id, user);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatRoom } from './entities/chat-room.entity';
@@ -43,12 +43,28 @@ export class ChatRoomsService {
     if (!room || room.createdBy !== user.id) {
       return {
         message:
-          'Không tìm thấy phòng chat hoặc bạn không có quyền cập nhật đoanj chat này ',
+          'Không tìm thấy phòng chat hoặc bạn không có quyền cập nhật đoạn chat này',
       };
     }
     await this.chatRoomsRepository.update({ id: dto.id }, { ...dto });
     await this.redisService.del(`chat-romm:${room.id}`);
 
     return { message: 'Cập nhật phòng chat thành công' };
+  }
+
+  // Xóa phòng chat
+  async delete(id: string, user: IUser) {
+    const room = await this.findRoomChat(id);
+
+    if (!room || room.createdBy !== user.id) {
+      throw new NotFoundException(
+        'Không tìm thấy phòng chat hoặc bạn không có quyền xóa đoạn chat này',
+      );
+    }
+
+    await this.chatRoomsRepository.delete({ id });
+    await this.redisService.del(`chat-romm:${room.id}`);
+
+    return { message: 'Xóa phòng chat thành công' };
   }
 }
