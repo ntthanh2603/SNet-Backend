@@ -4,9 +4,9 @@ export enum GenderType {
   OTHER = 'other',
 }
 
-export enum StatusType {
-  ON = 'on',
-  OFF = 'off',
+export enum ActivateType {
+  ONLINE = 'online',
+  OFFLINE = 'offline',
 }
 
 export enum PrivacyType {

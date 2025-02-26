@@ -131,6 +131,7 @@ export class UsersService {
     return;
   }
 
+  // Xử lý khi nhập OTP đăng nhập
   async afterlogin(dto: AfterLoginDto, metaData: LoginMetaData) {
     const user = await this.validateUser(dto.email, dto.password);
 
@@ -153,6 +154,7 @@ export class UsersService {
     return user;
   }
 
+  // Xử lý khi nhập OTP đăng kí
   async afterSignUp(dto: AfterSignUpDto) {
     const otp = await this.redisService.get(`otp-code:${dto.email}`);
 
@@ -192,6 +194,7 @@ export class UsersService {
     return { message: 'Đăng kí tài khoản thành công' };
   }
 
+  // Xử lý khi nhập OTP xóa tài khoản
   async afterDelete(id: string, otp: string) {
     const user = await this.findUserById(id);
     const otpCache = await this.redisService.get(`otp-code:${user.email}`);

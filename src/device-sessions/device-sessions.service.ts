@@ -61,6 +61,16 @@ export class DeviceSessionsService {
     return accessToken;
   }
 
+  handleVerifyToken(token: string) {
+    try {
+      return this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+      });
+    } catch {
+      throw new UnauthorizedException('Token invalid');
+    }
+  }
+
   async reAuth(_refreshToken: string, deviceId: string) {
     const session = await this.repository.findOne({
       where: { deviceId, refreshToken: _refreshToken },

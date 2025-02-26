@@ -7,6 +7,7 @@ import { DeviceSession } from './entities/device-session.entity';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ActivateGateway } from './activate.gateway';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     RedisModule,
   ],
   controllers: [DeviceSessionsController],
-  providers: [DeviceSessionsService],
+  providers: [DeviceSessionsService, ActivateGateway],
   exports: [DeviceSessionsService],
 })
 export class DeviceSessionsModule {}

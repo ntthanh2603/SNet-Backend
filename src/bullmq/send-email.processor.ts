@@ -10,7 +10,6 @@ export class SendEmailProcessor extends WorkerHost {
 
   async process(job: Job<unknown>): Promise<any> {
     try {
-      console.log('send mail', job.data);
       await this.mailerService.sendMail({
         to: job.data['email'],
         subject: 'Mạng xã hội SNet',

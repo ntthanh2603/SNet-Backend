@@ -2,10 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
   <body>
-    Socket
+    <h1>Hello Socket</h1>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+
+    <script>
+      var socket = io.connect('http://localhost:3000', {
+        extraHeaders: {
+          Authorization:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlkMTkwZDg3LWQxNGUtNDVlYi1iYTY5LTY3ZTg0ZTcxNmFlMiIsInN1YiI6IjBmN2FjYThlODY4MDllMzllNWRmNGMxYWMzNGY3ZDY4YmUyMzc5YjE4MmE0NjgyOGU0NjhmZDc1YmUwZWY1NWEiLCJpYXQiOjE3NDA1NjY3NjUsImV4cCI6MTc0MDk5ODc2NX0.6Yd0j7Mw-fh9cjcvaiz6jvLMA5hPz6gyY0GfaBGXOn4',
+        },
+      });
+      socket.on('connect', function () {
+        console.log('Connected');
+
+        socket.emit('message', { message: 'quangdat' });
+      });
+
+      socket.on('disconnect', function () {
+        console.log('Disconnected');
+      });
+
+      socket.on('message', (data) => {
+        console.log('message', data);
+      });
+    </script>
   </body>
 </html>
