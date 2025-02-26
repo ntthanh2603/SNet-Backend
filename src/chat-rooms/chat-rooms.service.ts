@@ -5,6 +5,7 @@ import { ChatRoom } from './entities/chat-room.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
+import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 
 @Injectable()
 export class ChatRoomsService {
@@ -13,9 +14,41 @@ export class ChatRoomsService {
     private chatRoomsRepository: Repository<ChatRoom>,
     private readonly redisService: RedisService,
   ) {}
+
+  // Tìm phòng chat
+  async findRoomChat(id: string): Promise<ChatRoom | null> {
+    const roomCache: ChatRoom = await this.redisService.get(`chat-romm:${id}`);
+    if (roomCache) return roomCache;
+
+    const room = await this.chatRoomsRepository.findOneBy({ id });
+
+    if (room) await this.redisService.set(`chat-romm:${id}`, room, 600);
+
+    return room;
+  }
+
+  // Tạo phòng chat
   async create(dto: CreateChatRoomDto, user: IUser) {
     const room = { createdBy: user.id, ...dto };
-    await this.chatRoomsRepository.save(room);
-    return { message: 'Tạo phòng chat thành công' };
+    const roomDb = await this.chatRoomsRepository.save(room);
+
+    await this.redisService.set(`chat-romm:${roomDb.id}`, roomDb, 600);
+    return roomDb;
+  }
+
+  // Cập nhật phòng chat
+  async update(dto: UpdateChatRoomDto, user: IUser) {
+    const room = await this.findRoomChat(dto.id);
+
+    if (!room || room.createdBy !== user.id) {
+      return {
+        message:
+          'Không tìm thấy phòng chat hoặc bạn không có quyền cập nhật đoanj chat này ',
+      };
+    }
+    await this.chatRoomsRepository.update({ id: dto.id }, { ...dto });
+    await this.redisService.del(`chat-romm:${room.id}`);
+
+    return { message: 'Cập nhật phòng chat thành công' };
   }
 }

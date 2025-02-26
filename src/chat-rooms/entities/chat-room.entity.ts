@@ -23,6 +23,6 @@ export class ChatRoom {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ default: null })
   updatedAt: Date;
 }
