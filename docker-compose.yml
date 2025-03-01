@@ -36,6 +36,41 @@ services:
     command: redis-server --requirepass 123456 --maxmemory 200mb --maxmemory-policy noeviction
     restart: unless-stopped
 
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    container_name: elasticsearch
+    ports:
+      - '9200:9200'
+    networks:
+      - app-network
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.0
+    container_name: kibana
+    ports:
+      - '5601:5601'
+    networks:
+      - app-network
+    depends_on:
+      - elasticsearch
+
   # Backend
   backend:
     container_name: backend
@@ -102,3 +137,4 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  esdata:
