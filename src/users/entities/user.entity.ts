@@ -39,12 +39,6 @@ export class User {
   @Column({ type: 'enum', enum: PrivacyType, default: PrivacyType.PUBLIC })
   privacy: PrivacyType;
 
-  @Column({ default: 0 })
-  followerCount: number;
-
-  @Column({ default: 0 })
-  followedCount: number;
-
   @Column()
   createdAt: Date;
 
