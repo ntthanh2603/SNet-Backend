@@ -10,6 +10,9 @@ import {
   Req,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  ParseFilePipeBuilder,
+  UploadedFile,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { UsersService } from './users.service';
@@ -25,6 +28,7 @@ import { SendOtpDto } from './dto/send-otp.dto';
 import { AfterDeleteDto } from './dto/after-delete.dto';
 import { BeforeLoginDto } from './dto/before-login.dto';
 import { AfterLoginDto } from './dto/after-login.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Users')
 @Controller('users')
@@ -57,8 +61,26 @@ export class UsersController {
   @Patch()
   @ResponseMessage('Cập nhật người dùng')
   @ApiOperation({ summary: 'Cập nhật người dùng' })
-  updateUser(@Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
-    return this.usersService.updateProfile(updateUserDto, user);
+  @UseInterceptors(FileInterceptor('avatar-user'))
+  async updateUser(
+    @Body() dto: UpdateUserDto,
+    @User() user: IUser,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png|gif)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 1000 * 1024,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          fileIsRequired: false,
+        }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return await this.usersService.updateProfile(dto, user, file);
   }
 
   @Post('/before-login')

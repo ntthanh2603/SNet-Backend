@@ -22,6 +22,7 @@ import { BeforeLoginDto } from './dto/before-login.dto';
 import { AfterLoginDto } from './dto/after-login.dto';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
+import * as fs from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -234,8 +235,6 @@ export class UsersService {
           'gender',
           'address',
           'privacy',
-          'followerCount',
-          'followedCount',
           'createdAt',
           'updatedAt',
         ],
@@ -257,21 +256,64 @@ export class UsersService {
     }
   }
 
-  async updateProfile(dto: UpdateUserDto, user: IUser) {
+  async updateProfile(
+    dto: UpdateUserDto,
+    user: IUser,
+    file: Express.Multer.File,
+  ) {
     try {
-      await this.usersRepository.update(
-        { id: user.id },
-        {
-          ...dto,
-        },
-      );
+      if (dto.username) {
+        const userDb = await this.usersRepository.findOne({
+          where: { username: dto.username },
+        });
 
-      await this.redisService.del(`user:${user.id}`);
+        if (userDb) {
+          throw new BadRequestException(
+            `Username ${dto.username} has existed.`,
+          );
+        }
+      }
+      if (!file) {
+        await this.usersRepository.update(
+          { id: user.id },
+          {
+            ...dto,
+          },
+        );
+      } else {
+        const findUser = await this.usersRepository.findOne({
+          where: { id: user.id },
+        });
 
-      return {
-        message: 'Cập nhật thành công',
-      };
-    } catch {
+        const avatar = findUser.avatar;
+
+        if (avatar) {
+          try {
+            if (fs.existsSync(avatar)) {
+              fs.unlinkSync(avatar);
+            }
+          } catch (error) {
+            console.error('Error deleting old avatar:', error);
+          }
+        }
+        await this.redisService.del(`user:${user.id}`);
+
+        await this.usersRepository.update(
+          { id: user.id },
+          {
+            ...dto,
+            avatar: file.path,
+          },
+        );
+
+        return {
+          message: 'Cập nhật thành công',
+        };
+      }
+    } catch (e) {
+      if (e instanceof BadRequestException) {
+        throw e;
+      }
       throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
     }
   }

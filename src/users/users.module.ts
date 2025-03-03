@@ -10,10 +10,15 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BirthdayJob } from './birthday.job';
 import { NotificationModule } from 'src/notifications/notifications.module';
 import { BullModule } from '@nestjs/bullmq';
+import { MulterModule } from '@nestjs/platform-express';
+import { MulterConfigService } from 'src/core/multer.config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    MulterModule.registerAsync({
+      useClass: MulterConfigService,
+    }),
     RedisModule,
     forwardRef(() => RelationShipsModule),
     forwardRef(() => DeviceSessionsModule),
