@@ -71,7 +71,7 @@ export class UsersController {
           fileType: /(jpg|jpeg|png|gif)$/,
         })
         .addMaxSizeValidator({
-          maxSize: 1000 * 1024,
+          maxSize: 1024 * 1024 * 8,
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -80,7 +80,7 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ) {
-    return await this.usersService.updateProfile(dto, user, file);
+    return await this.usersService.updateUser(dto, user, file);
   }
 
   @Post('/before-login')

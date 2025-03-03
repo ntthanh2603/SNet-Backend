@@ -40,8 +40,8 @@ export class User {
   privacy: PrivacyType;
 
   @Column()
-  createdAt: Date;
+  created_at: Date;
 
   @Column({ default: null })
-  updatedAt: Date;
+  updated_at: Date;
 }

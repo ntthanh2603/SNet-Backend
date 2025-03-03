@@ -2,23 +2,19 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  Index,
+  PrimaryColumn,
 } from 'typeorm';
 
 @Entity()
 export class Comment {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @Index()
+  @PrimaryColumn()
+  user_id: string;
 
-  @Column()
-  userId: string;
-
-  @Column()
-  postId: string;
-
-  @Column()
-  parentId: string;
+  @Index()
+  @PrimaryColumn()
+  post_id: string;
 
   @Column()
   content: string;
@@ -27,8 +23,5 @@ export class Comment {
   medias: string[];
 
   @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  created_at: Date;
 }

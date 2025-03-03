@@ -235,8 +235,8 @@ export class UsersService {
           'gender',
           'address',
           'privacy',
-          'createdAt',
-          'updatedAt',
+          'created_at',
+          'updated_at',
         ],
       });
 
@@ -256,11 +256,8 @@ export class UsersService {
     }
   }
 
-  async updateProfile(
-    dto: UpdateUserDto,
-    user: IUser,
-    file: Express.Multer.File,
-  ) {
+  // Update user infomaion
+  async updateUser(dto: UpdateUserDto, user: IUser, file: Express.Multer.File) {
     try {
       if (dto.username) {
         const userDb = await this.usersRepository.findOne({
@@ -292,11 +289,10 @@ export class UsersService {
             if (fs.existsSync(avatar)) {
               fs.unlinkSync(avatar);
             }
-          } catch (error) {
-            console.error('Error deleting old avatar:', error);
+          } catch {
+            throw new BadRequestException('Error when delete file');
           }
         }
-        await this.redisService.del(`user:${user.id}`);
 
         await this.usersRepository.update(
           { id: user.id },
@@ -305,14 +301,15 @@ export class UsersService {
             avatar: file.path,
           },
         );
-
-        return {
-          message: 'Cập nhật thành công',
-        };
       }
-    } catch (e) {
-      if (e instanceof BadRequestException) {
-        throw e;
+      await this.redisService.del(`user:${user.id}`);
+
+      return {
+        message: 'Cập nhật thành công',
+      };
+    } catch (err) {
+      if (err instanceof BadRequestException) {
+        throw err;
       }
       throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
     }

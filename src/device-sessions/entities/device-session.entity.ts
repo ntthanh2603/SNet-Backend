@@ -13,30 +13,30 @@ export class DeviceSession {
 
   @Column()
   @Index()
-  userId: string;
+  user_id: string;
 
   @Index()
   @Column({ unique: true })
-  deviceId: string;
+  device_id: string;
 
   @Column()
-  ipAddress: string;
+  ip_address: string;
 
   @Column()
-  secretKey: string;
+  secret_key: string;
 
   @Column({ default: null })
   lastActive: Date;
 
   @Column()
-  refreshToken: string;
+  refresh_token: string;
 
   @Column()
-  expiredAt: Date;
+  expired_at: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 }

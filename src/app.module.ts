@@ -5,7 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from 'src/database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
-import { RelationShipsModule } from './relation-ships/relation-ships.module';
 import { DeviceSessionsModule } from './device-sessions/device-sessions.module';
 import { PostsModule } from './posts/posts.module';
 import { NotificationModule } from './notifications/notifications.module';
@@ -20,10 +19,14 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { ChatMembersModule } from './chat-members/chat-members.module';
 import { ChatRoomsModule } from './chat-rooms/chat-rooms.module';
 import { ChatMessagesModule } from './chat-messages/chat-messages.module';
-import { ReactionPostsModule } from './reaction-posts/reaction-posts.module';
 import { SavePostsModule } from './save-posts/save-posts.module';
-import { ReactionCommentsModule } from './reaction-comments/reaction-comments.module';
 import { CommentsModule } from './comments/comments.module';
+import { RelationsModule } from './relations/relations.module';
+import { NotificationUsersModule } from './notification-users/notification-users.module';
+import { SaveListsModule } from './save-lists/save-lists.module';
+import { HashtagsModule } from './hashtags/hashtags.module';
+import { ReactionsModule } from './reactions/reactions.module';
+import { ParentChildCommentsModule } from './parent-child-comments/parent-child-comments.module';
 
 @Module({
   imports: [
@@ -93,7 +96,7 @@ import { CommentsModule } from './comments/comments.module';
     UsersModule,
     AuthModule,
     RedisModule,
-    RelationShipsModule,
+    RelationsModule,
     DeviceSessionsModule,
     PostsModule,
     NotificationModule,
@@ -101,10 +104,13 @@ import { CommentsModule } from './comments/comments.module';
     ChatMembersModule,
     ChatRoomsModule,
     ChatMessagesModule,
-    ReactionPostsModule,
     SavePostsModule,
-    ReactionCommentsModule,
     CommentsModule,
+    NotificationUsersModule,
+    SaveListsModule,
+    HashtagsModule,
+    ReactionsModule,
+    ParentChildCommentsModule,
   ],
   controllers: [AppController],
   providers: [

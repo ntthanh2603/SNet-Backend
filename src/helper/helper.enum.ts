@@ -39,3 +39,9 @@ export enum MemberType {
   ADMIN = 'admin',
   OWNER = 'owner',
 }
+
+export enum RelationType {
+  FRIEND = 'friend',
+  FOLLOW = 'follow',
+  BLOCK = 'block',
+}

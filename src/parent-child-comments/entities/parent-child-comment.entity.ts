@@ -1,12 +1,12 @@
 import { Entity, Index, PrimaryColumn } from 'typeorm';
 
 @Entity()
-export class SavePost {
-  @PrimaryColumn()
+export class ParentChildComment {
   @Index()
-  save_list_id: string;
+  @PrimaryColumn()
+  parent_comment: string;
 
-  @PrimaryColumn()
   @Index()
-  post_id: string;
+  @PrimaryColumn()
+  child_comment: string;
 }

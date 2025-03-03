@@ -40,11 +40,11 @@ export class PostsService {
   async create(user: IUser, dto: CreatePostDto) {
     try {
       const newPost = new Post();
-      newPost.userId = user.id;
+      newPost.user_id = user.id;
       newPost.content = dto.content;
       newPost.medias = dto.medias;
       newPost.privacy = dto.privacy;
-      newPost.createdAt = new Date();
+      newPost.created_at = new Date();
 
       return await this.repository.save(newPost);
     } catch {

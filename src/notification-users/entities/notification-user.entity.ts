@@ -6,21 +6,24 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class ChatMessage {
+export class NotificationUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  room_id: string;
+  notification_id: string;
 
   @Column()
   user_id: string;
 
   @Column()
-  message: string;
+  title: string;
 
-  @Column('text', { array: true, default: null })
-  medias: string[];
+  @Column({ default: false })
+  is_sent: boolean;
+
+  @Column({ default: false })
+  is_read: boolean;
 
   @CreateDateColumn()
   created_at: Date;

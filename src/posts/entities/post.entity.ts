@@ -7,7 +7,7 @@ export class Post {
   id: string;
 
   @Column('uuid')
-  userId: string;
+  user_id: string;
 
   @Column({ default: null })
   content: string;
@@ -15,12 +15,12 @@ export class Post {
   @Column('text', { array: true, default: null })
   medias: string[];
 
+  @Column('text', { array: true, default: null })
+  hashtags: string[];
+
   @Column({ default: PrivacyType.PUBLIC, enum: PrivacyType })
   privacy: PrivacyType;
 
   @Column()
-  createdAt: Date;
-
-  @Column({ default: null })
-  updatedAt: Date;
+  created_at: Date;
 }

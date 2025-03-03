@@ -1,21 +1,20 @@
 import { MemberType } from 'src/helper/helper.enum';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 @Entity()
 export class ChatMember {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @Index()
+  @PrimaryColumn()
+  room_id: string;
 
-  @Column()
-  roomId: string;
-
-  @Column()
-  userId: string;
+  @Index()
+  @PrimaryColumn()
+  user_id: string;
 
   @Column({
     type: 'enum',
     enum: MemberType,
     default: MemberType.MEMBER,
   })
-  memberType: MemberType;
+  member_type: MemberType;
 }
