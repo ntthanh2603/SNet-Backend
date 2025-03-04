@@ -1,4 +1,5 @@
-import { Controller, Get, Body } from '@nestjs/common';
+// src/user-search/user-search.controller.ts
+import { Controller, Get, Query } from '@nestjs/common';
 import { ResponseMessage } from 'src/decorator/customize';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SearchUserDto } from './dto/search-user.dto';
@@ -12,7 +13,7 @@ export class SearchEngineController {
   @Get('search')
   @ResponseMessage('Tìm kiếm người dùng thành công')
   @ApiOperation({ summary: 'Tìm kiếm người dùng' })
-  async searchUser(@Body() query: SearchUserDto) {
-    return this.userSearchService.searchUser(query);
+  async searchUser(@Query() query: SearchUserDto) {
+    return this.userSearchService.searchUser(query.text);
   }
 }

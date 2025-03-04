@@ -23,8 +23,8 @@ import { AfterLoginDto } from './dto/after-login.dto';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as fs from 'fs';
-
-import { UserSearchBody } from '../search-engine/interfaces/user-search-body.interface';
+import { UserSearchService } from 'src/search-engine/user-search.service';
+import { UserSearchBody } from 'src/search-engine/interfaces/user-search-body.interface';
 
 @Injectable()
 export class UsersService {
@@ -36,6 +36,7 @@ export class UsersService {
     private readonly configService: ConfigService,
     @InjectQueue('sendEmail')
     private sendEmail: Queue,
+    private readonly userSearchService: UserSearchService,
   ) {}
 
   getHashPassword(password: string) {
@@ -182,20 +183,18 @@ export class UsersService {
 
       const userDb = await this.usersRepository.save(newUser);
 
-      await this.elasticsearchService.index<UserSearchBody>({
-        index: 'users',
-        body: {
-          id: userDb.id,
-          email: userDb.email,
-          username: userDb.username,
-          avatar: userDb.avatar,
-          bio: userDb.bio,
-          birthday: userDb.birthday,
-          website: userDb.website,
-          gender: userDb.gender,
-          address: userDb.address,
-        },
-      });
+      const userSearchBody: UserSearchBody = {
+        id: userDb.id,
+        email: userDb.email,
+        username: userDb.username,
+        avatar: userDb.avatar,
+        bio: userDb.bio,
+        website: userDb.website,
+        gender: userDb.gender,
+        address: userDb.address,
+      };
+
+      await this.userSearchService.createUser(userSearchBody);
 
       await this.sendEmail.add(
         'sendOTP',

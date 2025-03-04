@@ -9,5 +9,4 @@ export interface UserSearchBody {
   avatar: string;
   address: string;
   gender: GenderType;
-  birthday: Date;
 }
