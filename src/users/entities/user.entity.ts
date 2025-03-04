@@ -1,6 +1,12 @@
 import { MaxLength, MinLength } from 'class-validator';
 import { GenderType, PrivacyType } from 'src/helper/helper.enum';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -39,9 +45,9 @@ export class User {
   @Column({ type: 'enum', enum: PrivacyType, default: PrivacyType.PUBLIC })
   privacy: PrivacyType;
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date;
 
-  @Column({ default: null })
+  @UpdateDateColumn({ default: null })
   updated_at: Date;
 }

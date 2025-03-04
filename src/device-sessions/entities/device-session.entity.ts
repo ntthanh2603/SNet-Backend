@@ -26,9 +26,6 @@ export class DeviceSession {
   secret_key: string;
 
   @Column({ default: null })
-  lastActive: Date;
-
-  @Column()
   refresh_token: string;
 
   @Column()

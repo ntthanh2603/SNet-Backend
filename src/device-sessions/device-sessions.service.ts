@@ -34,10 +34,13 @@ export class DeviceSessionsService {
   ) {}
 
   async logout(user: IUser, device_id: string) {
-    const result = await this.repository.delete({
-      user_id: user.id,
-      device_id,
-    });
+    const result = await this.repository.update(
+      {
+        user_id: user.id,
+        device_id,
+      },
+      { refresh_token: null },
+    );
     if (result['affected'] != 0) return { message: 'Đăng xuất thành công' };
     else throw new InternalServerErrorException('Lỗi khi đăng xuất tài khoản');
   }

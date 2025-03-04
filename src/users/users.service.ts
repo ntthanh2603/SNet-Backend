@@ -36,11 +36,11 @@ export class UsersService {
     private sendEmail: Queue,
   ) {}
 
-  getHashPassword = (password: string) => {
+  getHashPassword(password: string) {
     const salt = genSaltSync(10);
     const hash = hashSync(password, salt);
     return hash;
-  };
+  }
 
   isValidPassword(password: string, hash: string) {
     return compareSync(password, hash);
@@ -174,7 +174,6 @@ export class UsersService {
       birthday: dto.birthday,
       gender: dto.gender,
       address: dto.address,
-      createdAt: new Date(),
       privacy: PrivacyType.PUBLIC,
     };
 

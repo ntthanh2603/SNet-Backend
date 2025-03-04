@@ -12,9 +12,17 @@ import { BullModule } from '@nestjs/bullmq';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
 import { RelationsModule } from 'src/relations/relations.module';
+import { NestjsFingerprintModule } from 'nestjs-fingerprint';
 
 @Module({
   imports: [
+    NestjsFingerprintModule.forRoot({
+      params: ['headers', 'userAgent', 'ipAddress'],
+      cookieOptions: {
+        name: 'your_cookie_name', // optional
+        httpOnly: true, // optional
+      },
+    }),
     TypeOrmModule.forFeature([User]),
     MulterModule.registerAsync({
       useClass: MulterConfigService,

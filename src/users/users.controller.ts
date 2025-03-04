@@ -7,21 +7,18 @@ import {
   Delete,
   BadRequestException,
   Post,
-  Req,
   HttpCode,
   HttpStatus,
   UseInterceptors,
   ParseFilePipeBuilder,
   UploadedFile,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { UsersService } from './users.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
-import { createHash } from 'crypto';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { SendOtpDto } from './dto/send-otp.dto';
@@ -29,6 +26,7 @@ import { AfterDeleteDto } from './dto/after-delete.dto';
 import { BeforeLoginDto } from './dto/before-login.dto';
 import { AfterLoginDto } from './dto/after-login.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Fingerprint, IFingerprint } from 'nestjs-fingerprint';
 
 @ApiTags('Users')
 @Controller('users')
@@ -83,7 +81,7 @@ export class UsersController {
     return await this.usersService.updateUser(dto, user, file);
   }
 
-  @Post('/before-login')
+  @Post('/login')
   @Public()
   @ResponseMessage('Gửi OTP thành công')
   @ApiOperation({
@@ -101,22 +99,17 @@ export class UsersController {
   @Throttle({ default: { limit: 3, ttl: 60000 } }) // Giới hạn đăng nhập 3 lần trong 60s
   @ApiOperation({ summary: 'Đăng nhập tài khoản nguời dùng' })
   @ApiBody({ type: AfterLoginDto })
-  afterlogin(@Body() dto: AfterLoginDto, @Req() request: Request) {
-    const userAgent = request.headers['user-agent'] || '';
-
-    const ipAddress = request.ip || '';
-
-    const acceptLang = request.headers['accept-language'] || '';
-
-    const rawString = `${userAgent}-${ipAddress}-${acceptLang}`;
-    const deviceId = createHash('sha256').update(rawString).digest('hex'); // Mã hóa thành ID duy nhất
-
-    const metaData: LoginMetaData = { deviceId, ipAddress };
+  afterlogin(@Body() dto: AfterLoginDto, @Fingerprint() fp: IFingerprint) {
+    const metaData: LoginMetaData = {
+      deviceId: fp['id'],
+      ipAddress: fp['ipAddress']['value'],
+    };
+    // console.log(fp['id'], fp['ipAddress']['value']);
 
     return this.usersService.afterlogin(dto, metaData);
   }
 
-  @Post('/before-signup')
+  @Post('/signup')
   @Public()
   @ResponseMessage('Gửi OTP thành công')
   @ApiOperation({
@@ -138,7 +131,7 @@ export class UsersController {
     return this.usersService.afterSignUp(dto);
   }
 
-  @Post('/before-delete')
+  @Post('/delete')
   @ResponseMessage('Gửi OTP thành công')
   @ApiOperation({
     summary: 'Gửi OTP về email',
