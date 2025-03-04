@@ -23,6 +23,7 @@ import { AfterLoginDto } from './dto/after-login.dto';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as fs from 'fs';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Injectable()
 export class UsersService {
@@ -34,6 +35,7 @@ export class UsersService {
     private readonly configService: ConfigService,
     @InjectQueue('sendEmail')
     private sendEmail: Queue,
+    private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
   getHashPassword(password: string) {

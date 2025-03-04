@@ -109,6 +109,10 @@ services:
 
       TIME_OTP: 125
 
+      # Elasticsearch
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: tuanthanh
+      ELASTICSEARCH_PASSWOR: '123456'
       # Server
       NODE_ENV: development
       PORT: 3000

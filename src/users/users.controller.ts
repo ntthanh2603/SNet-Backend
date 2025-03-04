@@ -104,8 +104,6 @@ export class UsersController {
       deviceId: fp['id'],
       ipAddress: fp['ipAddress']['value'],
     };
-    // console.log(fp['id'], fp['ipAddress']['value']);
-
     return this.usersService.afterlogin(dto, metaData);
   }
 

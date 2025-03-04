@@ -93,6 +93,7 @@ import { ParentChildCommentsModule } from './parent-child-comments/parent-child-
       }),
       inject: [ConfigService],
     }),
+
     UsersModule,
     AuthModule,
     RedisModule,

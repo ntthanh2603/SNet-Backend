@@ -13,6 +13,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
 import { RelationsModule } from 'src/relations/relations.module';
 import { NestjsFingerprintModule } from 'nestjs-fingerprint';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -26,6 +28,19 @@ import { NestjsFingerprintModule } from 'nestjs-fingerprint';
     TypeOrmModule.forFeature([User]),
     MulterModule.registerAsync({
       useClass: MulterConfigService,
+    }),
+    ElasticsearchModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        node: configService.get('ELASTICSEARCH_HOSTS'),
+        // auth: {
+        //   username: configService.get('ELASTICSEARCH_USERNAME'),
+        //   password: configService.get('ELASTICSEARCH_PASSWORD'),
+        // },
+        maxRetries: 10,
+        requestTimeout: 60000,
+      }),
+      inject: [ConfigService],
     }),
     RedisModule,
     forwardRef(() => RelationsModule),
