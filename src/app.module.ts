@@ -27,6 +27,7 @@ import { SaveListsModule } from './save-lists/save-lists.module';
 import { HashtagsModule } from './hashtags/hashtags.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ParentChildCommentsModule } from './parent-child-comments/parent-child-comments.module';
+import { SearchEngineModule } from './search-engine/search-engine.module';
 
 @Module({
   imports: [
@@ -112,6 +113,7 @@ import { ParentChildCommentsModule } from './parent-child-comments/parent-child-
     HashtagsModule,
     ReactionsModule,
     ParentChildCommentsModule,
+    SearchEngineModule,
   ],
   controllers: [AppController],
   providers: [

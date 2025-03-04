@@ -23,7 +23,8 @@ import { AfterLoginDto } from './dto/after-login.dto';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as fs from 'fs';
-import { ElasticsearchService } from '@nestjs/elasticsearch';
+
+import { UserSearchBody } from '../search-engine/interfaces/user-search-body.interface';
 
 @Injectable()
 export class UsersService {
@@ -35,7 +36,6 @@ export class UsersService {
     private readonly configService: ConfigService,
     @InjectQueue('sendEmail')
     private sendEmail: Queue,
-    private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
   getHashPassword(password: string) {
@@ -159,41 +159,61 @@ export class UsersService {
 
   // Xử lý khi nhập OTP đăng kí
   async afterSignUp(dto: AfterSignUpDto) {
-    const otp = await this.redisService.get(`otp-code:${dto.email}`);
+    try {
+      const otp = await this.redisService.get(`otp-code:${dto.email}`);
 
-    if (otp !== dto.otp)
-      throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
+      if (otp !== dto.otp)
+        throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
 
-    const hashPassword = this.getHashPassword(dto.password);
+      const hashPassword = this.getHashPassword(dto.password);
 
-    const newUser = {
-      email: dto.email,
-      password: hashPassword,
-      avatar: dto.avatar,
-      username: dto.username,
-      bio: dto.bio,
-      website: dto.website,
-      birthday: dto.birthday,
-      gender: dto.gender,
-      address: dto.address,
-      privacy: PrivacyType.PUBLIC,
-    };
-
-    await this.usersRepository.save(newUser);
-
-    await this.sendEmail.add(
-      'sendOTP',
-      {
-        to: dto.email,
+      const newUser = {
+        email: dto.email,
+        password: hashPassword,
+        avatar: dto.avatar,
         username: dto.username,
-        template: 'signup-success',
-      },
-      { removeOnComplete: true },
-    );
+        bio: dto.bio,
+        website: dto.website,
+        birthday: dto.birthday,
+        gender: dto.gender,
+        address: dto.address,
+        privacy: PrivacyType.PUBLIC,
+      };
 
-    await this.redisService.del(`otp-code:${dto.email}`);
+      const userDb = await this.usersRepository.save(newUser);
 
-    return { message: 'Đăng kí tài khoản thành công' };
+      await this.elasticsearchService.index<UserSearchBody>({
+        index: 'users',
+        body: {
+          id: userDb.id,
+          email: userDb.email,
+          username: userDb.username,
+          avatar: userDb.avatar,
+          bio: userDb.bio,
+          birthday: userDb.birthday,
+          website: userDb.website,
+          gender: userDb.gender,
+          address: userDb.address,
+        },
+      });
+
+      await this.sendEmail.add(
+        'sendOTP',
+        {
+          to: dto.email,
+          username: dto.username,
+          template: 'signup-success',
+        },
+        { removeOnComplete: true },
+      );
+
+      await this.redisService.del(`otp-code:${dto.email}`);
+
+      return { message: 'Đăng kí tài khoản thành công' };
+    } catch (err) {
+      if (err instanceof BadRequestException) throw err;
+      throw new InternalServerErrorException();
+    }
   }
 
   // Xử lý khi nhập OTP xóa tài khoản
@@ -257,7 +277,7 @@ export class UsersService {
     }
   }
 
-  // Update user infomaion
+  // Cập nhật thông tin người dùng
   async updateUser(dto: UpdateUserDto, user: IUser, file: Express.Multer.File) {
     try {
       if (dto.username) {
