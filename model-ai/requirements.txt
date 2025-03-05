@@ -3,3 +3,4 @@ fastapi
 uvicorn
 load_dotenv
 pydantic_settings
+chromadb

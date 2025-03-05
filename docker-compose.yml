@@ -1,8 +1,5 @@
 version: '3.8'
 
-# Lệnh xóa tất cả dữ liệu trong docker:
-# sudo docker system prune -a --volumes -f
-
 services:
   # Database
   postgres:
@@ -62,22 +59,44 @@ services:
     volumes:
       - esdata:/usr/share/elasticsearch/data
 
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.15.0
-  #   container_name: kibana
+  # ChromaDB - Vector Database
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: chromadb
+    ports:
+      - '8001:8000'
+    volumes:
+      - chroma_data:/chroma/index
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # FastAPI Backend (ML & Embedding Service)
+  # model-ai:
+  #   container_name: model-ai
+  #   build:
+  #     context: ./model-ai
+  #     dockerfile: Dockerfile
   #   environment:
-  #     - LOGGING_ROOT_LEVEL=error
+  #     - CHROMADB_HOST=chromadb
+  #     - CHROMADB_PORT=8000
+  #     - POSTGRES_HOST=postgres
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_USER=tuanthanh
+  #     - POSTGRES_PASSWORD=123456
+  #     - POSTGRES_DB=social-network-SNet
   #   ports:
-  #     - '5601:5601'
+  #     - '8000:8000'
+  #   depends_on:
+  #     - postgres
+  #     - chromadb
   #   networks:
   #     - app-network
-  #   depends_on:
-  #     - elasticsearch
+  #   restart: unless-stopped
 
-  # Backend
+  # Backend (NestJS API Gateway)
   backend:
     container_name: backend
-    # image: node:18
     build:
       context: .
       dockerfile: Dockerfile
@@ -101,21 +120,14 @@ services:
       BULLMQ_PASSWORD: 123456
       BULLMQ_DB: 1
 
-      # Mail
-      MAIL_HOST: smtp.gmail.com
-      MAIL_PORT: 587
-      MAIL_USER: tuanthanh2kk4@gmail.com
-      MAIL_PASSWORD: 'gwti fkzn bfng ngho'
-      MAIL_FORM: tuanthanh2kk4@gmail.com
-      MAIL_DEFAULT: 22022624@vnu.edu.vn
-      MAIL_TRANSPORT: smtp://tuanthanh2kk4@gmail.com:gwti fkzn bfng ngho@smtp.gmail.com
-
-      TIME_OTP: 125
-
       # Elasticsearch
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
       ELASTICSEARCH_USERNAME: tuanthanh
       ELASTICSEARCH_PASSWOR: '123456'
+
+      # FastAPI ML Service
+      # MODEL_AI: http://model-ai:8000
+
       # Server
       NODE_ENV: development
       PORT: 3000
@@ -124,6 +136,7 @@ services:
     depends_on:
       - postgres
       - redis
+      # - model-ai
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -145,3 +158,4 @@ volumes:
   postgres_data:
   redis_data:
   esdata:
+  chroma_data:

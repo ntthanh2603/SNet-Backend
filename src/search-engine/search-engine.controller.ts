@@ -4,7 +4,6 @@ import { ResponseMessage } from 'src/decorator/customize';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SearchUserDto } from './dto/search-user.dto';
 import { UserSearchService } from './user-search.service';
-import { generateEmbedding } from './embedding';
 
 @ApiTags('Search Engine')
 @Controller('search-engine')
@@ -23,6 +22,6 @@ export class SearchEngineController {
   @ApiOperation({ summary: 'Đề xuất người dùng để theo dõi' })
   async suggestFriends(@Query() query: SearchUserDto) {
     // return this.userSearchService.searchUser(query.text);
-    return generateEmbedding('Hello world!').then(console.log);
+    // return generateEmbedding('Hello world!').then(console.log);
   }
 }
