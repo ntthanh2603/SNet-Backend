@@ -1,0 +1,5 @@
+sentence-transformers
+fastapi
+uvicorn
+load_dotenv
+pydantic_settings

@@ -4,9 +4,14 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserSearchService } from './user-search.service';
 import { PostSearchService } from './post-search.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Relation } from 'src/relations/entities/relation.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Relation]),
     ElasticsearchModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
