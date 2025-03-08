@@ -60,16 +60,16 @@ services:
       - esdata:/usr/share/elasticsearch/data
 
   # ChromaDB - Vector Database
-  chromadb:
-    image: ghcr.io/chroma-core/chroma:latest
-    container_name: chromadb
-    ports:
-      - '8001:8000'
-    volumes:
-      - chroma_data:/chroma/index
-    networks:
-      - app-network
-    restart: unless-stopped
+  # chromadb:
+  #   image: ghcr.io/chroma-core/chroma:latest
+  #   container_name: chromadb
+  #   ports:
+  #     - '8001:8000'
+  #   volumes:
+  #     - chroma_data:/chroma/index
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
 
   # FastAPI Backend (ML & Embedding Service)
   # model-ai:
@@ -158,4 +158,4 @@ volumes:
   postgres_data:
   redis_data:
   esdata:
-  chroma_data:
+  # chroma_data:

@@ -5,5 +5,5 @@ export class RelationDto {
   @IsUUID()
   @ApiProperty({ example: '123123123123', description: 'userId1' })
   @IsNotEmpty()
-  accept_side: string;
+  user_id: string;
 }
