@@ -1,84 +1,105 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="docs/images/snet-logo.png" width="200" alt="SNet Logo" />
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# SNet - Modern Social Network Platform
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+  <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+  <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+  <a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+  <a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## 🚀 Overview
 
-Project social space
+SNet is a powerful social networking platform built on modern technologies. The project leverages NestJS as its primary framework for building a scalable and efficient backend, with FastAPI serving as a secondary framework for AI-powered features and API processing.
 
-#### 🗂 Project Structure:
+## 🔧 Tech Stack
+
+### Core Technologies
+
+- **[NestJS](https://nestjs.com/)**: Primary backend framework
+- **[FastAPI](https://fastapi.tiangolo.com/)**: Secondary framework for AI models and API processing
+- **[PostgreSQL](https://www.postgresql.org/)**: Main database
+- **[Redis](https://redis.io/)**: In-memory database for caching and real-time features
+- **[BullMQ](https://docs.bullmq.io/)**: Queue system for background job processing
+- **[Elasticsearch](https://www.elastic.co/)**: Search engine for content indexing
+- **[FAISS](https://github.com/facebookresearch/faiss)**: Vector similarity search for AI features
+
+## 🗂️ Project Structure
 
 ```
-├── backend/                # Backend system
-├── frontend/               # Frontend system
-├── docs                    # Documents for project and images for README.md 
-├── README.md               # Project documentation (this file)
+├── src/                    # Backend system
+├── model-ai/               # Models AI use FastAPI, Huggingface, Faiss...
+├── docs/                   # Documents for project and images for README.md
+├── public/                 # Data images/videos of app
+├── test/                   # Files test app
 ├── docker-compose.yaml     # Manager containers
+├── README.md               # Project documentation (this file)
 └── .gitignore              # Block files when push github
 ```
 
+## ⚙️ Installation and Setup
 
-## Compile and run the project
+### Using Docker (Recommended)
 
-For Backend
 ```bash
-# into backend folder
-$ cd backend
-
-# setup project
-$ npm install
-
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-For Frontend
-```bash
-# setup project
-$ npm install
-```
-## Compile and run the project using Docker
-```bash
-# create and run
+# Create and run all services
 docker-compose up
 
-# delete
-docker-compose down
+# To shut down and remove volumes
+docker-compose down -v
 ```
 
-## Support
+### Manual Setup
 
-If there is any error or need support, please message me [Facebook](https://www.facebook.com/ntthanh2603)
+```bash
+# Install dependencies
+npm install
 
-## License
+# Development mode with hot-reload
+npm run start:dev
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 🔄 Architecture
 
-![Image alt text](docs/images/thanks-for-watching.jpg)
+SNet follows a microservices architecture:
 
+1. **NestJS Backend**: Handles core application logic, authentication, and main API endpoints
+2. **FastAPI Services**: Process AI-related tasks and specialized API endpoints
+3. **Database Layer**: PostgreSQL for persistent storage, Redis for caching
+4. **Search Services**: Elasticsearch for content search, FAISS for AI vector similarity search
+5. **Background Processing**: BullMQ for handling asynchronous tasks
 
+## 🧪 Testing
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 💬 Support
+
+If you encounter any issues or need support, please reach out:
+
+- [Facebook](https://www.facebook.com/ntthanh2603)
+
+## 📜 License
+
+SNet is [MIT licensed](LICENSE).
+
+<p align="center">
+  <img src="docs/images/thanks-for-watching.jpg" alt="Thanks for watching" width="400" />
+</p>
