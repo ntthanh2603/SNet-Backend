@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/images/snet-logo.png" width="200" alt="SNet Logo" />
-</p>
-
 # SNet - Modern Social Network Platform
 
 <p align="center">
