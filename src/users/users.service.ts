@@ -199,7 +199,7 @@ export class UsersService {
       await this.sendEmail.add(
         'sendOTP',
         {
-          to: dto.email,
+          email: dto.email,
           username: dto.username,
           template: 'signup-success',
         },

@@ -95,56 +95,56 @@ services:
   #   restart: unless-stopped
 
   # Backend (NestJS API Gateway)
-  backend:
-    container_name: backend
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      # Database
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: tuanthanh
-      DATABASE_PASSWORD: 123456
-      DATABASE_NAME: social-network-SNet
+  # backend:
+  #   container_name: backend
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     # Database
+  #     DATABASE_HOST: postgres
+  #     DATABASE_PORT: 5432
+  #     DATABASE_USERNAME: tuanthanh
+  #     DATABASE_PASSWORD: 123456
+  #     DATABASE_NAME: social-network-SNet
 
-      # Redis
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: 123456
-      REDIS_DB: 0
+  #     # Redis
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     REDIS_PASSWORD: 123456
+  #     REDIS_DB: 0
 
-      # BullMQ
-      BULLMQ_HOST: redis
-      BULLMQ_PORT: 6379
-      BULLMQ_PASSWORD: 123456
-      BULLMQ_DB: 1
+  #     # BullMQ
+  #     BULLMQ_HOST: redis
+  #     BULLMQ_PORT: 6379
+  #     BULLMQ_PASSWORD: 123456
+  #     BULLMQ_DB: 1
 
-      # Elasticsearch
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-      ELASTICSEARCH_USERNAME: tuanthanh
-      ELASTICSEARCH_PASSWOR: '123456'
+  #     # Elasticsearch
+  #     ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+  #     ELASTICSEARCH_USERNAME: tuanthanh
+  #     ELASTICSEARCH_PASSWOR: '123456'
 
-      # FastAPI ML Service
-      # MODEL_AI: http://model-ai:8000
+  #     # FastAPI ML Service
+  #     # MODEL_AI: http://model-ai:8000
 
-      # Server
-      NODE_ENV: development
-      PORT: 3000
-    ports:
-      - '3000:3000'
-    depends_on:
-      - postgres
-      - redis
-      # - model-ai
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
-    volumes:
-      - .:/usr/src/app
-    networks:
-      - app-network
-    restart: unless-stopped
+  #     # Server
+  #     NODE_ENV: development
+  #     PORT: 3000
+  #   ports:
+  #     - '3000:3000'
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     # - model-ai
+  #   dns:
+  #     - 8.8.8.8
+  #     - 8.8.4.4
+  #   volumes:
+  #     - .:/usr/src/app
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
 
 networks:
   app-network:

@@ -4,6 +4,11 @@ export enum GenderType {
   OTHER = 'other',
 }
 
+export enum UserCategoryType {
+  IDOL = 'idol',
+  CASUALUSER = 'casualuser',
+}
+
 export enum ActivateType {
   ONLINE = 'online',
   OFFLINE = 'offline',
