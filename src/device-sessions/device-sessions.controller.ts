@@ -23,6 +23,6 @@ export class DeviceSessionsController {
   @ApiOperation({ summary: 'Cấp lại access token' })
   @Get('/refresh-token')
   reAuth(@Fingerprint() fp: IFingerprint, @Body() dto: RefreshTokenDto) {
-    return this.deviceSessionsService.reAuth(dto.refreshToken, fp['id']);
+    return this.deviceSessionsService.reAuth(dto.refresh_token, fp['id']);
   }
 }

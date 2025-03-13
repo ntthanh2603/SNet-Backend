@@ -53,7 +53,7 @@ docker-compose down -v
 
 ```bash
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
 
 # Development mode with hot-reload
 npm run start:dev

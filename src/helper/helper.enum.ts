@@ -7,6 +7,7 @@ export enum GenderType {
 export enum UserCategoryType {
   IDOL = 'idol',
   CASUALUSER = 'casualuser',
+  BLOCK = 'block',
 }
 
 export enum ActivateType {

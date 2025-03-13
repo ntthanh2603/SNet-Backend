@@ -77,9 +77,9 @@ export class DeviceSessionsService {
     }
   }
 
-  async reAuth(_refreshToken: string, device_id: string) {
+  async reAuth(_refresh_token: string, device_id: string) {
     const session = await this.repository.findOne({
-      where: { device_id, refresh_token: _refreshToken },
+      where: { device_id, refresh_token: _refresh_token },
     });
 
     if (

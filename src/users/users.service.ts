@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { compareSync, genSaltSync, hashSync } from 'bcrypt';
 import { IUser } from './users.interface';
@@ -16,7 +16,7 @@ import { RedisService } from 'src/redis/redis.service';
 import { LoginMetaData } from './users.controller';
 import { randomInt } from 'crypto';
 import { AfterSignUpDto } from './dto/after-signup.dto';
-import { PrivacyType } from 'src/helper/helper.enum';
+import { PrivacyType, UserCategoryType } from 'src/helper/helper.enum';
 import { ConfigService } from '@nestjs/config';
 import { BeforeLoginDto } from './dto/before-login.dto';
 import { AfterLoginDto } from './dto/after-login.dto';
@@ -242,7 +242,7 @@ export class UsersService {
       }
 
       const user = await this.usersRepository.findOne({
-        where: { id },
+        where: { id, user_category: Not(UserCategoryType.BLOCK) },
         select: [
           'id',
           'email',
@@ -298,9 +298,7 @@ export class UsersService {
           },
         );
       } else {
-        const findUser = await this.usersRepository.findOne({
-          where: { id: user.id },
-        });
+        const findUser = await this.findUserById(user.id);
 
         const avatar = findUser.avatar;
 
