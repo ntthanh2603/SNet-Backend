@@ -12,10 +12,9 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  // const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  app.useWebSocketAdapter(new IoAdapter(app)); // Websocket
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   app.use(
     helmet({
@@ -49,9 +48,9 @@ async function bootstrap() {
 
   // Config CORS
   app.enableCors({
-    origin: '*', // Cho phép frontend ở mọi cổng
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức HTTP được phép
-    credentials: true, // Nếu bạn sử dụng cookie hoặc thông tin xác thực
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   });
 
   // Config swagger
@@ -76,7 +75,6 @@ async function bootstrap() {
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory, {
-    // Dùng option thứ 4 này để khi reload lại trang swagger thì không mất token
     swaggerOptions: {
       persistAuthorization: true,
     },

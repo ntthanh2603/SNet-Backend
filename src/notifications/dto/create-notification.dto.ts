@@ -7,7 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { NotificationType } from 'src/helper/helper.enum';
+import { NotificationType } from 'src/helper/notification.enum';
 
 export class CreateNotificationDto {
   @IsString()

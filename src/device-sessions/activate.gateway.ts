@@ -47,9 +47,13 @@ export class ActivateGateway
         );
 
         if (!isActivate)
-          await this.redisService.set(`activate:${id}`, 1, 86400);
+          await this.redisService.set(`activate:${id}`, '1', 86400);
 
-        await this.redisService.set(`activate:${id}`, isActivate + 1, 86400);
+        await this.redisService.set(
+          `activate:${id}`,
+          JSON.stringify(isActivate + 1),
+          86400,
+        );
       } catch {
         socket.disconnect();
       }
@@ -66,7 +70,11 @@ export class ActivateGateway
     );
 
     if (isActivate > 1)
-      await this.redisService.set(`activate:${userId}`, isActivate - 1, 86400);
+      await this.redisService.set(
+        `activate:${userId}`,
+        JSON.stringify(isActivate - 1),
+        86400,
+      );
 
     await this.redisService.del(`activate:${userId}`);
   }

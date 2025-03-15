@@ -1,9 +1,8 @@
 import { MaxLength, MinLength } from 'class-validator';
-import {
-  GenderType,
-  PrivacyType,
-  UserCategoryType,
-} from 'src/helper/helper.enum';
+import { GenderType } from 'src/helper/gender.enum';
+import { PrivacyType } from 'src/helper/privacy.enum';
+import { RoleType } from 'src/helper/role.enum';
+import { UserCategoryType } from 'src/helper/user-category.enum';
 import {
   Column,
   CreateDateColumn,
@@ -58,6 +57,13 @@ export class User {
     default: UserCategoryType.CASUALUSER,
   })
   user_category: UserCategoryType;
+
+  @Column({
+    type: 'enum',
+    enum: RoleType,
+    default: RoleType.USER,
+  })
+  role: RoleType;
 
   @CreateDateColumn()
   created_at: Date;

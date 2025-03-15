@@ -19,7 +19,7 @@ import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { AfterDeleteDto } from './dto/after-delete.dto';
@@ -34,17 +34,16 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/account')
-  @ResponseMessage('Lấy thông tin tài khoản')
-  @ApiOperation({ summary: 'Lấy thông tin tài khoản từ header' })
+  @ResponseMessage('Get account from header successfully')
+  @ApiOperation({ summary: 'Get account' })
   handleGetAccount(@User() user: IUser) {
     return user;
   }
 
   @Public()
   @Get(':id')
-  @SkipThrottle() // Không giới hạn reqest
-  @ResponseMessage('Tìm kiếm người dùng bằng ID')
-  @ApiOperation({ summary: 'Tìm kiếm người dùng bằng ID' })
+  @ResponseMessage('Find user by ID successfully')
+  @ApiOperation({ summary: 'Find user by ID' })
   async findUserById(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new BadRequestException(`Invalid ID format: ${id}`);
@@ -56,9 +55,9 @@ export class UsersController {
     return result;
   }
 
-  @Patch()
-  @ResponseMessage('Cập nhật người dùng')
-  @ApiOperation({ summary: 'Cập nhật người dùng' })
+  @Patch('/update')
+  @ResponseMessage('Update profile user seccessfully')
+  @ApiOperation({ summary: 'Update profile user' })
   @UseInterceptors(FileInterceptor('avatar-user'))
   async updateUser(
     @Body() dto: UpdateUserDto,
@@ -81,11 +80,11 @@ export class UsersController {
     return await this.usersService.updateUser(dto, user, file);
   }
 
-  @Post('/login')
+  @Post('/otp/send/login')
   @Public()
-  @ResponseMessage('Gửi OTP thành công')
+  @ResponseMessage('Send OTP seccessfully')
   @ApiOperation({
-    summary: 'Gửi OTP về email',
+    summary: 'Send email to login',
   })
   @Throttle({ default: { limit: 1, ttl: 60000 } })
   beforeLogin(@Body() dto: BeforeLoginDto) {
@@ -93,11 +92,11 @@ export class UsersController {
   }
 
   @Public()
-  @ResponseMessage('Đăng nhập tài khoản nguời dùng thành công')
-  @Post('/after-login')
+  @ResponseMessage('Login account successfully')
+  @Post('/otp/verify/login')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) // Giới hạn đăng nhập 3 lần trong 60s
-  @ApiOperation({ summary: 'Đăng nhập tài khoản nguời dùng' })
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @ApiOperation({ summary: 'Login account' })
   @ApiBody({ type: AfterLoginDto })
   afterlogin(@Body() dto: AfterLoginDto, @Fingerprint() fp: IFingerprint) {
     const metaData: LoginMetaData = {
@@ -107,30 +106,30 @@ export class UsersController {
     return this.usersService.afterlogin(dto, metaData);
   }
 
-  @Post('/signup')
+  @Post('/otp/send/signup')
   @Public()
-  @ResponseMessage('Gửi OTP thành công')
+  @ResponseMessage('Send OTP seccessfully')
   @ApiOperation({
-    summary: 'Gửi OTP về email',
+    summary: 'Send email to sign up',
   })
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   beforeSignUp(@Body() dto: SendOtpDto) {
     return this.usersService.beforeSignUp(dto.email, dto.username);
   }
 
-  @Post('/after-signup')
+  @Post('/otp/verify/signup')
   @Public()
-  @ResponseMessage('Tại tài khoản thành công')
+  @ResponseMessage('Create user successfully')
   @ApiOperation({
-    summary: 'Kiểm tra OTP có hợp lệ không để đăng ký tài khoản',
+    summary: 'Check OTP on email to sign up',
   })
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   afterSignUp(@Body() dto: AfterSignUpDto) {
     return this.usersService.afterSignUp(dto);
   }
 
-  @Post('/delete')
-  @ResponseMessage('Gửi OTP thành công')
+  @Post('/otp/send/delete')
+  @ResponseMessage('Send OTP seccessfully')
   @ApiOperation({
     summary: 'Gửi OTP về email',
   })
@@ -139,9 +138,9 @@ export class UsersController {
     return this.usersService.beforeDelete(user);
   }
 
-  @Delete('/after-delete')
-  @ResponseMessage('Xóa tài khoản người dùng thành công')
-  @ApiOperation({ summary: 'Xóa tài khoản người dùng' })
+  @Delete('/otp/verify/delete')
+  @ResponseMessage('Delete account seccessfully')
+  @ApiOperation({ summary: 'Delete account' })
   afterDelete(@User() user: IUser, @Body() dto: AfterDeleteDto) {
     console.log(user);
 

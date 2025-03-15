@@ -1,4 +1,4 @@
-import { MemberType } from 'src/helper/helper.enum';
+import { RoleType } from 'src/helper/role.enum';
 import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 @Entity()
@@ -13,8 +13,8 @@ export class ChatMember {
 
   @Column({
     type: 'enum',
-    enum: MemberType,
-    default: MemberType.MEMBER,
+    enum: RoleType,
+    default: RoleType.USER,
   })
-  member_type: MemberType;
+  role: RoleType;
 }

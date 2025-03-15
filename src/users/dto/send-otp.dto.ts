@@ -10,7 +10,7 @@ import {
 export class SendOtpDto {
   @IsEmail()
   @IsString()
-  @IsNotEmpty({ message: 'Email không được trống' })
+  @IsNotEmpty({ message: 'Email not empty' })
   @ApiProperty({ example: '22022624@vnu.edu.vn', description: 'email' })
   email: string;
 

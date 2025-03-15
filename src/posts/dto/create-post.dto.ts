@@ -7,7 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { PrivacyType } from 'src/helper/helper.enum';
+import { PrivacyType } from 'src/helper/privacy.enum';
 
 export class CreatePostDto {
   @IsString()

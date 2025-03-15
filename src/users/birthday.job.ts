@@ -14,8 +14,8 @@ export class BirthdayJob {
     @InjectQueue('notificationBirthdays') private notiQueue: Queue,
   ) {}
 
-  @Cron('0 0 * * *') // Chạy mỗi ngày lúc 00:00
-  // @Cron('* * * * *') // Chạy mỗi phút
+  @Cron('0 0 * * *') // Running every day at 00h00
+  // @Cron('* * * * *') // Running every minute
   async checkBirthdays() {
     console.log('Checking birthdays...');
     const today = new Date();

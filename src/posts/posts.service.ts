@@ -28,7 +28,7 @@ export class PostsService {
       const postDb = await this.repository.findOne({ where: { id } });
       if (!postDb) throw new NotFoundException(`Post id: ${id} does not exist`);
 
-      await this.redisService.set(`post:${id}`, postDb, 300);
+      await this.redisService.set(`post:${id}`, JSON.stringify(postDb), 300);
 
       return postDb;
     } catch (error) {

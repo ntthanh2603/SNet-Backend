@@ -32,8 +32,8 @@ import { SearchEngineModule } from './search-engine/search-engine.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Để module config có thể sử dụng ở mọi nơi mà không cần import lại
-      envFilePath: '...env', // Đường dẫn tới file .env
+      isGlobal: true,
+      envFilePath: '...env',
     }),
     DatabaseModule,
     ConfigModule.forRoot({
@@ -120,7 +120,7 @@ import { SearchEngineModule } from './search-engine/search-engine.module';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard, // 🛡 Kích hoạt Rate Limiting toàn hệ thống
+      useClass: ThrottlerGuard, // 🛡 System-wide activation speed limit
     },
   ],
 })

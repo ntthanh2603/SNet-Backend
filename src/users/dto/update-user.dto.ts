@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
-import { GenderType, PrivacyType } from 'src/helper/helper.enum';
+import { GenderType } from 'src/helper/gender.enum';
+import { PrivacyType } from 'src/helper/privacy.enum';
 
 export class UpdateUserDto {
   @MinLength(2)
@@ -11,8 +12,8 @@ export class UpdateUserDto {
   username: string;
 
   @ApiProperty({ example: 'Good boy', description: 'bio' })
-  @MinLength(5, { message: 'Bio không được nhỏ hơn 5 ký tự' })
-  @MaxLength(100, { message: 'Bio không được lớn hơn 100 ký tự' })
+  @MinLength(5, { message: 'Bio not less than 5 characters' })
+  @MaxLength(100, { message: 'Bio not more than 100 characters' })
   @IsOptional()
   bio: string;
 
@@ -37,8 +38,8 @@ export class UpdateUserDto {
   gender: GenderType;
 
   @ApiProperty({ example: 'Cau Giay, Ha Noi', description: 'address' })
-  @MinLength(5, { message: 'Địa chỉ không được nhỏ hơn 5 ký tự' })
-  @MaxLength(100, { message: 'Địa chỉ không được lớn hơn 100 ký tự' })
+  @MinLength(5, { message: 'Address min lenth is 5' })
+  @MaxLength(100, { message: 'Address max lenth is 100' })
   @IsOptional()
   address: string;
 

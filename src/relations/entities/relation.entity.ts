@@ -1,4 +1,4 @@
-import { RelationType } from './../../helper/helper.enum';
+import { RelationType } from 'src/helper/relation.enum';
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()

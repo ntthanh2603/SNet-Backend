@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsUUID } from 'class-validator';
-import { PrivacyType } from 'src/helper/helper.enum';
+import { PrivacyType } from 'src/helper/privacy.enum';
 
 export class UpdatePrivacyPostDto {
   @IsUUID()

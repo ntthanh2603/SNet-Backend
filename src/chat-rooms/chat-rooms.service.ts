@@ -17,12 +17,15 @@ export class ChatRoomsService {
 
   // Tìm phòng chat
   async findRoomChat(id: string): Promise<ChatRoom | null> {
-    const roomCache: ChatRoom = await this.redisService.get(`chat-romm:${id}`);
+    const roomCache: ChatRoom = JSON.parse(
+      await this.redisService.get(`chat-romm:${id}`),
+    );
     if (roomCache) return roomCache;
 
     const room = await this.chatRoomsRepository.findOneBy({ id: id });
 
-    if (room) await this.redisService.set(`chat-romm:${id}`, room, 600);
+    if (room)
+      await this.redisService.set(`chat-romm:${id}`, JSON.stringify(room), 600);
 
     return room;
   }
@@ -32,7 +35,11 @@ export class ChatRoomsService {
     const room = { createdBy: user.id, ...dto };
     const roomDb = await this.chatRoomsRepository.save(room);
 
-    await this.redisService.set(`chat-romm:${roomDb.id}`, roomDb, 600);
+    await this.redisService.set(
+      `chat-romm:${roomDb.id}`,
+      JSON.stringify(roomDb),
+      600,
+    );
     return roomDb;
   }
 

@@ -1,4 +1,4 @@
-import { ReactionType } from 'src/helper/helper.enum';
+import { ReactionType } from 'src/helper/reaction.enum';
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 @Entity()

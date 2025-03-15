@@ -16,7 +16,6 @@ import { RedisService } from 'src/redis/redis.service';
 import { LoginMetaData } from './users.controller';
 import { randomInt } from 'crypto';
 import { AfterSignUpDto } from './dto/after-signup.dto';
-import { PrivacyType, UserCategoryType } from 'src/helper/helper.enum';
 import { ConfigService } from '@nestjs/config';
 import { BeforeLoginDto } from './dto/before-login.dto';
 import { AfterLoginDto } from './dto/after-login.dto';
@@ -25,6 +24,8 @@ import { InjectQueue } from '@nestjs/bullmq';
 import * as fs from 'fs';
 import { UserSearchService } from 'src/search-engine/user-search.service';
 import { UserSearchBody } from 'src/search-engine/interfaces/user-search-body.interface';
+import { PrivacyType } from 'src/helper/privacy.enum';
+import { UserCategoryType } from 'src/helper/user-category.enum';
 
 @Injectable()
 export class UsersService {
@@ -49,13 +50,23 @@ export class UsersService {
     return compareSync(password, hash);
   }
 
+  /**
+   * Find user by email
+   * @param email user's email
+   * @returns User entity if found, otherwise null
+   */
   async findUserByEmail(email: string) {
     return await this.usersRepository.findOne({
       where: { email },
     });
   }
 
-  // Gửi OTP khi đăng nhập
+  /**
+   * @description Send OTP to email when sign up
+   * @param email
+   * @param username
+   * @returns
+   */
   async beforeSignUp(email: string, username: string) {
     const userDb = await this.usersRepository.findOneBy({ email });
 
@@ -85,7 +96,12 @@ export class UsersService {
     return;
   }
 
-  // Gửi OTP khi đăng nhập
+  /**
+   * @description Sends an OTP to the user's email for login verification.
+   * @param dto - Data transfer object containing user's email and password.
+   * @returns void
+   * @throws BadRequestException if the email or password is invalid.
+   */
   async beforeLogin(dto: BeforeLoginDto) {
     const userDb = await this.validateUser(dto.email, dto.password);
 
@@ -110,7 +126,12 @@ export class UsersService {
     return;
   }
 
-  // Gửi OTP khi xóa tài khoản
+  /**
+   * @description Sends an OTP to the user's email for account deletion.
+   * @param user - The user to delete.
+   * @returns void
+   * @throws NotFoundException if the user is not found.
+   */
   async beforeDelete(user: IUser) {
     const userDb = await this.findUserById(user.id);
 
@@ -135,36 +156,58 @@ export class UsersService {
     return;
   }
 
-  // Xử lý khi nhập OTP đăng nhập
+  /**
+   * @description Handles the login process.
+   * @param dto - The data transfer object containing the user's email, password and OTP.
+   * @param metaData - The metadata of the user's login session.
+   * @returns The result of DeviceSessionService#handleLogin.
+   * @throws BadRequestException if the OTP is not valid.
+   * @throws NotFoundException if the user is not found.
+   * @throws UnauthorizedException if the password is not valid.
+   */
   async afterlogin(dto: AfterLoginDto, metaData: LoginMetaData) {
     const user = await this.validateUser(dto.email, dto.password);
 
     const otp = await this.redisService.get(`otp-code:${dto.email}`);
 
     if (otp !== dto.otp)
-      throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
+      throw new BadRequestException('OTP code is incorrect or expired');
 
     await this.redisService.del(`otp-code:${dto.email}`);
 
     return await this.diviceSessionsService.handleLogin(user.id, metaData);
   }
 
+  /**
+   * Validates a user's credentials.
+   *
+   * @param email - The email of the user to validate.
+   * @param password - The password of the user to validate.
+   * @returns The user object if validation is successful.
+   * @throws UnauthorizedException if the user is not found or the password is incorrect.
+   */
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user || !this.isValidPassword(password, user.password)) {
-      throw new UnauthorizedException('Thông tin đăng nhập không hợp lệ');
+      throw new UnauthorizedException('Info is incorrect');
     }
     return user;
   }
 
-  // Xử lý khi nhập OTP đăng kí
+  /**
+   * Handles the sign up process.
+   * @param dto - The data transfer object containing the user's information.
+   * @returns The result of UserSearchService#createUser.
+   * @throws BadRequestException if the OTP is not valid.
+   * @throws InternalServerErrorException if an error occurs while saving the user to the database.
+   */
   async afterSignUp(dto: AfterSignUpDto) {
     try {
       const otp = await this.redisService.get(`otp-code:${dto.email}`);
 
       if (otp !== dto.otp)
-        throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
+        throw new BadRequestException('OTP code is incorrect or expired');
 
       const hashPassword = this.getHashPassword(dto.password);
 
@@ -208,20 +251,26 @@ export class UsersService {
 
       await this.redisService.del(`otp-code:${dto.email}`);
 
-      return { message: 'Đăng kí tài khoản thành công' };
+      return { message: 'sign up successfully' };
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException();
     }
   }
 
-  // Xử lý khi nhập OTP xóa tài khoản
+  /**
+   * @description Handles the deletion of a user account.
+   * @param id - The id of the user to delete.
+   * @param otp - The OTP code sent to the user's email.
+   * @returns The result of the deletion.
+   * @throws BadRequestException if the OTP is not valid.
+   * @throws NotFoundException if the user is not found.
+   */
   async afterDelete(id: string, otp: string) {
     const user = await this.findUserById(id);
     const otpCache = await this.redisService.get(`otp-code:${user.email}`);
 
-    if (otp !== otpCache)
-      throw new BadRequestException('Mã OTP không đúng hoặc đã quá hạn');
+    if (otp !== otpCache) throw new BadRequestException('OTP is incorrect');
 
     await this.usersRepository.delete({ id });
 
@@ -229,14 +278,21 @@ export class UsersService {
 
     await this.redisService.del(`otp-code:${user.email}`);
 
-    return { message: 'Xóa người dùng thành công' };
+    return { message: 'Delete user successfully' };
   }
 
+  /**
+   * @description Finds a user by ID from the database and Redis cache.
+   * If the user is not found, throws a NotFoundException.
+   * If an error occurs while fetching the user, throws an Error.
+   * @param id The ID of the user to find.
+   * @returns The user object.
+   */
   async findUserById(id: string): Promise<User> {
     try {
       const cacheKey = `user:id:${id}`;
 
-      const cachedUser = await this.redisService.get<User>(cacheKey);
+      const cachedUser = JSON.parse(await this.redisService.get(cacheKey));
       if (cachedUser) {
         return cachedUser;
       }
@@ -264,7 +320,7 @@ export class UsersService {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
 
-      await this.redisService.set(cacheKey, user, 300);
+      await this.redisService.set(cacheKey, JSON.stringify(user), 300);
 
       return user;
     } catch (error) {
@@ -276,7 +332,18 @@ export class UsersService {
     }
   }
 
-  // Cập nhật thông tin người dùng
+  /**
+   * @description Updates a user's information in the database.
+   * If a username is provided, checks for its uniqueness.
+   * If a file is provided, updates the user's avatar and deletes the old one.
+   * Clears the user's cache in Redis after updating.
+   * @param dto - The data transfer object containing updated user information.
+   * @param user - The user object representing the current user.
+   * @param file - The uploaded file object, representing the user's new avatar.
+   * @returns A message indicating successful update.
+   * @throws BadRequestException if the username already exists or error occurs when deleting the file.
+   * @throws InternalServerErrorException if an error occurs during the update process.
+   */
   async updateUser(dto: UpdateUserDto, user: IUser, file: Express.Multer.File) {
     try {
       if (dto.username) {
@@ -323,13 +390,13 @@ export class UsersService {
       await this.redisService.del(`user:${user.id}`);
 
       return {
-        message: 'Cập nhật thành công',
+        message: 'Update successful',
       };
     } catch (err) {
       if (err instanceof BadRequestException) {
         throw err;
       }
-      throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
+      throw new InternalServerErrorException('Error updating user');
     }
   }
 }

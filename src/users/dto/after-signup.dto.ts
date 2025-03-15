@@ -7,7 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { GenderType } from 'src/helper/helper.enum';
+import { GenderType } from 'src/helper/gender.enum';
 
 export class AfterSignUpDto {
   @IsString()

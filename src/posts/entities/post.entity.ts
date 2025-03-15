@@ -1,4 +1,4 @@
-import { PrivacyType } from 'src/helper/helper.enum';
+import { PrivacyType } from 'src/helper/privacy.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
