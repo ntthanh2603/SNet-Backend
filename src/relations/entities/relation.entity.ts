@@ -1,16 +1,28 @@
 import { RelationType } from 'src/helper/relation.enum';
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Relation {
-  @PrimaryColumn('uuid')
-  request_side: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @PrimaryColumn('uuid')
-  accept_side: string;
+  @ManyToOne(() => User, (user) => user.request_side, { onDelete: 'CASCADE' })
+  request_side: User;
 
-  @Column({ default: RelationType.FOLLOW })
-  relation: RelationType;
+  @ManyToOne(() => User, (user) => user.accept_side, {
+    onDelete: 'CASCADE',
+  })
+  accept_side: User;
+
+  @Column({ type: 'enum', enum: RelationType })
+  relation: RelationType; // Relation Type (Friend, Blocked, Following)
 
   @CreateDateColumn()
   created_at: Date;

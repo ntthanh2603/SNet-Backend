@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { compareSync, genSaltSync, hashSync } from 'bcrypt';
 import { IUser } from './users.interface';
@@ -25,7 +25,6 @@ import * as fs from 'fs';
 import { UserSearchService } from 'src/search-engine/user-search.service';
 import { UserSearchBody } from 'src/search-engine/interfaces/user-search-body.interface';
 import { PrivacyType } from 'src/helper/privacy.enum';
-import { UserCategoryType } from 'src/helper/user-category.enum';
 
 @Injectable()
 export class UsersService {
@@ -290,37 +289,23 @@ export class UsersService {
    */
   async findUserById(id: string): Promise<User> {
     try {
-      const cacheKey = `user:id:${id}`;
+      const cacheKey = `user:${id}`;
 
-      const cachedUser = JSON.parse(await this.redisService.get(cacheKey));
-      if (cachedUser) {
-        return cachedUser;
+      const userCache = await this.redisService.hGetAll(cacheKey);
+
+      if (userCache && Object.keys(userCache).length > 0) {
+        return userCache;
       }
 
       const user = await this.usersRepository.findOne({
-        where: { id, user_category: Not(UserCategoryType.BLOCK) },
-        select: [
-          'id',
-          'email',
-          'password',
-          'avatar',
-          'username',
-          'bio',
-          'website',
-          'birthday',
-          'gender',
-          'address',
-          'privacy',
-          'created_at',
-          'updated_at',
-        ],
+        where: { id },
       });
 
       if (!user) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
 
-      await this.redisService.set(cacheKey, JSON.stringify(user), 300);
+      await this.redisService.hMSet(cacheKey, user);
 
       return user;
     } catch (error) {

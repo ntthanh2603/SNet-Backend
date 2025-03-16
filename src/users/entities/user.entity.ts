@@ -1,12 +1,15 @@
 import { MaxLength, MinLength } from 'class-validator';
+import { DeviceSession } from 'src/device-sessions/entities/device-session.entity';
 import { GenderType } from 'src/helper/gender.enum';
 import { PrivacyType } from 'src/helper/privacy.enum';
 import { RoleType } from 'src/helper/role.enum';
 import { UserCategoryType } from 'src/helper/user-category.enum';
+import { Relation } from 'src/relations/entities/relation.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -58,6 +61,12 @@ export class User {
   })
   user_category: UserCategoryType;
 
+  @Column({ type: 'text', array: true, default: () => "'{}'" })
+  company: string[];
+
+  @Column({ type: 'text', array: true, default: () => "'{}'" })
+  education: string[];
+
   @Column({
     type: 'enum',
     enum: RoleType,
@@ -70,4 +79,13 @@ export class User {
 
   @UpdateDateColumn({ default: null })
   updated_at: Date;
+
+  @OneToMany(() => DeviceSession, (deviceSession) => deviceSession.user)
+  devices: DeviceSession[];
+
+  @OneToMany(() => Relation, (relation) => relation.request_side)
+  request_side: Relation[];
+
+  @OneToMany(() => Relation, (relation) => relation.accept_side)
+  accept_side: Relation[];
 }

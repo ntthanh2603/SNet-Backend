@@ -40,22 +40,24 @@ export class UsersController {
     return user;
   }
 
-  @Public()
   @Get(':id')
   @ResponseMessage('Find user by ID successfully')
   @ApiOperation({ summary: 'Find user by ID' })
-  async findUserById(@Param('id') id: string) {
+  async findUserById(@Param('id') id: string, @User() user: IUser) {
     if (!isUUID(id)) {
       throw new BadRequestException(`Invalid ID format: ${id}`);
     }
-    const user = await this.usersService.findUserById(id);
+    const userResult = await this.usersService.findUserById(id);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
+    const { password, privacy, ...result } = userResult;
 
+    if (privacy === 'private') {
+      return;
+    }
     return result;
   }
 
-  @Patch('/update')
+  @Patch('/update/profile')
   @ResponseMessage('Update profile user seccessfully')
   @ApiOperation({ summary: 'Update profile user' })
   @UseInterceptors(FileInterceptor('avatar-user'))

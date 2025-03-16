@@ -1,5 +1,6 @@
 export enum RelationType {
   FRIEND = 'friend',
-  FOLLOW = 'follow',
+  FOLLOWING = 'following',
   BLOCK = 'block',
+  NONE = 'none',
 }

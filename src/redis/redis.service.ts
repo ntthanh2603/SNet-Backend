@@ -146,7 +146,7 @@ export class RedisService {
    * @param key - Khóa của hash
    * @returns Object chứa các cặp trường/giá trị
    */
-  async hGetAll(key: string): Promise<Record<string, string>> {
+  async hGetAll(key: string): Promise<any> {
     return this.redis.hgetall(key);
   }
 
