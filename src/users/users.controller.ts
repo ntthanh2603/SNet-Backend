@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   ParseFilePipeBuilder,
   UploadedFile,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
@@ -27,6 +28,7 @@ import { BeforeLoginDto } from './dto/before-login.dto';
 import { AfterLoginDto } from './dto/after-login.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Fingerprint, IFingerprint } from 'nestjs-fingerprint';
+import { Response } from 'express';
 
 @ApiTags('Users')
 @Controller('users')
@@ -112,12 +114,16 @@ export class UsersController {
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @ApiOperation({ summary: 'Login account' })
   @ApiBody({ type: AfterLoginDto })
-  afterlogin(@Body() dto: AfterLoginDto, @Fingerprint() fp: IFingerprint) {
+  afterlogin(
+    @Body() dto: AfterLoginDto,
+    @Fingerprint() fp: IFingerprint,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const metaData: LoginMetaData = {
       deviceId: fp['id'],
       ipAddress: fp['ipAddress']['value'],
     };
-    return this.usersService.afterlogin(dto, metaData);
+    return this.usersService.afterlogin(dto, metaData, response);
   }
 
   @Post('/otp/send/signup')

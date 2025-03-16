@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -13,6 +15,8 @@ import { JwtService } from '@nestjs/jwt';
 import addDay from 'src/helper/addDay';
 import { randomUUID } from 'crypto';
 import * as randomatic from 'randomatic';
+import { RoleType } from 'src/helper/role.enum';
+import { UsersService } from 'src/users/users.service';
 
 export interface ISession {
   userId: string;
@@ -31,12 +35,16 @@ export class DeviceSessionsService {
     private repository: Repository<DeviceSession>,
     private configService: ConfigService,
     private jwtService: JwtService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) {}
 
   async logout(user: IUser, device_id: string) {
+    const userDb = await this.usersService.findUserById(user.id);
+
     const result = await this.repository.update(
       {
-        user_id: user.id,
+        user: userDb,
         device_id,
       },
       { refresh_token: null },
@@ -45,22 +53,13 @@ export class DeviceSessionsService {
     else throw new InternalServerErrorException('Lỗi khi đăng xuất tài khoản');
   }
 
-  async updateToken(user_id: string, refresh_token: string) {
-    return await this.repository.update({ user_id }, { refresh_token });
+  async findOne(deviceSecssionId: string) {
+    return await this.repository.findOne({ where: { id: deviceSecssionId } });
   }
 
-  async findOneByUserIdAndDevice(user_id: string, device_id: string) {
-    return await this.repository.findOne({ where: { user_id, device_id } });
-  }
-
-  generateAccessToken(userId: string, deviceId: string) {
-    const payload = {
-      id: userId,
-      sub: deviceId,
-    };
-
+  generateAccessToken(payload: any, secretKey: string) {
     const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+      secret: secretKey,
       expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRE'),
     });
 
@@ -89,10 +88,18 @@ export class DeviceSessionsService {
       throw new UnauthorizedException('Refresh token invalid');
     }
 
-    const secret_key = randomatic('A0', 16);
+    const secretKey = randomatic('A0', 16);
+
+    // const user = await this.usersService.findUserById(session.user_id);
+
+    const payload = {
+      id: session.user.id,
+      deviceSecssionId: session.id,
+      role: session.user.role,
+    };
 
     const [accessToken, refresh_token, expired_at] = [
-      this.generateAccessToken(session.user_id, device_id),
+      this.generateAccessToken(payload, secretKey),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];
@@ -100,28 +107,39 @@ export class DeviceSessionsService {
     await this.repository.update(session.id, {
       refresh_token,
       expired_at,
-      secret_key,
+      secret_key: secretKey,
     });
-    return { accessToken, refresh_token, expired_at };
+    return { accessToken, expired_at };
   }
 
-  async handleLogin(userId: string, metaData: LoginMetaData) {
+  async handleLogin(userId: string, metaData: LoginMetaData, role: RoleType) {
     const { deviceId, ipAddress } = metaData;
 
     const currentDevice = await this.repository.findOne({
       where: { device_id: deviceId },
     });
 
+    const deviceSecssionId = currentDevice?.id || randomUUID();
+
+    const payload = {
+      id: userId,
+      deviceSecssionId: deviceSecssionId,
+      role: role,
+    };
+
+    const user = await this.usersService.findUserById(userId);
+
     const secretKey = randomatic('A0', 16);
 
     const [accessToken, refreshToken, expiredAt] = [
-      this.generateAccessToken(userId, deviceId),
+      this.generateAccessToken(payload, secretKey),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];
 
     const newDeviceSession = new DeviceSession();
-    newDeviceSession.user_id = userId;
+    newDeviceSession.id = deviceSecssionId;
+    newDeviceSession.user = user;
     newDeviceSession.device_id = deviceId;
     newDeviceSession.ip_address = ipAddress;
     newDeviceSession.refresh_token = refreshToken;
@@ -131,7 +149,6 @@ export class DeviceSessionsService {
 
     // update or create device session
     await this.repository.save({
-      id: currentDevice?.id || randomUUID(),
       ...newDeviceSession,
     });
     return { accessToken, refreshToken, expiredAt };

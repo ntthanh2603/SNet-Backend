@@ -13,10 +13,6 @@ export class DeviceSession {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  @Index()
-  user_id: string;
-
   @Index()
   @Column({ unique: true })
   device_id: string;

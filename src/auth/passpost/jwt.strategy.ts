@@ -1,20 +1,47 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/users/users.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUser } from 'src/users/users.interface';
+import { DeviceSessionsService } from 'src/device-sessions/device-sessions.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private configService: ConfigService,
-    private usersService: UsersService,
-  ) {
+  constructor(private readonly deviceSessionsService: DeviceSessionsService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+      secretOrKeyProvider: async (request, rawJwtToken, done) => {
+        try {
+          // Decode token and get `deviceSessionId`
+          const payload: any = JSON.parse(
+            Buffer.from(rawJwtToken.split('.')[1], 'base64').toString(),
+          );
+
+          if (!payload.deviceSecssionId) {
+            return done(
+              new UnauthorizedException('Invalid token payload'),
+              null,
+            );
+          }
+
+          // Find device session
+          const deviceSession = await this.deviceSessionsService.findOne(
+            payload.deviceSewssionId,
+          );
+
+          if (!deviceSession || !deviceSession.secret_key) {
+            return done(
+              new UnauthorizedException('Invalid device session'),
+              null,
+            );
+          }
+
+          // Return secret key
+          return done(null, deviceSession.secret_key);
+        } catch {
+          return done(new UnauthorizedException('Invalid token format'), null);
+        }
+      },
     });
   }
 

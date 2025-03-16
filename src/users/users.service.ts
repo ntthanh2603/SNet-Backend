@@ -29,6 +29,7 @@ import { UserSearchBody } from 'src/search-engine/interfaces/user-search-body.in
 import { PrivacyType } from 'src/helper/privacy.enum';
 import { RelationsService } from 'src/relations/relations.service';
 import { RelationType } from 'src/helper/relation.enum';
+import { Response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -191,14 +192,17 @@ export class UsersService {
 
   /**
    * @description Handles the login process.
-   * @param dto - The data transfer object containing the user's email, password and OTP.
-   * @param metaData - The metadata of the user's login session.
-   * @returns The result of DeviceSessionService#handleLogin.
-   * @throws BadRequestException if the OTP is not valid.
-   * @throws NotFoundException if the user is not found.
-   * @throws UnauthorizedException if the password is not valid.
+   * @param dto - The login payload.
+   * @param metaData - The login metadata.
+   * @param response - The response object.
+   * @returns A promise containing the access token.
+   * @throws BadRequestException if OTP code is incorrect or expired.
    */
-  async afterlogin(dto: AfterLoginDto, metaData: LoginMetaData) {
+  async afterlogin(
+    dto: AfterLoginDto,
+    metaData: LoginMetaData,
+    response: Response,
+  ) {
     const user = await this.validateUser(dto.email, dto.password);
 
     const otp = await this.redisService.get(`otp-code:${dto.email}`);
@@ -208,7 +212,16 @@ export class UsersService {
 
     await this.redisService.del(`otp-code:${dto.email}`);
 
-    return await this.diviceSessionsService.handleLogin(user.id, metaData);
+    const handleLogin = await this.diviceSessionsService.handleLogin(
+      user.id,
+      metaData,
+      user.role,
+    );
+    response.cookie('refreshToken', handleLogin.refreshToken, {
+      httpOnly: true,
+      maxAge: handleLogin.expiredAt.getTime(),
+    });
+    return { accessToken: handleLogin.accessToken };
   }
 
   /**
