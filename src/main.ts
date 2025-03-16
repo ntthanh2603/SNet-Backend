@@ -80,6 +80,10 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(configService.get<string>('PORT'));
+  await app.listen(configService.get<string>('PORT'), () => {
+    console.log(
+      `[Nest] Server running on port http://localhost:${configService.get<string>('PORT')}`,
+    );
+  });
 }
 bootstrap();

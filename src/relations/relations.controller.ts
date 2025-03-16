@@ -6,74 +6,64 @@ import {
   BadRequestException,
   Param,
   Query,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User, ResponseMessage } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
-import { isUUID } from 'class-validator';
 import { RelationDto } from './dto/relation.dto';
 import { RelationsService } from './relations.service';
 import { UpdateRelationDto } from './dto/update-relation.dto';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('Relations')
 @Controller('relations')
 export class RelationsController {
-  constructor(private readonly relationShipsService: RelationsService) {}
+  constructor(
+    private readonly relationShipsService: RelationsService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
+  ) {}
 
-  // @Public()
-  // @ResponseMessage('Danh sách bạn bè')
-  // @Get('friends/:id')
-  // @ApiOperation({ summary: 'Danh sách bạn bè' })
-  // getFriends(
-  //   @Param('id') id: string,
-  //   @Query('page') page: number = 1,
-  //   @Query('limit') limit: number = 10,
-  // ) {
-  //   if (!isUUID(id)) {
-  //     throw new BadRequestException(`Invalid ID format: ${id}`);
-  //   }
-  //   return this.relationShipsService.getFriends(id, page, limit);
-  // }
-
-  // @Public()
-  // @ResponseMessage('Danh sách người theo dõi')
-  // @Get('friends/:id')
-  // @ApiOperation({ summary: 'Danh sách người theo dõi' })
-  // getFolllower(
-  //   @Param('id') id: string,
-  //   @Query('page') page: number = 1,
-  //   @Query('limit') limit: number = 10,
-  // ) {
-  //   if (!isUUID(id)) {
-  //     throw new BadRequestException(`Invalid ID format: ${id}`);
-  //   }
-  //   return this.relationShipsService.getFollower(id, page, limit);
-  // }
-
-  @ResponseMessage('Danh sách người mà người dùng theo dõi')
-  @Get('friends/:id')
-  @ApiOperation({ summary: 'Danh sách người mà người dùng theo dõi' })
-  getFollowed(
-    @Param('id') id: string,
+  @ResponseMessage(
+    `Get list relation ['friend', 'following', 'block'] of user successfully`,
+  )
+  @Get('friends/:user_id')
+  @ApiOperation({
+    summary: `Get list relation ['friend', 'following', 'block'] of user`,
+  })
+  async friends(
+    @User() user: IUser,
+    @Param() params: RelationDto,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    if (!isUUID(id)) {
-      throw new BadRequestException(`Invalid ID format: ${id}`);
+    const privacy = await this.usersService.privacySeeProfile(
+      user.id,
+      params.user_id,
+    );
+    if (!privacy) {
+      throw new BadRequestException('You are not allowed to see list friend');
     }
-    return this.relationShipsService.getFollowed(id, page, limit);
+    return this.relationShipsService.getListRelation(
+      params.user_id,
+      page,
+      limit,
+      params.relation,
+    );
   }
 
-  @Get()
+  @Get(':user_id')
   @ResponseMessage('Get relation between 2 users successfully')
   @ApiOperation({ summary: 'Get relation between 2 users' })
-  async getRelation(@User() user: IUser, @Body() dto: RelationDto) {
-    if (!isUUID(dto.user_id)) {
-      throw new BadRequestException(`Invalid ID format: ${dto.user_id}`);
-    }
-    const relation = await this.relationShipsService.getRelation(user, dto);
+  async getRelation(@User() user: IUser, @Param() params: RelationDto) {
+    const relation = await this.relationShipsService.getRelation(
+      user.id,
+      params.user_id,
+    );
 
-    return relation.relation;
+    return relation;
   }
 
   @Post('update')

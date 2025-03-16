@@ -1,5 +1,8 @@
+import { RelationType } from './../helper/relation.enum';
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,32 +13,57 @@ import { RedisService } from 'src/redis/redis.service';
 import { UsersService } from 'src/users/users.service';
 import { Relation } from './entities/relation.entity';
 import { UpdateRelationDto } from './dto/update-relation.dto';
-import { RelationType } from 'src/helper/relation.enum';
-import { RelationDto } from './dto/relation.dto';
+
 @Injectable()
 export class RelationsService {
   constructor(
     @InjectRepository(Relation)
     private relationsRepository: Repository<Relation>,
     private redisService: RedisService,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 
-  async getFollowed(id: string, page: number, limit: number) {}
+  async getListRelation(
+    id: string,
+    page: number,
+    limit: number,
+    relation: RelationType,
+  ) {
+    const skip = (page - 1) * limit;
+    const take = limit;
 
-  async getRelation(user: IUser, dto: RelationDto) {
-    const acceptUser = await this.usersService.findUserById(dto.user_id);
+    const followedUsers = await this.relationsRepository.find({
+      where: {
+        request_side: { id },
+        relation: relation,
+      },
+      relations: ['accept_side'],
+      skip,
+      take,
+    });
+
+    return followedUsers.map((relation) => [
+      relation.accept_side.id,
+      relation.accept_side.username,
+      relation.accept_side.avatar,
+      relation.accept_side.bio,
+    ]);
+  }
+
+  async getRelation(id: string, id_other: string): Promise<RelationType> {
+    const acceptUser = await this.usersService.findUserById(id_other);
     if (!acceptUser) {
       throw new NotFoundException('User does not exist');
     }
 
     const relation = await this.relationsRepository.findOne({
       where: {
-        request_side: { id: user.id },
-        accept_side: { id: dto.user_id },
+        request_side: { id: id },
+        accept_side: { id: id_other },
       },
     });
-    return relation;
+    return relation.relation;
   }
 
   /**

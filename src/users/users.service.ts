@@ -1,6 +1,8 @@
 import { DeviceSessionsService } from './../device-sessions/device-sessions.service';
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -25,6 +27,8 @@ import * as fs from 'fs';
 import { UserSearchService } from 'src/search-engine/user-search.service';
 import { UserSearchBody } from 'src/search-engine/interfaces/user-search-body.interface';
 import { PrivacyType } from 'src/helper/privacy.enum';
+import { RelationsService } from 'src/relations/relations.service';
+import { RelationType } from 'src/helper/relation.enum';
 
 @Injectable()
 export class UsersService {
@@ -37,6 +41,8 @@ export class UsersService {
     @InjectQueue('sendEmail')
     private sendEmail: Queue,
     private readonly userSearchService: UserSearchService,
+    @Inject(forwardRef(() => RelationsService))
+    private readonly relationsService: RelationsService,
   ) {}
 
   getHashPassword(password: string) {
@@ -58,6 +64,44 @@ export class UsersService {
     return await this.usersRepository.findOne({
       where: { email },
     });
+  }
+
+  /**
+   * Checks the privacy setting of a user by their ID.
+   * @param id - The unique identifier of the user.
+   * @returns The privacy setting of the user as a PrivacyType.
+   */
+  async getPrivacy(id: string): Promise<PrivacyType> {
+    const user = await this.usersRepository.findOneBy({ id });
+    return user.privacy;
+  }
+
+  /**
+   * Check if a user is allowed to see another user's profile based on
+   * the privacy setting of the user being viewed.
+   * @param user_id_see The ID of the user performing the action.
+   * @param user_id The ID of the user being viewed.
+   * @returns A boolean indicating whether the view is allowed.
+   */
+  async privacySeeProfile(user_id_see: string, user_id: string) {
+    const privacy = await this.getPrivacy(user_id);
+    switch (true) {
+      case privacy === PrivacyType.PRIVATE:
+        return false;
+      case privacy === PrivacyType.PUBLIC:
+        return true;
+      case privacy === PrivacyType.FRIEND:
+        const relation = await this.relationsService.getRelation(
+          user_id,
+          user_id_see,
+        );
+        if (relation === RelationType.FRIEND) {
+          return true;
+        } else {
+          return false;
+        }
+    }
+    return false;
   }
 
   /**
