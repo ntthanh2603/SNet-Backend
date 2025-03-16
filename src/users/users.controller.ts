@@ -40,19 +40,31 @@ export class UsersController {
     return user;
   }
 
-  @Get(':id')
+  @Get(':user_id')
   @ResponseMessage('Find user by ID successfully')
   @ApiOperation({ summary: 'Find user by ID' })
-  async findUserById(@Param('id') id: string, @User() user: IUser) {
-    if (!isUUID(id)) {
-      throw new BadRequestException(`Invalid ID format: ${id}`);
+  async getProfile(@Param('user_id') user_id: string, @User() user: IUser) {
+    if (!isUUID(user_id)) {
+      throw new BadRequestException(`Invalid ID format: ${user_id}`);
     }
-    const userResult = await this.usersService.findUserById(id);
+    const userResult = await this.usersService.findUserById(user_id);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, privacy, ...result } = userResult;
+    const { password, ...result } = userResult;
 
-    if (privacy === 'private') {
-      return;
+    const privacySeeProfile = await this.usersService.privacySeeProfile(
+      user.id,
+      user_id,
+    );
+
+    if (!privacySeeProfile) {
+      const { id, email, avatar, username, privacy } = userResult;
+      return {
+        id,
+        email,
+        avatar,
+        username,
+        privacy,
+      };
     }
     return result;
   }

@@ -67,16 +67,6 @@ export class UsersService {
   }
 
   /**
-   * Checks the privacy setting of a user by their ID.
-   * @param id - The unique identifier of the user.
-   * @returns The privacy setting of the user as a PrivacyType.
-   */
-  async getPrivacy(id: string): Promise<PrivacyType> {
-    const user = await this.usersRepository.findOneBy({ id });
-    return user.privacy;
-  }
-
-  /**
    * Check if a user is allowed to see another user's profile based on
    * the privacy setting of the user being viewed.
    * @param user_id_see The ID of the user performing the action.
@@ -84,7 +74,7 @@ export class UsersService {
    * @returns A boolean indicating whether the view is allowed.
    */
   async privacySeeProfile(user_id_see: string, user_id: string) {
-    const privacy = await this.getPrivacy(user_id);
+    const privacy = (await this.findUserById(user_id)).privacy;
     switch (true) {
       case privacy === PrivacyType.PRIVATE:
         return false;
@@ -92,8 +82,8 @@ export class UsersService {
         return true;
       case privacy === PrivacyType.FRIEND:
         const relation = await this.relationsService.getRelation(
-          user_id,
           user_id_see,
+          user_id,
         );
         if (relation === RelationType.FRIEND) {
           return true;
