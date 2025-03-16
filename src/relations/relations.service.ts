@@ -11,6 +11,7 @@ import { UsersService } from 'src/users/users.service';
 import { Relation } from './entities/relation.entity';
 import { UpdateRelationDto } from './dto/update-relation.dto';
 import { RelationType } from 'src/helper/relation.enum';
+import { RelationDto } from './dto/relation.dto';
 @Injectable()
 export class RelationsService {
   constructor(
@@ -20,6 +21,31 @@ export class RelationsService {
     private readonly usersService: UsersService,
   ) {}
 
+  async getFollowed(id: string, page: number, limit: number) {}
+
+  async getRelation(user: IUser, dto: RelationDto) {
+    const acceptUser = await this.usersService.findUserById(dto.user_id);
+    if (!acceptUser) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    const relation = await this.relationsRepository.findOne({
+      where: {
+        request_side: { id: user.id },
+        accept_side: { id: dto.user_id },
+      },
+    });
+    return relation;
+  }
+
+  /**
+   * Update the relation between 2 users
+   * @param user The user who made the request
+   * @param dto The data transfer object containing the updated relation
+   * @returns A message indicating successful update
+   * @throws NotFoundException if the user does not exist
+   * @throws BadRequestException if the input is incorrect
+   */
   async updateRelation(user: IUser, dto: UpdateRelationDto) {
     const requestUser = await this.usersService.findUserById(user.id);
     const acceptUser = await this.usersService.findUserById(dto.user_id);

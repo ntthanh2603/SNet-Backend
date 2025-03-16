@@ -2,14 +2,13 @@ import {
   Controller,
   Post,
   Body,
-  Delete,
-  Param,
   Get,
   BadRequestException,
+  Param,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public, User, ResponseMessage } from 'src/decorator/customize';
+import { User, ResponseMessage } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { isUUID } from 'class-validator';
 import { RelationDto } from './dto/relation.dto';
@@ -51,30 +50,31 @@ export class RelationsController {
   //   return this.relationShipsService.getFollower(id, page, limit);
   // }
 
-  // @Public()
-  // @ResponseMessage('Danh sách người mà người dùng theo dõi')
-  // @Get('friends/:id')
-  // @ApiOperation({ summary: 'Danh sách người mà người dùng theo dõi' })
-  // getFollowed(
-  //   @Param('id') id: string,
-  //   @Query('page') page: number = 1,
-  //   @Query('limit') limit: number = 10,
-  // ) {
-  //   if (!isUUID(id)) {
-  //     throw new BadRequestException(`Invalid ID format: ${id}`);
-  //   }
-  //   return this.relationShipsService.getFollowed(id, page, limit);
-  // }
+  @ResponseMessage('Danh sách người mà người dùng theo dõi')
+  @Get('friends/:id')
+  @ApiOperation({ summary: 'Danh sách người mà người dùng theo dõi' })
+  getFollowed(
+    @Param('id') id: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    if (!isUUID(id)) {
+      throw new BadRequestException(`Invalid ID format: ${id}`);
+    }
+    return this.relationShipsService.getFollowed(id, page, limit);
+  }
 
-  // @Get()
-  // @ResponseMessage('Quan hệ 2 người dùng')
-  // @ApiOperation({ summary: 'Quan hệ 2 người dùng' })
-  // getRelation(@User() user: IUser, @Body() dto: RelationDto) {
-  //   if (!isUUID(dto.user_id)) {
-  //     throw new BadRequestException(`Invalid ID format: ${dto.user_id}`);
-  //   }
-  //   return this.relationShipsService.getRelation(user, dto.user_id);
-  // }
+  @Get()
+  @ResponseMessage('Get relation between 2 users successfully')
+  @ApiOperation({ summary: 'Get relation between 2 users' })
+  async getRelation(@User() user: IUser, @Body() dto: RelationDto) {
+    if (!isUUID(dto.user_id)) {
+      throw new BadRequestException(`Invalid ID format: ${dto.user_id}`);
+    }
+    const relation = await this.relationShipsService.getRelation(user, dto);
+
+    return relation.relation;
+  }
 
   @Post('update')
   @ResponseMessage('Update relation successfully')
