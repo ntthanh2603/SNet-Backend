@@ -25,11 +25,11 @@ import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as fs from 'fs';
 import { UserSearchService } from 'src/search-engine/user-search.service';
-import { UserSearchBody } from 'src/search-engine/interfaces/user-search-body.interface';
 import { PrivacyType } from 'src/helper/privacy.enum';
 import { RelationsService } from 'src/relations/relations.service';
 import { RelationType } from 'src/helper/relation.enum';
 import { Response } from 'express';
+import { UserSearchBody } from 'src/search-engine/dto/user-search-body.interface';
 
 @Injectable()
 export class UsersService {
@@ -272,7 +272,7 @@ export class UsersService {
 
       const userDb = await this.usersRepository.save(newUser);
 
-      const userSearchBody: UserSearchBody = {
+      const userSearch: UserSearchBody = {
         id: userDb.id,
         email: userDb.email,
         username: userDb.username,
@@ -281,9 +281,18 @@ export class UsersService {
         website: userDb.website,
         gender: userDb.gender,
         address: userDb.address,
+        birthday: userDb.birthday,
+        company: userDb.company,
+        education: userDb.education,
+        last_active: userDb.last_active,
+        user_category: userDb.user_category,
+        role: userDb.role,
+        privacy: userDb.privacy,
+        created_at: userDb.created_at,
+        updated_at: userDb.updated_at,
       };
 
-      await this.userSearchService.createUser(userSearchBody);
+      await this.userSearchService.indexUser(userSearch);
 
       await this.sendEmail.add(
         'sendOTP',
@@ -321,6 +330,8 @@ export class UsersService {
     await this.usersRepository.delete({ id });
 
     await this.redisService.del(`user:${id}`);
+
+    await this.userSearchService.deleteUser(id);
 
     await this.redisService.del(`otp-code:${user.email}`);
 
@@ -397,9 +408,9 @@ export class UsersService {
           },
         );
       } else {
-        const findUser = await this.findUserById(user.id);
+        const userDb = await this.findUserById(user.id);
 
-        const avatar = findUser.avatar;
+        const avatar = userDb.avatar;
 
         if (avatar) {
           try {
@@ -418,7 +429,29 @@ export class UsersService {
             avatar: file.path,
           },
         );
+        const userSearch: UserSearchBody = {
+          id: userDb.id,
+          email: userDb.email,
+          username: userDb.username,
+          avatar: userDb.avatar,
+          bio: userDb.bio,
+          website: userDb.website,
+          gender: userDb.gender,
+          address: userDb.address,
+          birthday: userDb.birthday,
+          company: userDb.company,
+          education: userDb.education,
+          last_active: userDb.last_active,
+          user_category: userDb.user_category,
+          role: userDb.role,
+          privacy: userDb.privacy,
+          created_at: userDb.created_at,
+          updated_at: userDb.updated_at,
+        };
+
+        await this.userSearchService.indexUser(userSearch);
       }
+
       await this.redisService.del(`user:${user.id}`);
 
       return {

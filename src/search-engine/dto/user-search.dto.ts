@@ -1,8 +1,11 @@
 import { IsString, IsNotEmpty, Length } from 'class-validator';
 
-export class SearchUserDto {
+export class UserSearchDto {
   @IsString()
   @IsNotEmpty()
   @Length(3, 50)
-  text: string;
+  query: string;
+
+  page?: number = 1;
+  limit?: number = 10;
 }
