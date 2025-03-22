@@ -23,7 +23,7 @@ export class UserSearchService {
           query: {
             multi_match: {
               query,
-              fields: ['username', 'email', 'fullName', 'bio'],
+              fields: ['id', 'username', 'email', 'bio'],
               fuzziness: 'AUTO', // Allows approximate search
               operator: 'and',
             },

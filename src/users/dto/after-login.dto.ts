@@ -17,7 +17,7 @@ export class AfterLoginDto {
   @IsNotEmpty({ message: 'Email not empty' })
   @IsEmail({}, { message: 'Email is not valid' })
   @IsString({ message: 'Type email is string' })
-  @ApiProperty({ example: '22022624@vnu.edu.vn', description: 'email' })
+  @ApiProperty({ example: 'user@gmail.com', description: 'email' })
   email: string;
 
   @IsNotEmpty({ message: 'Password not empty' })

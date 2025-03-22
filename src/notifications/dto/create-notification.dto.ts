@@ -32,6 +32,6 @@ export class CreateNotificationDto {
 
   @IsEnum(NotificationType)
   @IsNotEmpty()
-  @ApiProperty({ example: NotificationType.OTHER })
-  notificationType: NotificationType;
+  @ApiProperty()
+  notification_type: NotificationType;
 }

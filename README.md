@@ -56,7 +56,7 @@ docker-compose down -v
 npm install --legacy-peer-deps
 
 # Development mode with hot-reload
-npm run start:dev
+npm run dev
 ```
 
 ## 🔄 Architecture

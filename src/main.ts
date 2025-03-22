@@ -9,9 +9,23 @@ import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { logger } from './config/logger.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  });
+
+  app.useLogger({
+    log() {},
+    error(message: string, trace: string) {
+      logger.error(`${message} - Trace: ${trace}`);
+    },
+    warn(message: string) {
+      logger.warn(message);
+    },
+  });
+
   const configService = app.get(ConfigService);
 
   app.useWebSocketAdapter(new IoAdapter(app));

@@ -20,7 +20,7 @@ import { SearchEngineModule } from 'src/search-engine/search-engine.module';
     NestjsFingerprintModule.forRoot({
       params: ['headers', 'userAgent', 'ipAddress'],
       cookieOptions: {
-        name: 'your_cookie_name', // optional
+        name: 'refreshToken', // optional
         httpOnly: true, // optional
       },
     }),

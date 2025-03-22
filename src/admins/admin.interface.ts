@@ -1,4 +1,4 @@
-export interface IUser {
+export interface IAdmin {
   id: string;
   deviceSecssionId: string;
   role: string;

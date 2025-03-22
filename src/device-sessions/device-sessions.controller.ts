@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req } from '@nestjs/common';
 import { DeviceSessionsService } from './device-sessions.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RefreshTokenDto } from 'src/users/dto/refresh-token.dto';
 import { Fingerprint, IFingerprint } from 'nestjs-fingerprint';
 import { Request } from 'express';
 

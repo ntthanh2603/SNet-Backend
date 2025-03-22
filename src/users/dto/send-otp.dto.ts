@@ -11,7 +11,7 @@ export class SendOtpDto {
   @IsEmail()
   @IsString()
   @IsNotEmpty({ message: 'Email not empty' })
-  @ApiProperty({ example: '22022624@vnu.edu.vn', description: 'email' })
+  @ApiProperty({ example: 'user@gmail.com', description: 'email' })
   email: string;
 
   @MinLength(2)

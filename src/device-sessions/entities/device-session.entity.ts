@@ -2,7 +2,6 @@ import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
-  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,8 +12,7 @@ export class DeviceSession {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Index()
-  @Column({ unique: true })
+  @Column()
   device_id: string;
 
   @Column()
@@ -35,6 +33,6 @@ export class DeviceSession {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => User, (user) => user.devices, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.deviceSession)
   user: User;
 }

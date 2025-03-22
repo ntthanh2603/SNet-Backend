@@ -90,12 +90,12 @@ export class DeviceSessionsService {
 
     const secretKey = randomatic('A0', 16);
 
-    // const user = await this.usersService.findUserById(session.user_id);
+    const user = await this.usersService.findUserById(session.user.id);
 
     const payload = {
-      id: session.user.id,
+      id: user.id,
       deviceSecssionId: session.id,
-      role: session.user.role,
+      role: user.role,
     };
 
     const [accessToken, refresh_token, expired_at] = [
@@ -116,7 +116,9 @@ export class DeviceSessionsService {
     const { deviceId, ipAddress } = metaData;
 
     const currentDevice = await this.repository.findOne({
-      where: { device_id: deviceId },
+      where: {
+        device_id: deviceId,
+      },
     });
 
     const deviceSecssionId = currentDevice?.id || randomUUID();

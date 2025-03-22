@@ -13,12 +13,10 @@ export class Relation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, (user) => user.request_side, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.request_side)
   request_side: User;
 
-  @ManyToOne(() => User, (user) => user.accept_side, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => User, (user) => user.accept_side)
   accept_side: User;
 
   @Column({ type: 'enum', enum: RelationType })

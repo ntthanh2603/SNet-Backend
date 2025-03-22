@@ -1,9 +1,7 @@
 export enum NotificationType {
-  MEMORY = 'memory',
-  BIRTHDAY = 'birthday',
-  OTHER = 'other',
-  INFO = 'INFO',
-  WARNING = 'WARNING',
-  ERROR = 'ERROR',
-  SUCCESS = 'SUCCESS',
+  LIKE = 'like',
+  COMMENT = 'comment',
+  FOLLOW = 'follow',
+  REACTION = 'reaction',
+  SYSTEM = 'system',
 }

@@ -19,14 +19,9 @@ export const User = createParamDecorator(
   },
 );
 
-// export const User = createParamDecorator(
-//   (data: unknown, ctx: ExecutionContext) => {
-//     // Xử lý WebSocket hoặc HTTP Request
-//     if (ctx.getType() === 'http') {
-//       return ctx.switchToHttp().getRequest().user;
-//     } else if (ctx.getType() === 'ws') {
-//       console.log(ctx.switchToWs().getClient().handshake.headers);
-//       return ctx.switchToWs().getClient().handshake.headers['user-id']; // Lấy userId từ header WebSocket
-//     }
-//   },
-// );
+export const Admin = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.user;
+  },
+);

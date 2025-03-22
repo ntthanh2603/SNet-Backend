@@ -4,6 +4,7 @@ import { GenderType } from 'src/helper/gender.enum';
 import { PrivacyType } from 'src/helper/privacy.enum';
 import { RoleType } from 'src/helper/role.enum';
 import { UserCategoryType } from 'src/helper/user-category.enum';
+import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
 import { Relation } from 'src/relations/entities/relation.entity';
 import {
   Column,
@@ -81,11 +82,17 @@ export class User {
   updated_at: Date;
 
   @OneToMany(() => DeviceSession, (deviceSession) => deviceSession.user)
-  devices: DeviceSession[];
+  deviceSession: DeviceSession[];
 
   @OneToMany(() => Relation, (relation) => relation.request_side)
   request_side: Relation[];
 
   @OneToMany(() => Relation, (relation) => relation.accept_side)
   accept_side: Relation[];
+
+  @OneToMany(
+    () => NotificationUser,
+    (notification_user) => notification_user.id,
+  )
+  notification_user: NotificationUser[];
 }

@@ -16,10 +16,10 @@ import { Relation } from 'src/relations/entities/relation.entity';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         node: configService.get('ELASTICSEARCH_HOSTS'),
-        // auth: {
-        //   username: configService.get('ELASTICSEARCH_USERNAME'),
-        //   password: configService.get('ELASTICSEARCH_PASSWORD'),
-        // },
+        auth: {
+          username: configService.get('ELASTICSEARCH_USERNAME'),
+          password: configService.get('ELASTICSEARCH_PASSWORD'),
+        },
         maxRetries: 10,
         requestTimeout: 60000,
       }),

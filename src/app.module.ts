@@ -28,6 +28,7 @@ import { HashtagsModule } from './hashtags/hashtags.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ParentChildCommentsModule } from './parent-child-comments/parent-child-comments.module';
 import { SearchEngineModule } from './search-engine/search-engine.module';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
   imports: [
@@ -94,7 +95,6 @@ import { SearchEngineModule } from './search-engine/search-engine.module';
       }),
       inject: [ConfigService],
     }),
-
     UsersModule,
     AuthModule,
     RedisModule,
@@ -114,6 +114,7 @@ import { SearchEngineModule } from './search-engine/search-engine.module';
     ReactionsModule,
     ParentChildCommentsModule,
     SearchEngineModule,
+    AdminsModule,
   ],
   controllers: [AppController],
   providers: [

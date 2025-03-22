@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { NotiBirthdayProcessor } from 'src/bullmq/notification-birthday.processor';
+import { CreateNotificationDto } from './dto/create-notification.dto';
 
 @Injectable()
 export class NotificationService {
@@ -12,7 +13,7 @@ export class NotificationService {
     private readonly notiBirthdayProcessor: NotiBirthdayProcessor,
   ) {}
 
-  async notificationBirthday() {
-    // return await this.notiBirthdayProcessor.process();
+  createByAdmin(dto: CreateNotificationDto) {
+    console.log(dto);
   }
 }

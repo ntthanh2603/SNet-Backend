@@ -20,7 +20,7 @@ export class AfterSignUpDto {
   @IsEmail()
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: '22022624@vnu.edu.vn', description: 'email' })
+  @ApiProperty({ example: 'user@gmail.com', description: 'email' })
   email: string;
 
   @MinLength(8)
