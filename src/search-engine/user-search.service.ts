@@ -16,7 +16,7 @@ export class UserSearchService {
 
     try {
       const result = await this.elasticsearchService.search({
-        index: 'users', // name index in elasticsearch
+        index: 'snet-users', // name index in elasticsearch
         body: {
           from,
           size: limit,

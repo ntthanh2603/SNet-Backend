@@ -2,29 +2,21 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './core/transform.interceptor';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { logger } from './config/logger.config';
+import { LoggerMiddleware } from './middleware/logger.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn', 'log'],
   });
 
-  app.useLogger({
-    log() {},
-    error(message: string, trace: string) {
-      logger.error(`${message} - Trace: ${trace}`);
-    },
-    warn(message: string) {
-      logger.warn(message);
-    },
-  });
+  app.use(new LoggerMiddleware().use);
 
   const configService = app.get(ConfigService);
 
@@ -86,7 +78,6 @@ async function bootstrap() {
 
   // Để mở documentation thì dùng lệnh sau npx @compodoc/compodoc -p tsconfig.json -s
   // Rồi vào cổng http://localhost:8080/ để mở documentation
-
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory, {
     swaggerOptions: {
@@ -94,9 +85,10 @@ async function bootstrap() {
     },
   });
 
+  const logger = new Logger('Social-Network-SNET');
   await app.listen(configService.get<string>('PORT'), () => {
-    console.log(
-      `[Nest] Server running on port http://localhost:${configService.get<string>('PORT')}`,
+    logger.log(
+      `Server running on port http://localhost:${configService.get<string>('PORT')}`,
     );
   });
 }
