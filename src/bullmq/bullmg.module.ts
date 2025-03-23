@@ -5,18 +5,24 @@ import { BullMQController } from './bullmq.controller';
 import { BullModule } from '@nestjs/bullmq';
 import { BullMQService } from './bullmq.service';
 import { SendEmailProcessor } from './send-email.processor';
-import { NotiBirthdayProcessor } from './notification-birthday.processor';
+import { NotiSystemProcessor } from './noti-system.processor';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
 
 @Global()
 @Module({
   imports: [
     ConfigModule,
     RedisModule,
-    BullModule.registerQueue({ name: 'sendEmail' }),
-    BullModule.registerQueue({ name: 'notificationBirthdays' }),
+    BullModule.registerQueue({ name: 'send-email' }),
+    BullModule.registerQueue({ name: 'noti-birthday' }),
+    BullModule.registerQueue({ name: 'noti-system' }),
+    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([NotificationUser]),
   ],
   controllers: [BullMQController],
-  providers: [BullMQService, SendEmailProcessor, NotiBirthdayProcessor],
-  exports: [NotiBirthdayProcessor],
+  providers: [BullMQService, SendEmailProcessor, NotiSystemProcessor],
+  exports: [SendEmailProcessor, NotiSystemProcessor],
 })
 export class BullMQModule {}

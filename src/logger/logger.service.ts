@@ -46,6 +46,7 @@ export class LoggerService {
             role: { type: 'keyword' },
             deviceId: { type: 'keyword' },
             error: { type: 'object' },
+            metadata: { type: 'object' },
             environment: this.configService.get('NODE_ENV'),
             host: this.configService.get('HOST'),
           },

@@ -1,8 +1,10 @@
 import { NotificationType } from 'src/helper/notification.enum';
+import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -22,4 +24,7 @@ export class Notification {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @OneToMany(() => NotificationUser, (notificationUser) => notificationUser)
+  notificationUser: NotificationUser[];
 }

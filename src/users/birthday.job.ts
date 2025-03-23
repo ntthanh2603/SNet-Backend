@@ -10,8 +10,8 @@ import { Queue } from 'bullmq';
 export class BirthdayJob {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectQueue('notificationBirthdays') private notiQueue: Queue,
+    private readonly userRepository: Repository<User>,
+    @InjectQueue('noti-birthday') private notiQueue: Queue,
   ) {}
 
   @Cron('0 0 * * *') // Running every day at 00h00

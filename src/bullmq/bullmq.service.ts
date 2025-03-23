@@ -4,7 +4,7 @@ import { Queue } from 'bullmq';
 
 @Injectable()
 export class BullMQService {
-  constructor(@InjectQueue('sendEmail') private readonly queue: Queue) {}
+  constructor(@InjectQueue('send-email') private readonly queue: Queue) {}
 
   async push(name: string, data: any, opts?: any): Promise<void> {
     await this.queue.add(name, data, opts);

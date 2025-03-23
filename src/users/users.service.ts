@@ -39,7 +39,7 @@ export class UsersService {
     private redisService: RedisService,
     private diviceSessionsService: DeviceSessionsService,
     private readonly configService: ConfigService,
-    @InjectQueue('sendEmail')
+    @InjectQueue('send-email')
     private sendEmail: Queue,
     private readonly userSearchService: UserSearchService,
     @Inject(forwardRef(() => RelationsService))

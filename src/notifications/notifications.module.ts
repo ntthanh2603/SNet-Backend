@@ -4,13 +4,13 @@ import { NotificationController } from './notifications.controller';
 import { NotificationService } from './notifications.service';
 import { Notification } from './entities/notification.entity';
 import { ConfigModule } from '@nestjs/config';
-import { BullMQModule } from 'src/bullmq/bullmg.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([Notification]),
-    BullMQModule,
+    BullModule.registerQueue({ name: 'noti-system' }),
   ],
   controllers: [NotificationController],
   providers: [NotificationService],

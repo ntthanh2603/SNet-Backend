@@ -1,7 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
-@Processor('notificationBirthdays')
+@Processor('noti-birthday')
 export class NotiBirthdayProcessor extends WorkerHost {
   constructor() {
     super();
