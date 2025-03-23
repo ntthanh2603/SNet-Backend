@@ -1,23 +1,31 @@
+import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchTransport } from 'winston-elasticsearch';
 import * as winston from 'winston';
 import { Logger as LoggerCommon } from '@nestjs/common';
+
 @Injectable()
 export class LoggerService {
-  private readonly logger: winston.Logger;
   private readonly loggerCommon = new LoggerCommon(LoggerService.name);
+  private readonly transportsCache = new Map<string, ElasticsearchTransport>();
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {}
+
+  private createElasticsearchTransport(index: string): ElasticsearchTransport {
+    if (this.transportsCache.has(index)) {
+      return this.transportsCache.get(index);
+    }
+
     const esTransportOpts = {
       level: 'info',
       clientOpts: {
-        node: process.env.ELASTICSEARCH_HOSTS || 'http://localhost:9200',
+        node: this.configService.get('ELASTICSEARCH_HOSTS'),
         auth: {
-          username: process.env.ELASTICSEARCH_USERNAME || 'elastic',
-          password: process.env.ELASTICSEARCH_PASSWORD || 'tuanthanh',
+          username: this.configService.get('ELASTICSEARCH_USERNAME'),
+          password: this.configService.get('ELASTICSEARCH_PASSWORD'),
         },
       },
-      index: 'snet-system-logs',
+      index,
       mappingTemplate: {
         settings: {},
         mappings: {
@@ -25,7 +33,6 @@ export class LoggerService {
             '@timestamp': { type: 'date' },
             message: { type: 'text' },
             level: { type: 'keyword' },
-            timestamp: { type: 'date' },
             method: { type: 'keyword' },
             requestId: { type: 'keyword' },
             url: { type: 'keyword' },
@@ -39,16 +46,24 @@ export class LoggerService {
             role: { type: 'keyword' },
             deviceId: { type: 'keyword' },
             error: { type: 'object' },
-            environment: { type: 'keyword' },
-            host: { type: 'keyword' },
+            environment: this.configService.get('NODE_ENV'),
+            host: this.configService.get('HOST'),
           },
         },
       },
     };
 
     const esTransport = new ElasticsearchTransport(esTransportOpts);
+    this.transportsCache.set(index, esTransport);
 
-    this.logger = winston.createLogger({
+    esTransport.on('error', (error) => {
+      console.error('Error in Elasticsearch transport:', error);
+    });
+    return esTransport;
+  }
+
+  private getLogger(index: string): winston.Logger {
+    return winston.createLogger({
       level: 'info',
       format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }),
@@ -58,34 +73,22 @@ export class LoggerService {
           return info;
         })(),
       ),
-      transports: [
-        // new winston.transports.Console({
-        //   format: winston.format.combine(
-        //     winston.format.colorize(),
-        //     winston.format.simple(),
-        //   ),
-        // }),
-        esTransport,
-      ],
-    });
-
-    esTransport.on('error', (error) => {
-      console.error('Error in Elasticsearch transport:', error);
+      transports: [this.createElasticsearchTransport(index)],
     });
   }
 
-  log(message: string, context?: Record<string, any>) {
-    this.logger.info({ message, ...context });
-    this.loggerCommon.log({ message, ...context });
+  log(context?: Record<string, any>, index = 'snet-system-logs') {
+    this.getLogger(index).info(context);
+    this.loggerCommon.log(JSON.stringify(context));
   }
 
-  warn(message: string, context?: Record<string, any>) {
-    this.logger.warn({ message, ...context });
-    this.loggerCommon.warn({ message, ...context });
+  warn(context?: Record<string, any>, index = 'snet-system-logs') {
+    this.getLogger(index).warn(context);
+    this.loggerCommon.warn(JSON.stringify(context));
   }
 
-  error(message: string, context?: Record<string, any>) {
-    this.logger.error({ message, ...context });
-    this.loggerCommon.error({ message, ...context });
+  error(context?: Record<string, any>, index = 'snet-system-logs') {
+    this.getLogger(index).error(context);
+    this.loggerCommon.error(JSON.stringify(context));
   }
 }
