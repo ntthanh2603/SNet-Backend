@@ -11,7 +11,7 @@ import { AddAdminDto } from './dto/add-admin.dto';
 @UseGuards(AdminGuard)
 export class AdminsController {
   constructor(private readonly adminsService: AdminsService) {}
-  @Post('addAdmin')
+  @Post('add-admin')
   @ApiOperation({ summary: 'Admin: Add Admin' })
   addAdmin(@Admin() admin: IAdmin, @Body() dto: AddAdminDto) {
     return this.adminsService.addAdmin(admin, dto);

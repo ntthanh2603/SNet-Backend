@@ -11,12 +11,12 @@ import { Repository } from 'typeorm';
 import { IUser } from 'src/users/users.interface';
 import { LoginMetaData } from 'src/users/users.controller';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import addDay from 'src/helper/addDay';
 import { randomUUID } from 'crypto';
 import * as randomatic from 'randomatic';
 import { RoleType } from 'src/helper/role.enum';
 import { UsersService } from 'src/users/users.service';
+import { AuthService } from 'src/auth/auth.service';
 
 export interface ISession {
   userId: string;
@@ -34,9 +34,10 @@ export class DeviceSessionsService {
     @InjectRepository(DeviceSession)
     private repository: Repository<DeviceSession>,
     private configService: ConfigService,
-    private jwtService: JwtService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   async logout(user: IUser, device_id: string) {
@@ -55,25 +56,6 @@ export class DeviceSessionsService {
 
   async findOne(deviceSecssionId: string) {
     return await this.repository.findOne({ where: { id: deviceSecssionId } });
-  }
-
-  generateAccessToken(payload: any, secretKey: string) {
-    const accessToken = this.jwtService.sign(payload, {
-      secret: secretKey,
-      expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRE'),
-    });
-
-    return accessToken;
-  }
-
-  handleVerifyToken(token: string) {
-    try {
-      return this.jwtService.verify(token, {
-        secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-      });
-    } catch {
-      throw new UnauthorizedException('Token invalid');
-    }
   }
 
   async reAuth(_refresh_token: string, device_id: string) {
@@ -99,7 +81,7 @@ export class DeviceSessionsService {
     };
 
     const [accessToken, refresh_token, expired_at] = [
-      this.generateAccessToken(payload, secretKey),
+      this.authService.generateAccessToken(payload, secretKey),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];
@@ -134,7 +116,7 @@ export class DeviceSessionsService {
     const secretKey = randomatic('A0', 16);
 
     const [accessToken, refreshToken, expiredAt] = [
-      this.generateAccessToken(payload, secretKey),
+      this.authService.generateAccessToken(payload, secretKey),
       randomatic('Aa0', 64),
       addDay(this.configService.get<number>('JWT_REFRESH_EXPIRE_DAY')),
     ];
