@@ -5,28 +5,17 @@ import { DeviceSessionsController } from './device-sessions.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DeviceSession } from './entities/device-session.entity';
 import { UsersModule } from 'src/users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ActivateGateway } from './activate.gateway';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([DeviceSession]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_ACCESS_EXPIRE'),
-        },
-      }),
-      inject: [ConfigService],
-    }),
     forwardRef(() => UsersModule),
+    forwardRef(() => AuthModule),
     RedisModule,
   ],
   controllers: [DeviceSessionsController],
-  providers: [DeviceSessionsService, ActivateGateway],
+  providers: [DeviceSessionsService],
   exports: [DeviceSessionsService],
 })
 export class DeviceSessionsModule {}

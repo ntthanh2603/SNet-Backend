@@ -5,11 +5,11 @@ import { UserSearchDto } from './dto/user-search.dto';
 import { ResponseMessage } from 'src/decorator/customize';
 
 @ApiTags('Search Engine')
-@Controller('searchEngine')
+@Controller('search-engine')
 export class SearchEngineController {
   constructor(private readonly userSearchService: UserSearchService) {}
 
-  @Get('searchUser')
+  @Get('search-user')
   @ResponseMessage('Search user full text success')
   @ApiOperation({ summary: 'Search user full text' })
   async searchUsers(@Query() searchDto: UserSearchDto) {
