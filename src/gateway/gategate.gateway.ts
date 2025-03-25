@@ -9,9 +9,8 @@ import {
   MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { AuthService } from 'src/auth/auth.service';
-import { AuthMiddlewareGateway } from 'src/middleware/auth.middleware.gateway';
 import { RedisService } from 'src/redis/redis.service';
+import { WsAuthMiddleware } from './ws-auth.middleware';
 
 @WebSocketGateway({
   cors: true,
@@ -25,15 +24,14 @@ export class GatewayGateway
   server: Server;
 
   constructor(
-    private readonly authService: AuthService,
     private readonly redisService: RedisService,
-    private readonly authMiddleware: AuthMiddlewareGateway,
+    private readonly wsAuthMiddleware: WsAuthMiddleware,
   ) {}
 
   afterInit() {
     console.log('WebSocket initialized');
     this.server.use((socket: Socket, next) =>
-      this.authMiddleware.use(socket, next),
+      this.wsAuthMiddleware.use(socket, next),
     );
   }
 

@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
-export class AuthMiddlewareGateway implements NestMiddleware {
+export class WsAuthMiddleware implements NestMiddleware {
   constructor(private readonly authService: AuthService) {}
   async use(socket: Socket, next: (err?: any) => void) {
     const authToken: any = socket.handshake.headers.authorization;
