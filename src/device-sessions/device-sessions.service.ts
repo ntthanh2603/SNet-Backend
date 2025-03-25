@@ -40,6 +40,13 @@ export class DeviceSessionsService {
     private readonly authService: AuthService,
   ) {}
 
+  async getSecret(userId: string, deviceSecssionId: string) {
+    const deviceSeccion = await this.repository.findOne({
+      where: { device_id: deviceSecssionId, user: { id: userId } },
+    });
+    return deviceSeccion?.secret_key;
+  }
+
   async logout(user: IUser, device_id: string) {
     const userDb = await this.usersService.findUserById(user.id);
 

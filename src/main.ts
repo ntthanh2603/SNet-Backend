@@ -1,7 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { NestExpressApplication } from '@nestjs/platform-express';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './core/transform.interceptor';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
@@ -12,9 +11,7 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: ['error', 'warn', 'log'],
-  });
+  const app = await NestFactory.create(AppModule);
 
   app.use(new LoggerMiddleware().use);
 
@@ -56,7 +53,8 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Allow send cookie and Authorization header
   });
 
   // Config swagger

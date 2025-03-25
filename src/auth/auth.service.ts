@@ -11,15 +11,32 @@ export class AuthService {
     @Inject(forwardRef(() => DeviceSessionsService))
     private readonly deviceSessionsService: DeviceSessionsService,
   ) {}
-  verify(token: string) {
+
+  /**
+   * Verify a given JWT token, using the secret key from the associated device session.
+   *
+   * @param token The JWT token to verify.
+   * @returns The decoded payload if the token is valid.
+   * @throws An error if the token is invalid or cannot be decoded.
+   */
+
+  async verify(token: string) {
     try {
+      // Decode token
       const decoded = this.jwtService.decode(token);
-      if (!decoded) {
-        throw new Error('Invalid token');
-      }
-      return decoded;
+
+      // Get secret key from device session
+      const secret = await this.deviceSessionsService.getSecret(
+        decoded.id,
+        decoded.deviceSecssionid,
+      );
+
+      // Return payload if valid token
+      return this.jwtService.verify(token, {
+        secret: secret,
+      });
     } catch (error) {
-      throw new Error(`Failed to decode token: ${error.message}`);
+      throw new Error(`Failed to verify token: ${error.message}`);
     }
   }
 

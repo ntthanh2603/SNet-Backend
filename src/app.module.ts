@@ -30,6 +30,7 @@ import { ParentChildCommentsModule } from './parent-child-comments/parent-child-
 import { SearchEngineModule } from './search-engine/search-engine.module';
 import { AdminsModule } from './admins/admins.module';
 import { LoggerModule } from './logger/logger.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -117,6 +118,7 @@ import { LoggerModule } from './logger/logger.module';
     SearchEngineModule,
     AdminsModule,
     LoggerModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [
