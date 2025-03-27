@@ -6,21 +6,32 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  JoinColumn,
+  Index,
 } from 'typeorm';
 
 @Entity()
+@Index(['request_side_id', 'accept_side_id'], { unique: true })
 export class Relation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, (user) => user.request_side)
+  @Column()
+  request_side_id: string;
+
+  @Column()
+  accept_side_id: string;
+
+  @ManyToOne(() => User, (user) => user.sent_relations)
+  @JoinColumn({ name: 'request_side_id' })
   request_side: User;
 
-  @ManyToOne(() => User, (user) => user.accept_side)
+  @ManyToOne(() => User, (user) => user.received_relations)
+  @JoinColumn({ name: 'accept_side_id' })
   accept_side: User;
 
   @Column({ type: 'enum', enum: RelationType })
-  relation: RelationType; // Relation Type (Friend, Blocked, Following)
+  relation_type: RelationType;
 
   @CreateDateColumn()
   created_at: Date;

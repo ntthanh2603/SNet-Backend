@@ -1,16 +1,22 @@
 import { Notification } from 'src/notifications/entities/notification.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class NotificationUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Notification, (notification) => notification.id)
+  @Column()
   notification_id: string;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @Column()
   user_id: string;
 
   @Column({ default: false })
@@ -18,4 +24,15 @@ export class NotificationUser {
 
   @Column({ default: false })
   is_read: boolean;
+
+  @ManyToOne(
+    () => Notification,
+    (notification) => notification.notification_user,
+  )
+  @JoinColumn({ name: 'notification_id' })
+  notification: Notification;
+
+  @ManyToOne(() => User, (user) => user.notification_users)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

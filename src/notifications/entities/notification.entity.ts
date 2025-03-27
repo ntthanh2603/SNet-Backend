@@ -19,12 +19,15 @@ export class Notification {
   @Column({ default: null })
   message: string;
 
-  @Column({ enum: NotificationType })
+  @Column({ type: 'enum', enum: NotificationType })
   notification_type: NotificationType;
 
   @CreateDateColumn()
   created_at: Date;
 
-  @OneToMany(() => NotificationUser, (notificationUser) => notificationUser)
-  notificationUser: NotificationUser[];
+  @OneToMany(
+    () => NotificationUser,
+    (notificationUser) => notificationUser.notification,
+  )
+  notification_user: NotificationUser[];
 }

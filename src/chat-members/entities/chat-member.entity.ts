@@ -1,14 +1,23 @@
+import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import { RoleType } from 'src/helper/role.enum';
-import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 export class ChatMember {
-  @Index()
-  @PrimaryColumn()
-  room_id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Index()
-  @PrimaryColumn()
+  @Column()
+  chat_room_id: string;
+
+  @Column()
   user_id: string;
 
   @Column({
@@ -17,4 +26,12 @@ export class ChatMember {
     default: RoleType.USER,
   })
   role: RoleType;
+
+  @ManyToOne(() => User, (user) => user.chat_members)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.chat_members)
+  @JoinColumn({ name: 'chat_room_id' })
+  chat_room: ChatRoom;
 }

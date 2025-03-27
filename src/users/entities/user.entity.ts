@@ -1,4 +1,7 @@
 import { MaxLength, MinLength } from 'class-validator';
+import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
+import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
+import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import { DeviceSession } from 'src/device-sessions/entities/device-session.entity';
 import { GenderType } from 'src/helper/gender.enum';
 import { PrivacyType } from 'src/helper/privacy.enum';
@@ -28,31 +31,31 @@ export class User {
   @MaxLength(15)
   password: string;
 
-  @Column({ default: null })
+  @Column({ nullable: true })
   avatar: string;
 
   @Column()
   username: string;
 
-  @Column({ default: null })
+  @Column({ nullable: true })
   bio: string;
 
-  @Column({ default: null })
+  @Column({ nullable: true })
   website: string;
 
-  @Column({ default: null })
+  @Column({ nullable: true })
   birthday: Date;
 
-  @Column({ type: 'enum', enum: GenderType, default: null })
+  @Column({ type: 'enum', enum: GenderType, nullable: true })
   gender: GenderType;
 
-  @Column({ default: null })
+  @Column({ nullable: true })
   address: string;
 
   @Column({ type: 'enum', enum: PrivacyType, default: PrivacyType.PUBLIC })
   privacy: PrivacyType;
 
-  @Column({ default: null })
+  @Column({ nullable: true })
   last_active: Date;
 
   @Column({
@@ -68,31 +71,36 @@ export class User {
   @Column({ type: 'text', array: true, default: () => "'{}'" })
   education: string[];
 
-  @Column({
-    type: 'enum',
-    enum: RoleType,
-    default: RoleType.USER,
-  })
+  @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
   role: RoleType;
 
   @CreateDateColumn()
   created_at: Date;
 
-  @UpdateDateColumn({ default: null })
+  @UpdateDateColumn({ nullable: true })
   updated_at: Date;
 
   @OneToMany(() => DeviceSession, (deviceSession) => deviceSession.user)
-  deviceSession: DeviceSession[];
+  device_sessions: DeviceSession[];
 
   @OneToMany(() => Relation, (relation) => relation.request_side)
-  request_side: Relation[];
+  sent_relations: Relation[];
 
   @OneToMany(() => Relation, (relation) => relation.accept_side)
-  accept_side: Relation[];
+  received_relations: Relation[];
 
   @OneToMany(
     () => NotificationUser,
-    (notification_user) => notification_user.id,
+    (notification_user) => notification_user.user,
   )
-  notification_user: NotificationUser[];
+  notification_users: NotificationUser[];
+
+  @OneToMany(() => ChatRoom, (chatRoom) => chatRoom.user)
+  chat_rooms: ChatRoom[];
+
+  @OneToMany(() => ChatMember, (chatMember) => chatMember.user)
+  chat_members: ChatMember[];
+
+  @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.user)
+  chat_messages: ChatMessage[];
 }

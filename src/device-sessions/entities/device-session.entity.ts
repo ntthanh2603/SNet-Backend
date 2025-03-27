@@ -33,6 +33,6 @@ export class DeviceSession {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => User, (user) => user.deviceSession)
+  @ManyToOne(() => User, (user) => user.device_sessions)
   user: User;
 }

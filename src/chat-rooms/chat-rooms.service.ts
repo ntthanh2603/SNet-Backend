@@ -47,7 +47,7 @@ export class ChatRoomsService {
   async update(dto: UpdateChatRoomDto, user: IUser) {
     const room = await this.findRoomChat(dto.id);
 
-    if (!room || room.user_id !== user.id) {
+    if (!room || room.created_by !== user.id) {
       return {
         message:
           'Không tìm thấy phòng chat hoặc bạn không có quyền cập nhật đoạn chat này',
@@ -63,7 +63,7 @@ export class ChatRoomsService {
   async delete(id: string, user: IUser) {
     const room = await this.findRoomChat(id);
 
-    if (!room || room.user_id !== user.id) {
+    if (!room || room.created_by !== user.id) {
       throw new NotFoundException(
         'Không tìm thấy phòng chat hoặc bạn không có quyền xóa đoạn chat này',
       );

@@ -33,7 +33,7 @@ export class RelationsController {
   @ApiOperation({
     summary: `Get list relation ['friend', 'following', 'block'] of user`,
   })
-  async friends(
+  async getListRelation(
     @User() user: IUser,
     @Param() params: RelationDto,
     @Query('page') page: number = 1,

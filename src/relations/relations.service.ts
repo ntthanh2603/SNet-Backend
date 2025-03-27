@@ -18,37 +18,56 @@ import { UpdateRelationDto } from './dto/update-relation.dto';
 export class RelationsService {
   constructor(
     @InjectRepository(Relation)
-    private relationsRepository: Repository<Relation>,
+    private relationRepository: Repository<Relation>,
     private redisService: RedisService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 
   async getListRelation(
-    id: string,
+    userId: string,
     page: number,
     limit: number,
-    relation: RelationType,
+    relationType: RelationType,
   ) {
-    const skip = (page - 1) * limit;
-    const take = limit;
+    const offset = (page - 1) * limit;
 
-    const followedUsers = await this.relationsRepository.find({
-      where: {
-        request_side: { id },
-        relation: relation,
-      },
-      relations: ['accept_side'],
-      skip,
-      take,
+    // Kiểm tra user có tồn tại không
+    const exists = await this.relationRepository.count({
+      where: [{ request_side_id: userId }, { accept_side_id: userId }],
     });
 
-    return followedUsers.map((relation) => [
-      relation.accept_side.id,
-      relation.accept_side.username,
-      relation.accept_side.avatar,
-      relation.accept_side.bio,
-    ]);
+    if (!exists) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Truy vấn danh sách quan hệ
+    const relations = await this.relationRepository
+      .createQueryBuilder('relation')
+      .leftJoinAndSelect('relation.request_side', 'requestUser')
+      .leftJoinAndSelect('relation.accept_side', 'acceptUser')
+      .where(
+        'relation.request_side_id = :userId OR relation.accept_side_id = :userId',
+        { userId },
+      )
+      .andWhere('relation.relation_type = :relationType', { relationType })
+      .skip(offset)
+      .take(limit)
+      .getMany();
+
+    return {
+      page,
+      limit,
+      total: relations.length,
+      data: relations.map((relation) => ({
+        id: relation.id,
+        relation_type: relation.relation_type,
+        user:
+          relation.request_side_id === userId
+            ? relation.accept_side
+            : relation.request_side,
+      })),
+    };
   }
 
   async getRelation(id: string, id_other: string): Promise<RelationType> {
@@ -57,43 +76,34 @@ export class RelationsService {
       throw new NotFoundException('User does not exist');
     }
 
-    const relation = await this.relationsRepository.findOne({
+    const relation = await this.relationRepository.findOne({
       where: {
-        request_side: { id: id },
-        accept_side: { id: id_other },
+        request_side_id: id,
+        accept_side_id: id_other,
       },
     });
-    return relation.relation;
+    return relation?.relation_type || RelationType.NONE;
   }
 
-  /**
-   * Update the relation between 2 users
-   * @param user The user who made the request
-   * @param dto The data transfer object containing the updated relation
-   * @returns A message indicating successful update
-   * @throws NotFoundException if the user does not exist
-   * @throws BadRequestException if the input is incorrect
-   */
   async updateRelation(user: IUser, dto: UpdateRelationDto) {
-    const requestUser = await this.usersService.findUserById(user.id);
     const acceptUser = await this.usersService.findUserById(dto.user_id);
-    if (!requestUser || !acceptUser) {
+    if (!acceptUser) {
       throw new NotFoundException('User does not exist');
     }
 
     // Relation requestUser -> acceptUser
-    const relationRequestAccept = await this.relationsRepository.findOne({
+    const relationRequestAccept = await this.relationRepository.findOne({
       where: {
-        request_side: { id: requestUser.id },
-        accept_side: { id: acceptUser.id },
+        request_side_id: user.id,
+        accept_side_id: dto.user_id,
       },
     });
 
     // Relation acceptUser -> requestUser
-    const relationAcceptRequest = await this.relationsRepository.findOne({
+    const relationAcceptRequest = await this.relationRepository.findOne({
       where: {
-        request_side: { id: acceptUser.id },
-        accept_side: { id: requestUser.id },
+        request_side_id: dto.user_id,
+        accept_side_id: user.id,
       },
     });
 
@@ -103,19 +113,19 @@ export class RelationsService {
     switch (true) {
       // RequestUser -> acceptUser relation friend
       case relationNew === RelationType.FRIEND &&
-        relationAcceptRequest?.relation === RelationType.FOLLOWING &&
+        relationAcceptRequest?.relation_type === RelationType.FOLLOWING &&
         !relationRequestAccept:
         // Update relation acceptUser -> requestUser
-        await this.relationsRepository.save({
-          request_side: { id: acceptUser.id },
-          accept_side: { id: requestUser.id },
+        await this.relationRepository.save({
+          request_side_id: dto.user_id,
+          accept_side_id: user.id,
           relation: RelationType.FRIEND,
         });
 
         // Create relation requestUser -> acceptUser
-        await this.relationsRepository.save({
-          request_side: { id: requestUser.id },
-          accept_side: { id: acceptUser.id },
+        await this.relationRepository.save({
+          request_side_id: user.id,
+          accept_side_id: dto.user_id,
           relation: RelationType.FRIEND,
         });
         break;
@@ -124,42 +134,40 @@ export class RelationsService {
       case relationNew === RelationType.FOLLOWING &&
         !relationRequestAccept &&
         !relationAcceptRequest:
-        const relationFollowing = this.relationsRepository.create({
-          request_side: { id: requestUser.id },
-          accept_side: { id: acceptUser.id },
+        await this.relationRepository.save({
+          request_side_id: user.id,
+          accept_side_id: dto.user_id,
           relation: RelationType.FOLLOWING,
         });
-
-        await this.relationsRepository.save(relationFollowing);
 
         break;
 
       // RequestUser -> acceptUser does not exits relation
       case relationNew === RelationType.NONE &&
-        (relationRequestAccept?.relation === RelationType.FRIEND ||
-          relationRequestAccept?.relation === RelationType.FOLLOWING ||
-          relationAcceptRequest?.relation === RelationType.FRIEND ||
-          relationAcceptRequest?.relation === RelationType.FOLLOWING):
-        await this.relationsRepository.delete({
-          request_side: requestUser,
-          accept_side: acceptUser,
+        (relationRequestAccept?.relation_type === RelationType.FRIEND ||
+          relationRequestAccept?.relation_type === RelationType.FOLLOWING ||
+          relationAcceptRequest?.relation_type === RelationType.FRIEND ||
+          relationAcceptRequest?.relation_type === RelationType.FOLLOWING):
+        await this.relationRepository.delete({
+          request_side_id: user.id,
+          accept_side_id: dto.user_id,
         });
-        await this.relationsRepository.delete({
-          request_side: acceptUser,
-          accept_side: requestUser,
+        await this.relationRepository.delete({
+          request_side_id: dto.user_id,
+          accept_side_id: user.id,
         });
         break;
 
       // RequestUser -> acceptUser relation block
       case relationNew === RelationType.BLOCK:
-        await this.relationsRepository.update(
-          { request_side: requestUser, accept_side: acceptUser },
-          { relation: RelationType.BLOCK },
+        await this.relationRepository.update(
+          { request_side_id: user.id, accept_side_id: dto.user_id },
+          { relation_type: RelationType.BLOCK },
         );
 
-        await this.relationsRepository.delete({
-          request_side: acceptUser,
-          accept_side: requestUser,
+        await this.relationRepository.delete({
+          request_side_id: dto.user_id,
+          accept_side_id: user.id,
         });
         break;
 
