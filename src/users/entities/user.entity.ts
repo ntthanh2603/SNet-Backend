@@ -2,13 +2,16 @@ import { MaxLength, MinLength } from 'class-validator';
 import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
 import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 import { DeviceSession } from 'src/device-sessions/entities/device-session.entity';
 import { GenderType } from 'src/helper/gender.enum';
 import { PrivacyType } from 'src/helper/privacy.enum';
 import { RoleType } from 'src/helper/role.enum';
 import { UserCategoryType } from 'src/helper/user-category.enum';
 import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
+import { Post } from 'src/posts/entities/post.entity';
 import { Relation } from 'src/relations/entities/relation.entity';
+import { SaveList } from 'src/save-lists/entities/save-list.entity';
 import {
   Column,
   CreateDateColumn,
@@ -103,4 +106,13 @@ export class User {
 
   @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.user)
   chat_messages: ChatMessage[];
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
+
+  @OneToMany(() => SaveList, (saveList) => saveList.user)
+  save_lists: SaveList[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 }
