@@ -9,6 +9,7 @@ import { NotiSystemProcessor } from './noti-system.processor';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
+import { GatewayModule } from 'src/gateway/gateway.module';
 
 @Global()
 @Module({
@@ -20,6 +21,7 @@ import { NotificationUser } from 'src/notification-users/entities/notification-u
     BullModule.registerQueue({ name: 'noti-system' }),
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([NotificationUser]),
+    GatewayModule,
   ],
   controllers: [BullMQController],
   providers: [BullMQService, SendEmailProcessor, NotiSystemProcessor],

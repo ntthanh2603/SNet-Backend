@@ -32,7 +32,11 @@ export class NotificationService {
     // Notification for all user
     this.notiQueue.add(
       'system',
-      { notification_id: notification.id },
+      {
+        notification_id: notification.id,
+        title: dto.title,
+        message: dto.message,
+      },
       { removeOnComplete: true },
     );
     // Log

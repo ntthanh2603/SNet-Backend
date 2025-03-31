@@ -7,5 +7,6 @@ import { WsAuthMiddleware } from './ws-auth.middleware';
 @Module({
   imports: [AuthModule],
   providers: [GatewayService, GatewayGateway, WsAuthMiddleware],
+  exports: [GatewayGateway],
 })
 export class GatewayModule {}

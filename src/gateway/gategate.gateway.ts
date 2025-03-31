@@ -11,6 +11,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RedisService } from 'src/redis/redis.service';
 import { WsAuthMiddleware } from './ws-auth.middleware';
+import { INotiUser } from 'src/notifications/notification.interface';
+
 /*
     Client -->|Gửi tin| Redis;
     Redis -->|Phản hồi nhanh| Client;
@@ -46,6 +48,7 @@ export class GatewayGateway
   // Handle connection
   async handleConnection(socket: Socket) {
     // Increase connection number
+    socket.join(socket.data.user.id);
     await this.redisService.incr(`connection_number:${socket.data.user.id}`);
   }
 
@@ -62,6 +65,11 @@ export class GatewayGateway
     } else {
       await this.redisService.decr(`connection_number:${socket.data.user.id}`);
     }
+  }
+
+  // Send notification
+  async sendNotification(noti: INotiUser) {
+    this.server.to(noti.user_id).emit('notification', noti);
   }
 
   // Join a chat room
@@ -92,33 +100,4 @@ export class GatewayGateway
     socket.leave(roomId);
     console.log(`User ${socket.data.user.id} left room ${roomId}`);
   }
-
-  // Send a message to a chat room
-  @SubscribeMessage('sendMessage')
-  async handleSendMessage(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() payload: MessagePayload,
-  ) {
-    const { roomId, content } = payload;
-    const userId = socket.data.user.id;
-
-    // Create message object
-    const message = {
-      senderId: userId,
-      content,
-      timestamp: new Date().toISOString(),
-    };
-
-    // Sava message to Redis
-    await this.redisService.rPush(`chat:${roomId}`, JSON.stringify(message));
-
-    // Broadcast message to all clients in the room
-    this.server.to(roomId).emit('newMessage', message);
-    console.log(`Message sent to room ${roomId}: ${content}`);
-  }
-}
-
-interface MessagePayload {
-  roomId: string;
-  content: string;
 }
