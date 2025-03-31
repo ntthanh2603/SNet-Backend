@@ -80,7 +80,7 @@ export class GatewayGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() body: object,
   ) {
-    this.notificationUsersService.readNotification(
+    this.notificationUsersService.readNoti(
       socket.data.user.id,
       body['noti_user_id'],
     );
