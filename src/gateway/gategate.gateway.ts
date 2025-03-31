@@ -1,3 +1,4 @@
+import { NotificationUsersService } from './../notification-users/notification-users.service';
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -35,6 +36,7 @@ export class GatewayGateway
   constructor(
     private readonly redisService: RedisService,
     private readonly wsAuthMiddleware: WsAuthMiddleware,
+    private readonly notificationUsersService: NotificationUsersService,
   ) {}
 
   // Initialize WebSocket
@@ -70,6 +72,18 @@ export class GatewayGateway
   // Send notification
   async sendNotification(noti: INotiUser) {
     this.server.to(noti.user_id).emit('notification', noti);
+  }
+
+  // User read notification
+  @SubscribeMessage('readNotification')
+  handleReadNotification(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: object,
+  ) {
+    this.notificationUsersService.readNotification(
+      socket.data.user.id,
+      body['noti_user_id'],
+    );
   }
 
   // Join a chat room

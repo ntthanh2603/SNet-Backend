@@ -49,13 +49,14 @@ export class NotiSystemProcessor extends WorkerHost {
         notificationUser.id = uuidv4();
         notificationUser.notification_id = notification_id;
         notificationUser.user_id = user.id;
+        notificationUser.is_sent = false;
 
         // Check user status
         const userStatus = await this.redisService.get(
           `connection_number:${user.id}`,
         );
 
-        if (parseInt(userStatus) === 0) {
+        if (!userStatus || parseInt(userStatus) <= 0) {
           notificationUser.is_sent = false;
         } else {
           notificationUser.is_sent = true;
