@@ -19,6 +19,19 @@ export class NotificationService {
     private logger: LoggerService,
   ) {}
 
+  /**
+   * Creates a system notification and queues it for distribution to all users.
+   *
+   * This function generates a new notification entry with the details provided
+   * in the `CreateNotiSystemDto`, assigns it a unique ID, and categorizes it
+   * as a system notification. The notification is saved to the database, and
+   * a job is added to the notification queue to broadcast the notification to
+   * all users. Logs the creation of the notification with the admin's ID for
+   * auditing purposes.
+   *
+   * @param admin - The admin initiating the creation of the notification.
+   * @param dto - Data transfer object containing the title and message of the notification.
+   */
   async createNotiSystem(admin: IAdmin, dto: CreateNotiSystemDto) {
     // Create notification system
     const notification = new Notification();

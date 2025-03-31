@@ -4,6 +4,7 @@ import { Job } from 'bullmq';
 import { GatewayGateway } from 'src/gateway/gategate.gateway';
 import { LoggerService } from 'src/logger/logger.service';
 import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
+import { RedisService } from 'src/redis/redis.service';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,6 +18,7 @@ export class NotiSystemProcessor extends WorkerHost {
     private readonly notiUserRepository: Repository<NotificationUser>,
     private readonly logger: LoggerService,
     private readonly gatewayGateway: GatewayGateway,
+    private readonly redisService: RedisService,
   ) {
     super();
   }
@@ -48,16 +50,29 @@ export class NotiSystemProcessor extends WorkerHost {
         notificationUser.notification_id = notification_id;
         notificationUser.user_id = user.id;
 
-        await this.notiUserRepository.save(notificationUser);
+        // Check user status
+        const userStatus = await this.redisService.get(
+          `connection_number:${user.id}`,
+        );
 
-        this.gatewayGateway.sendNotification({
-          user_id: user.id,
-          noti_user_id: notificationUser.id,
-          notification_type: 'system',
-          title: job.data['title'],
-          message: job.data['message'],
-        });
+        if (parseInt(userStatus) === 0) {
+          notificationUser.is_sent = false;
+        } else {
+          notificationUser.is_sent = true;
+
+          // Send notification use socket
+          this.gatewayGateway.sendNotification({
+            user_id: user.id,
+            noti_user_id: notificationUser.id,
+            notification_type: 'system',
+            title: job.data['title'],
+            message: job.data['message'],
+          });
+        }
+        // Save notification in database
+        await this.notiUserRepository.save(notificationUser);
       });
+
       return;
     } catch (error) {
       this.logger.error({
