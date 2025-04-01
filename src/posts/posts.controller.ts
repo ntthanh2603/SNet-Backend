@@ -20,8 +20,8 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  @ResponseMessage('Tạo bài viết thành công')
-  @ApiOperation({ summary: 'Tạo bài viết' })
+  @ResponseMessage('Create post successfully')
+  @ApiOperation({ summary: 'Create post' })
   create(@User() user: IUser, @Body() createPostDto: CreatePostDto) {
     return this.postsService.create(user, createPostDto);
   }

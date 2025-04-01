@@ -44,7 +44,7 @@ export class LoggerService {
             responseTime: { type: 'long' },
             userId: { type: 'keyword' },
             role: { type: 'keyword' },
-            deviceId: { type: 'keyword' },
+            deviceSecssionId: { type: 'keyword' },
             error: { type: 'object' },
             metadata: { type: 'object' },
             environment: this.configService.get('NODE_ENV'),
