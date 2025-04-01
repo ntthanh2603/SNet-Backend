@@ -37,6 +37,10 @@ SNet is a powerful social networking platform built on modern technologies. The 
 └── .gitignore              # Block files when push github
 ```
 
+#### Model detect image 16+ [**click here**](https://github.com/ntthanh2603/ImageGuard.git)
+
+#### Database [**click here**](https://drive.google.com/file/d/1ZPQa1NhCKHPOJKAGEMPWNWbutVYLUWsU/view?usp=sharing)
+
 ## ⚙️ Installation and Setup
 
 ### Using Docker (Recommended)
