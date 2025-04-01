@@ -39,6 +39,8 @@ SNet is a powerful social networking platform built on modern technologies. The 
 
 #### Model detect image 16+ [**click here**](https://github.com/ntthanh2603/ImageGuard.git)
 
+#### Model AI segmentation analysis [**click here**](https://github.com/ntthanh2603/segmentation-analysis.git)
+
 #### Database [**click here**](https://drive.google.com/file/d/1ZPQa1NhCKHPOJKAGEMPWNWbutVYLUWsU/view?usp=sharing)
 
 ## ⚙️ Installation and Setup
