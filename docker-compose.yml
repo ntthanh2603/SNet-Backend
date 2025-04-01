@@ -70,8 +70,33 @@ services:
       - elasticsearch
     restart: unless-stopped
 
-  backend:
-    container_name: backend
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    ports:
+      - '8001:8000'
+    volumes:
+      - chromadb_data:/chroma/index
+    networks:
+      - app-network
+    restart: always
+
+  # backend-fastapi:
+  #   build:
+  #     context: ./fastapi-ai
+  #     dockerfile: Dockerfile
+  #   container_name: backend_fastapi
+  #   ports:
+  #     - '8000:8000'
+  #   depends_on:
+  #     - chromadb
+  #   networks:
+  #     - app-network
+  #   env_file:
+  #     - .env
+
+  backend-nestjs:
+    container_name: backend_nestjs
     build:
       context: .
       dockerfile: Dockerfile
@@ -132,6 +157,7 @@ networks:
         - subnet: 172.20.0.0/16
 
 volumes:
+  chromadb_data:
   postgres_data:
   redis_data:
   esdata:

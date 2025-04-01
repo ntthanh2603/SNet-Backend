@@ -26,18 +26,11 @@ export class PostsController {
     return this.postsService.create(user, createPostDto);
   }
 
-  @Get()
-  @ResponseMessage('Tìm kiếm tất cả bài viết thành công')
-  @ApiOperation({ summary: 'Tìm kiếm tất cả bài viết' })
-  findAll() {
-    return this.postsService.findAll();
-  }
-
   @Get(':id')
-  @ResponseMessage('Tìm kiếm bài viết thành công')
-  @ApiOperation({ summary: 'Tìm kiếm bài viết' })
+  @ResponseMessage('Find post by id successfully')
+  @ApiOperation({ summary: 'Find post by id' })
   findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+    return this.postsService.findOne(id);
   }
 
   @Patch('all')

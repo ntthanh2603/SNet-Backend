@@ -4,5 +4,7 @@
   "editor.formatOnPaste": true,
   "editor.formatOnType": true,
   "editor.tabSize": 2,
-  "editor.insertSpaces": true
+  "editor.insertSpaces": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "88"]
 }

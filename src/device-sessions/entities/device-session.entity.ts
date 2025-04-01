@@ -2,6 +2,7 @@ import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -33,6 +34,10 @@ export class DeviceSession {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @Column()
+  user_id: string;
+
   @ManyToOne(() => User, (user) => user.device_sessions)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

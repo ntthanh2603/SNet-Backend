@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+chromadb
+sentence-transformers
+numpy
+pydantic
+pyjwt
+python-jose[cryptography] 
+passlib
+sqlalchemy
+load_dotenv
+asyncpg
+black
