@@ -1,37 +1,50 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Request, UploadFile, File, Form
+from services.post import PostService
+from dto.create_post import CreatePostDto
+import os
+import shutil
+import json
 
 router = APIRouter()
 
+postService = PostService()
 
-class PostRequest(BaseModel):
-    post_id: str
-    text: str
+UPLOAD_DIR = "medias/"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@router.post("/createPosts")
-def create_post():
-    # add_post(body.post_id, body.text)
-    # return {"message": "Post added", "post_id": body.post_id}
-    return "hahaha"
+# @router.post("/create")
+# async def create_post(request: Request ,post: str , media: UploadFile = File(...)):
+#     post = json.loads(post)
+#     print(f"post: {post}")
+#     # Chuyển dictionary thành CreatePostDto
+#     post = CreatePostDto(**post)
 
-# @router.put("/posts/{post_id}")
-# def edit_post(post_id: str, body: PostRequest):
-#     if post_id != body.post_id:
-#         raise HTTPException(status_code=400, detail="Post ID mismatch")
-#     update_post(post_id, body.text)
-#     return {"message": "Post updated", "post_id": post_id}
+#     file_path = os.path.join(UPLOAD_DIR, media.filename)
+#     with open(file_path, "wb") as buffer:
+#         shutil.copyfileobj(media.file, buffer)
 
-# @router.get("/posts/search/")
-# def search(text: str, page: int = 1, page_size: int = 5):
-#     results = search_posts(text, page, page_size)
-#     return results
+#     embedding_post = await postService.create(request.state.user['id'], post)
+#     return embedding_post
 
-# @router.delete("/posts/{post_id}")
-# def delete(post_id: str):
-#     delete_post(post_id)
-#     return {"message": "Post deleted"}
+# @router.post("/create")
+# async def create_post(request: Request ,post: CreatePostDto , media: UploadFile = File(...)):
+#     print(f"request: {request.state.user}")
+#     print(f"post: {post['content']}")
+#     print(f"media: {media.filename}")
+ 
+#     return post
 
-# @router.post("/posts/recommend/")
-# def recommend(body: RecommendRequest):
-#     results = recommend_posts(body.embedding, body.n)
-#     return results
+@router.post("/create")
+async def create_post(request: Request ,post: str = Form(...),  ):
+    # post = post.dict()
+    post = json.loads(post)
+    print(f"request: {request.state.user}")
+    print(f"post: {post}")
+
+ 
+    return post
+
+@router.post("/test")
+async def create_post(request: Request ):
+    print(f"request: {request.body}")
+    return request.state.user

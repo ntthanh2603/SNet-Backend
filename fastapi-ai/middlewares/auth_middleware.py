@@ -16,8 +16,8 @@ async def auth_middleware(request: Request, call_next):
       return await call_next(request)
 
   # Get token from header
-  token = request.headers.get("Authorization")
-  
+  token = request.headers.get("authorization").split(" ")[1]
+
   if not token:
       return JSONResponse(
           status_code=status.HTTP_401_UNAUTHORIZED,

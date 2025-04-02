@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from models.device_session import DeviceSession
-from schemas.device_session import DeviceSessionCreate
 from sqlalchemy import text
 from database.base import get_db
 from fastapi import HTTPException
@@ -25,6 +24,7 @@ class DeviceSessionService:
 						status_code=404,
 						detail="Not found session login user"
 					)
+
 
 				# return secret_key
 				return device_session.secret_key

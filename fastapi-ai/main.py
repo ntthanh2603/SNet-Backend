@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from starlette.middleware.cors import CORSMiddleware
 from middlewares.auth_middleware import auth_middleware
 import os
@@ -7,11 +7,20 @@ import uvicorn
 from database.base import get_db
 import asyncio
 
-
 def create_application() -> FastAPI:
     # Create the FastAPI application
-    application = FastAPI()
-
+    application = FastAPI(
+        title='Social network SNet', docs_url="/docs", redoc_url='/re-docs',
+        openapi_url=f"{os.getenv('API_PREFIX', '')}/openapi.json",
+        description='''
+        API use FastAPI docs for Social network SNet:
+        - Posts.
+        - Recomendations.
+        - Search vector.
+        - Suggest user follow.
+        '''
+    )
+    
     application.middleware("http")(auth_middleware)
 
     application.add_middleware(

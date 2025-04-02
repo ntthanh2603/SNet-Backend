@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Request
-from middlewares.auth_middleware import auth_middleware
-from  api import api_posts 
+from fastapi import APIRouter
+from  api import api_posts, api_users 
 
 router = APIRouter()
 
-router.include_router(api_posts.router, tags=["posts"], prefix="")
+router.include_router(api_posts.router, tags=["posts"], prefix="/posts")
+router.include_router(api_users.router, tags=["users"], prefix="/users")
