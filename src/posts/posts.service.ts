@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { RedisService } from 'src/redis/redis.service';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { LoggerService } from 'src/logger/logger.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PostsService {
@@ -41,27 +42,38 @@ export class PostsService {
   }
 
   /**
-   * Creates a new post and saves it to the database.
-   * @param user The user who is creating the post.
-   * @param dto The data transfer object containing the post information.
-   * @returns A message indicating that the post was created successfully.
-   * @throws BadRequestException if the content and medias are both empty.
-   * @throws InternalServerErrorException if an error occurs during the creation process.
+   * Create a new post with the given content, medias and privacy.
+   *
+   * @param user The user who creates the post
+   * @param dto The create post dto
+   * @param file The uploaded medias
+   *
+   * @throws BadRequestException If the content and medias are empty
+   * @throws InternalServerErrorException If there is an error when creating the post
+   *
+   * @returns A message indicating that the post has been created successfully
    */
-  async create(user: IUser, dto: CreatePostDto) {
-    try {
-      if (!dto.content && !dto.medias)
-        throw new BadRequestException('Content and medias are required');
+  async create(user: IUser, dto: CreatePostDto, file: Express.Multer.File[]) {
+    // Check if content and medias are empty
+    if (!dto.content && !file)
+      throw new BadRequestException('Content and medias are required');
 
+    // Map path of file to string
+    const medias: string[] = file.map((f) => (f ? f.path : ''));
+
+    try {
+      // Create a new post
       const newPost = new Post();
+      newPost.id = uuidv4();
       newPost.user_id = user.id;
-      newPost.content = dto.content;
-      newPost.medias = dto.medias;
+      newPost.content = dto?.content;
+      newPost.medias = medias;
       newPost.privacy = dto.privacy;
       newPost.created_at = new Date();
 
       await this.repository.save(newPost);
 
+      // Log post in elasticsearch
       this.loggerServer.log(
         {
           message: 'Create post successfully',
@@ -70,8 +82,9 @@ export class PostsService {
           role: user.role,
           deviceId: user.deviceSecssionId,
           metadata: {
+            id: newPost.id,
             content: dto.content,
-            medias: dto.medias,
+            medias: medias,
             privacy: dto.privacy,
           },
         },
@@ -82,6 +95,7 @@ export class PostsService {
         message: 'Create post successfully',
       };
     } catch (err) {
+      // Log error in elasticsearch
       this.loggerServer.error(
         {
           message: 'Error when create post',
@@ -93,7 +107,7 @@ export class PostsService {
           deviceId: user.deviceSecssionId,
           metadata: {
             content: dto.content,
-            medias: dto.medias,
+            medias: medias,
             privacy: dto.privacy,
           },
         },

@@ -6,6 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  HttpStatus,
+  ParseFilePipeBuilder,
+  UploadedFiles,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -13,6 +17,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -22,8 +27,26 @@ export class PostsController {
   @Post()
   @ResponseMessage('Create post successfully')
   @ApiOperation({ summary: 'Create post' })
-  create(@User() user: IUser, @Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(user, createPostDto);
+  @UseInterceptors(FilesInterceptor('medias-posts', 10))
+  create(
+    @User() user: IUser,
+    @Body() createPostDto: CreatePostDto,
+    @UploadedFiles(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png|gif)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 1024 * 1024 * 10, // 10MB
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          fileIsRequired: false,
+        }),
+    )
+    file: Express.Multer.File[],
+  ) {
+    return this.postsService.create(user, createPostDto, file);
   }
 
   @Get(':id')
@@ -38,11 +61,6 @@ export class PostsController {
   @ApiOperation({ summary: 'Cập nhật bài viết' })
   @ApiBody({ type: UpdatePostDto })
   update(@User() user: IUser, dto: UpdatePostDto) {
-    // if (!isUUID(dto?.id))
-    //   throw new BadRequestException('Id does not type uuid');
-    console.log('=>> check');
-    console.log(dto);
-
     return this.postsService.update(user, dto);
   }
 

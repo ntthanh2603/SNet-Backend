@@ -1,3 +1,4 @@
+import { Hashtag } from './../../hashtags/entities/hashtag.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,
@@ -19,10 +20,10 @@ export class CreatePostDto {
 
   @IsOptional()
   @ApiProperty({
-    example: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
-    description: 'medias',
+    example: ['human', 'it', 'life'],
+    description: 'hashtags',
   })
-  medias: string[];
+  hashtags: string[];
 
   @IsEnum(PrivacyType)
   @IsNotEmpty()
