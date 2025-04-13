@@ -1,5 +1,5 @@
 import jwt 
-from models.user_interface import IUser
+from schemas.user_interface import IUser
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from services.device_session import DeviceSessionService

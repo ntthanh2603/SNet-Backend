@@ -10,6 +10,7 @@ import {
   HttpStatus,
   ParseFilePipeBuilder,
   UploadedFiles,
+  BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -18,6 +19,7 @@ import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { isUUID } from 'class-validator';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -52,8 +54,11 @@ export class PostsController {
   @Get(':id')
   @ResponseMessage('Find post by id successfully')
   @ApiOperation({ summary: 'Find post by id' })
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(id);
+  findOne(@Param('id') id: string, @User() user: IUser) {
+    if (!isUUID(id)) {
+      throw new BadRequestException(`Invalid ID format: ${id}`);
+    }
+    return this.postsService.findOne(user, id);
   }
 
   @Patch('all')

@@ -1,4 +1,3 @@
-import { Hashtag } from './../../hashtags/entities/hashtag.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,

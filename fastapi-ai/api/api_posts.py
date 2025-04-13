@@ -1,24 +1,13 @@
-from fastapi import APIRouter, Request, UploadFile, File, Form
+from fastapi import APIRouter
 from services.post import PostService
-from dto.create_post import CreatePostDto
-import os
-import shutil
-import json
+from schemas.id_request import IDRequest
 
 router = APIRouter()
 
 postService = PostService()
 
-UPLOAD_DIR = "medias/"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-@router.post("/create")
-async def create_post(request: Request ,post: str = Form(...),  media: UploadFile = File(...)):
-    post = json.loads(post)
-    # Transform to CreatePostDto
-    post = CreatePostDto(**post)
-
-    return await postService.create(request.state.user['id'], post, media)
-
+@router.post("/check-policy-for-post")
+async def check_policy_for_post(dto: IDRequest):
+    return await postService.check_policy_for_posts(dto.id)
 
 

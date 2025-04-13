@@ -4,13 +4,13 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional, Union, Dict, Any
 from helpers.embeddinh_type import EmbeddingType
-import os
-from models.paginated_query import PaginatedQuery
-from models.embedding_search_query import EmbeddingSearchQuery
+from core.settings import settings
+from schemas.paginated_query import PaginatedQuery
+from schemas.embedding_search_query import EmbeddingSearchQuery
 
 
 # Connect to ChromaDB
-chroma_client = chromadb.HttpClient(host=os.getenv('CHROMA_DB_HOST'), port=os.getenv('CHROMA_DB_PORT'))
+chroma_client = chromadb.HttpClient(host=settings.CHROMA_DB_HOST, port=settings.CHROMA_DB_PORT)
 collection = chroma_client.get_or_create_collection(name="posts")
 
 

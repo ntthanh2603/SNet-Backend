@@ -7,6 +7,7 @@ import { Post } from './entities/post.entity';
 import { RedisModule } from 'src/redis/redis.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MulterConfigService } from 'src/core/multer.config';
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),
+    BullModule.registerQueue({ name: 'create-posts' }),
   ],
   controllers: [PostsController],
   providers: [PostsService],

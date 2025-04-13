@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
 import { GatewayModule } from 'src/gateway/gateway.module';
+import { MediasPostsProcessor } from './medias-post.processor';
 
 @Global()
 @Module({
@@ -19,12 +20,18 @@ import { GatewayModule } from 'src/gateway/gateway.module';
     BullModule.registerQueue({ name: 'send-email' }),
     BullModule.registerQueue({ name: 'noti-birthday' }),
     BullModule.registerQueue({ name: 'noti-system' }),
+    BullModule.registerQueue({ name: 'create-posts' }),
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([NotificationUser]),
     GatewayModule,
   ],
   controllers: [BullMQController],
-  providers: [BullMQService, SendEmailProcessor, NotiSystemProcessor],
+  providers: [
+    BullMQService,
+    SendEmailProcessor,
+    NotiSystemProcessor,
+    MediasPostsProcessor,
+  ],
   exports: [SendEmailProcessor, NotiSystemProcessor],
 })
 export class BullMQModule {}

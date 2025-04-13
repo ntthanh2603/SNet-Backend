@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import datetime
 import uuid
 import enum
-from helpers.enum import PrivacyType
+from helpers.privacy_type import PrivacyType
 
 Base = declarative_base()
 

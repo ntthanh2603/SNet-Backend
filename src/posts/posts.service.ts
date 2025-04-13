@@ -13,6 +13,8 @@ import { RedisService } from 'src/redis/redis.service';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { LoggerService } from 'src/logger/logger.service';
 import { v4 as uuidv4 } from 'uuid';
+import { Queue } from 'bullmq';
+import { InjectQueue } from '@nestjs/bullmq';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +22,8 @@ export class PostsService {
     @InjectRepository(Post)
     private repository: Repository<Post>,
     private readonly redisService: RedisService,
+    @InjectQueue('create-posts')
+    private mediasPostsQueue: Queue,
     private readonly loggerServer: LoggerService,
   ) {}
 
@@ -59,7 +63,7 @@ export class PostsService {
       throw new BadRequestException('Content and medias are required');
 
     // Map path of file to string
-    const medias: string[] = file.map((f) => (f ? f.path : ''));
+    const medias: string[] = file.map((f) => (f ? f.filename : ''));
 
     try {
       // Create a new post
@@ -91,6 +95,17 @@ export class PostsService {
         'snet-system-logs-posts',
       );
 
+      // Add job to queue
+      this.mediasPostsQueue.add(
+        'create-posts',
+        {
+          ...newPost,
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: true,
+        },
+      );
       return {
         message: 'Create post successfully',
       };
@@ -123,7 +138,7 @@ export class PostsService {
     return `This action returns all posts`;
   }
 
-  findOne(id: string) {
+  findOne(user: IUser, id: string) {
     return `This action returns a #${id} post`;
   }
 

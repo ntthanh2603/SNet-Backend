@@ -9,8 +9,7 @@ class DeviceSessionBase(BaseModel):
     refresh_token: str
     expired_at: datetime
 
-class DeviceSessionCreate(DeviceSessionBase):
-     pass
+
 
 class DeviceSessionResponse(DeviceSessionBase):
     id: str

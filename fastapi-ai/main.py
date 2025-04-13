@@ -1,17 +1,17 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from middlewares.auth_middleware import auth_middleware
-import os
 from api.api_router import router
 import uvicorn
 from database.base import get_db
 import asyncio
+from core.settings import settings
 
 def create_application() -> FastAPI:
     # Create the FastAPI application
     application = FastAPI(
         title='Social network SNet', docs_url="/docs", redoc_url='/re-docs',
-        openapi_url=f"{os.getenv('API_PREFIX', '')}/openapi.json",
+        openapi_url=f"{settings.API_PREFIX}/openapi.json",
         description='''
         API use FastAPI docs for Social network SNet:
         - Posts.
@@ -30,7 +30,7 @@ def create_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    application.include_router(router, prefix=os.getenv('API_PREFIX', ''))
+    application.include_router(router, prefix=settings.API_PREFIX)
     return application
 
 app = create_application()
@@ -38,8 +38,8 @@ app = create_application()
 def main():
     config = uvicorn.Config(
         app=app,
-        host=os.getenv('HOST', '0.0.0.0'),
-        port=int(os.getenv('PORT', '8000')),
+        host=settings.HOST_FASTAPI,
+        port=int(settings.PORT_FASTAPI),
         reload=True
     )
   

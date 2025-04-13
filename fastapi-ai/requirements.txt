@@ -11,3 +11,9 @@ sqlalchemy
 load_dotenv
 asyncpg
 black
+ultralytics
+opencv-python
+opencv-python
+pydantic-settings
+aiohttp
+pillow
