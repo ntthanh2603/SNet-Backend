@@ -6,4 +6,4 @@ documentation/
 .tmp.driveupload/
 fastapi-ai/venv/
 __pycache__
-
+package-lock.json
