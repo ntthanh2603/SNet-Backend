@@ -17,7 +17,7 @@ RUN npm install -g @nestjs/cli
 COPY . .
 
 # Biên dịch ứng dụng NestJS
-# RUN npm run build
+# RUN npm run builda
 
 # Mở port mà ứng dụng NestJS sẽ chạy (ví dụ: 3000)
 # EXPOSE 3000

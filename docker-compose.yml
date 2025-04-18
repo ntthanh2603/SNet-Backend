@@ -144,6 +144,7 @@ services:
       - 8.8.4.4
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     networks:
       - app-network
     restart: unless-stopped
