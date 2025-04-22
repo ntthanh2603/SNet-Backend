@@ -250,27 +250,25 @@ export class UsersService {
    */
   async afterSignUp(dto: AfterSignUpDto) {
     try {
-      console.log('check 6');
       const otp = await this.redisService.get(`otp-code:${dto.email}`);
-      console.log('check 5');
+
       if (otp !== dto.otp)
         throw new BadRequestException('OTP code is incorrect or expired');
-      console.log('check 4');
+
       const hashPassword = this.getHashPassword(dto.password);
 
       const newUser = {
         email: dto.email,
         password: hashPassword,
-        avatar: dto.avatar,
+        avatar: dto?.avatar,
         username: dto.username,
-        bio: dto.bio,
-        website: dto.website,
-        birthday: dto.birthday,
-        gender: dto.gender,
-        address: dto.address,
+        bio: dto?.bio,
+        website: dto?.website,
+        birthday: dto?.birthday,
+        gender: dto?.gender,
+        address: dto?.address,
         privacy: PrivacyType.PUBLIC,
       };
-      console.log('check 3');
 
       const userDb = await this.usersRepository.save(newUser);
 
@@ -278,27 +276,23 @@ export class UsersService {
         id: userDb.id,
         email: userDb.email,
         username: userDb.username,
-        avatar: userDb.avatar,
-        bio: userDb.bio,
-        website: userDb.website,
-        gender: userDb.gender,
-        address: userDb.address,
-        birthday: userDb.birthday,
-        company: userDb.company,
-        education: userDb.education,
-        last_active: userDb.last_active,
-        user_category: userDb.user_category,
-        role: userDb.role,
+        avatar: userDb?.avatar,
+        bio: userDb?.bio,
+        website: userDb?.website,
+        gender: userDb?.gender,
+        address: userDb?.address,
+        birthday: userDb?.birthday,
+        company: userDb?.company,
+        education: userDb?.education,
+        last_active: userDb?.last_active,
+        user_category: userDb?.user_category,
+        role: userDb?.role,
         privacy: userDb.privacy,
         created_at: userDb.created_at,
         updated_at: userDb.updated_at,
       };
-      console.log('check 0');
 
-      const a = await this.userSearchService.indexUser(userSearch);
-      console.log(a);
-
-      console.log('check 1');
+      await this.userSearchService.indexUser(userSearch);
 
       await this.sendEmail.add(
         'sendOTP',
@@ -309,14 +303,12 @@ export class UsersService {
         },
         { removeOnComplete: true },
       );
-      console.log('check 2');
 
       await this.redisService.del(`otp-code:${dto.email}`);
 
       return { message: 'sign up successfully' };
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
-      console.log(err);
       throw new InternalServerErrorException();
     }
   }

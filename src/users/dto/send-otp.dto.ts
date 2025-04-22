@@ -10,14 +10,14 @@ import {
 export class SendOtpDto {
   @IsEmail()
   @IsString()
-  @IsNotEmpty({ message: 'Email not empty' })
+  @IsNotEmpty()
   @ApiProperty({ example: 'user@gmail.com', description: 'email' })
   email: string;
 
   @MinLength(2)
   @MaxLength(20)
   @IsString()
-  @IsNotEmpty({ message: 'Last username not empty' })
+  @IsNotEmpty()
   @ApiProperty({
     example: 'Nguyễn Tuấn Thành',
     description: 'Your last username',
