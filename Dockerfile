@@ -16,11 +16,5 @@ RUN npm install -g @nestjs/cli
 # Sao chép toàn bộ mã nguồn vào container
 COPY . .
 
-# Biên dịch ứng dụng NestJS
-# RUN npm run builda
-
-# Mở port mà ứng dụng NestJS sẽ chạy (ví dụ: 3000)
-# EXPOSE 3000
-
 # Chạy ứng dụng NestJS
 CMD ["npm", "run", "start:dev"]
