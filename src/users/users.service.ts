@@ -260,13 +260,13 @@ export class UsersService {
       const newUser = {
         email: dto.email,
         password: hashPassword,
-        avatar: dto.avatar,
+        avatar: dto?.avatar,
         username: dto.username,
-        bio: dto.bio,
-        website: dto.website,
-        birthday: dto.birthday,
-        gender: dto.gender,
-        address: dto.address,
+        bio: dto?.bio,
+        website: dto?.website,
+        birthday: dto?.birthday,
+        gender: dto?.gender,
+        address: dto?.address,
         privacy: PrivacyType.PUBLIC,
       };
 
@@ -276,17 +276,17 @@ export class UsersService {
         id: userDb.id,
         email: userDb.email,
         username: userDb.username,
-        avatar: userDb.avatar,
-        bio: userDb.bio,
-        website: userDb.website,
-        gender: userDb.gender,
-        address: userDb.address,
-        birthday: userDb.birthday,
-        company: userDb.company,
-        education: userDb.education,
-        last_active: userDb.last_active,
-        user_category: userDb.user_category,
-        role: userDb.role,
+        avatar: userDb?.avatar,
+        bio: userDb?.bio,
+        website: userDb?.website,
+        gender: userDb?.gender,
+        address: userDb?.address,
+        birthday: userDb?.birthday,
+        company: userDb?.company,
+        education: userDb?.education,
+        last_active: userDb?.last_active,
+        user_category: userDb?.user_category,
+        role: userDb?.role,
         privacy: userDb.privacy,
         created_at: userDb.created_at,
         updated_at: userDb.updated_at,
@@ -309,7 +309,6 @@ export class UsersService {
       return { message: 'sign up successfully' };
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
-      console.log(err);
       throw new InternalServerErrorException();
     }
   }

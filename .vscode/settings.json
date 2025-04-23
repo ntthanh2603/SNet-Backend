@@ -5,6 +5,7 @@
   "editor.formatOnType": true,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
+  "files.eol": "\n",
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": ["--line-length", "88"]
 }
