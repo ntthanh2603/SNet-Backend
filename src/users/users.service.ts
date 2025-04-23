@@ -250,12 +250,11 @@ export class UsersService {
    */
   async afterSignUp(dto: AfterSignUpDto) {
     try {
-      console.log('check 6');
       const otp = await this.redisService.get(`otp-code:${dto.email}`);
-      console.log('check 5');
+
       if (otp !== dto.otp)
         throw new BadRequestException('OTP code is incorrect or expired');
-      console.log('check 4');
+
       const hashPassword = this.getHashPassword(dto.password);
 
       const newUser = {
@@ -270,7 +269,6 @@ export class UsersService {
         address: dto.address,
         privacy: PrivacyType.PUBLIC,
       };
-      console.log('check 3');
 
       const userDb = await this.usersRepository.save(newUser);
 
@@ -293,12 +291,8 @@ export class UsersService {
         created_at: userDb.created_at,
         updated_at: userDb.updated_at,
       };
-      console.log('check 0');
 
-      const a = await this.userSearchService.indexUser(userSearch);
-      console.log(a);
-
-      console.log('check 1');
+      await this.userSearchService.indexUser(userSearch);
 
       await this.sendEmail.add(
         'sendOTP',
@@ -309,7 +303,6 @@ export class UsersService {
         },
         { removeOnComplete: true },
       );
-      console.log('check 2');
 
       await this.redisService.del(`otp-code:${dto.email}`);
 
