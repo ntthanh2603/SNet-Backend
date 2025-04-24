@@ -29,6 +29,7 @@ import { AfterLoginDto } from './dto/after-login.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Fingerprint, IFingerprint } from 'nestjs-fingerprint';
 import { Response } from 'express';
+import { AfterForgotPasswordDto } from './dto/after-forgot-password';
 
 @ApiTags('Users')
 @Controller('users')
@@ -166,6 +167,28 @@ export class UsersController {
 
     return this.usersService.afterDelete(user.id, dto.otp);
   }
+
+  @Post('/otp/verify/forgot-password')
+  @Public()
+  @ResponseMessage('Send OTP seccessfully')
+  @ApiOperation({
+    summary: 'Send otp to forgot password',
+  })
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  boforeForgotPassword(@Body() dto: SendOtpDto) {
+    return this.usersService.beforeForgotPassword(dto);
+  }
+
+  // @Post('/otp/verify/forgot-password')
+  // @Public()
+  // @ResponseMessage('Update password seccessfully')
+  // @ApiOperation({
+  //   summary: 'Authenticate otp to update password',
+  // })
+  // @Throttle({ default: { limit: 5, ttl: 60000 } })
+  // afterForgotPassword(@Body() dto: AfterForgotPasswordDto) {
+  //   return this.usersService.afterForgotPassword(dto);
+  // }
 }
 
 export interface LoginMetaData {

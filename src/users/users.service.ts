@@ -30,6 +30,8 @@ import { RelationsService } from 'src/relations/relations.service';
 import { RelationType } from 'src/helper/relation.enum';
 import { Response } from 'express';
 import { UserSearchBody } from 'src/search-engine/dto/user-search-body.interface';
+import { SendOtpDto } from './dto/send-otp.dto';
+import { AfterForgotPasswordDto } from './dto/after-forgot-password';
 
 @Injectable()
 export class UsersService {
@@ -463,5 +465,13 @@ export class UsersService {
       }
       throw new InternalServerErrorException('Error updating user');
     }
+  }
+
+  async beforeForgotPassword(dto: SendOtpDto) {
+    console.log(`dto`, dto);
+  }
+
+  async afterForgotPassword(dto: AfterForgotPasswordDto) {
+    console.log(`dto`, dto);
   }
 }

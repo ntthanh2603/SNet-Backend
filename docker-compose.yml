@@ -112,7 +112,7 @@ services:
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_DB: ${REDIS_DB}
-      # BullMQ (nếu sử dụng)
+      # BullMQ
       BULLMQ_HOST: ${BULLMQ_HOST:-redis}
       BULLMQ_PORT: ${BULLMQ_PORT:-6379}
       BULLMQ_PASSWORD: ${BULLMQ_PASSWORD}
@@ -143,7 +143,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/app:cached
       - /usr/src/app/node_modules
     networks:
       - app-network
