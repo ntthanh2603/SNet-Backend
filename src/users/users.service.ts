@@ -11,7 +11,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { compareSync, genSaltSync, hashSync } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from 'src/redis/redis.service';
@@ -32,6 +32,7 @@ import { Response } from 'express';
 import { UserSearchBody } from 'src/search-engine/dto/user-search-body.interface';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { AfterForgotPasswordDto } from './dto/after-forgot-password';
+import { format } from 'date-fns';
 
 @Injectable()
 export class UsersService {
@@ -48,14 +49,14 @@ export class UsersService {
     private readonly relationsService: RelationsService,
   ) {}
 
-  getHashPassword(password: string) {
-    const salt = genSaltSync(10);
-    const hash = hashSync(password, salt);
+  async getHashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
     return hash;
   }
 
   isValidPassword(password: string, hash: string) {
-    return compareSync(password, hash);
+    return bcrypt.compareSync(password, hash);
   }
 
   /**
@@ -257,8 +258,8 @@ export class UsersService {
       if (otp !== dto.otp)
         throw new BadRequestException('OTP code is incorrect or expired');
 
-      const hashPassword = this.getHashPassword(dto.password);
-
+      const hashPassword = await this.getHashPassword(dto.password);
+      console.log('check c');
       const newUser = {
         email: dto.email,
         password: hashPassword,
@@ -274,6 +275,10 @@ export class UsersService {
 
       const userDb = await this.usersRepository.save(newUser);
 
+      const formattedBirthday = dto.birthday
+        ? format(new Date(dto.birthday), 'yyyy-MM-dd')
+        : undefined;
+
       const userSearch: UserSearchBody = {
         id: userDb.id,
         email: userDb.email,
@@ -283,7 +288,7 @@ export class UsersService {
         website: userDb?.website,
         gender: userDb?.gender,
         address: userDb?.address,
-        birthday: userDb?.birthday,
+        birthday: formattedBirthday,
         company: userDb?.company,
         education: userDb?.education,
         last_active: userDb?.last_active,
@@ -311,7 +316,7 @@ export class UsersService {
       return { message: 'sign up successfully' };
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException('Error when sign up');
     }
   }
 
@@ -440,7 +445,7 @@ export class UsersService {
           website: userDb.website,
           gender: userDb.gender,
           address: userDb.address,
-          birthday: userDb.birthday,
+          birthday: userDb.birthday.toString(),
           company: userDb.company,
           education: userDb.education,
           last_active: userDb.last_active,
@@ -467,11 +472,68 @@ export class UsersService {
     }
   }
 
+  /**
+   * Sends an OTP to the user's email for password reset verification.
+   * @param dto - Data transfer object containing the user's email and username.
+   * @returns A promise containing a success message if the OTP is sent successfully.
+   * @throws BadRequestException if the email or username is incorrect.
+   * @throws InternalServerErrorException if an error occurs when sending the OTP.
+   */
   async beforeForgotPassword(dto: SendOtpDto) {
-    console.log(`dto`, dto);
+    try {
+      const user = await this.findUserByEmail(dto.email);
+
+      if (!user || user.username !== dto.username)
+        throw new BadRequestException('Email or username is incorrect');
+
+      const otp = randomInt(100000, 999999).toString();
+
+      await this.redisService.set(`otp-code:${dto.email}`, otp, 120);
+
+      await this.sendEmail.add(
+        'sendOTP',
+        {
+          email: user.email,
+          username: user.username,
+          otp: otp,
+          template: 'otp-forgot-password-account',
+        },
+        { removeOnComplete: true },
+      );
+
+      return { message: 'Send OTP successfully' };
+    } catch (err) {
+      if (err instanceof BadRequestException) throw err;
+      throw new InternalServerErrorException('Error when send OTP');
+    }
   }
 
+  /**
+   * Resets the user's password using the provided OTP.
+   *
+   * @param dto - Data transfer object containing the user's email, username, OTP, and new password.
+   * @throws BadRequestException if the email, username, or OTP is incorrect.
+   * @throws InternalServerErrorException if an error occurs during the password reset process.
+   */
   async afterForgotPassword(dto: AfterForgotPasswordDto) {
-    console.log(`dto`, dto);
+    try {
+      const user = await this.findUserByEmail(dto.email);
+      const otp = await this.redisService.get(`otp-code:${dto.email}`);
+
+      if (!user || user.username !== dto.username || otp !== dto.otp)
+        throw new BadRequestException('Email or username or OTP is incorrect');
+
+      const hashPassword = await this.getHashPassword(dto.password);
+
+      await this.usersRepository.update(
+        { id: user.id },
+        {
+          password: hashPassword,
+        },
+      );
+    } catch (err) {
+      if (err instanceof BadRequestException) throw err;
+      throw new InternalServerErrorException('Error when send OTP');
+    }
   }
 }

@@ -4,8 +4,8 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm ci --legacy-peer-deps
+RUN npm install --legacy-peer-deps
 
-RUN npm install -g nodemon
+RUN npm install -g @nestjs/cli --legacy-peer-deps
 
 CMD ["npm", "run", "start:dev"]

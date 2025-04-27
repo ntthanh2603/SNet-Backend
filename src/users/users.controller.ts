@@ -133,7 +133,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Send email to sign up',
   })
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  // @Throttle({ default: { limit: 10, ttl: 60000 } })
   beforeSignUp(@Body() dto: SendOtpDto) {
     return this.usersService.beforeSignUp(dto.email, dto.username);
   }
@@ -144,9 +144,31 @@ export class UsersController {
   @ApiOperation({
     summary: 'Check OTP on email to sign up',
   })
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  // @Throttle({ default: { limit: 5, ttl: 60000 } })
   afterSignUp(@Body() dto: AfterSignUpDto) {
     return this.usersService.afterSignUp(dto);
+  }
+
+  @Post('/otp/send/forgot-password')
+  @Public()
+  @ResponseMessage('Send OTP seccessfully')
+  @ApiOperation({
+    summary: 'Send otp to forgot password',
+  })
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  boforeForgotPassword(@Body() dto: SendOtpDto) {
+    return this.usersService.beforeForgotPassword(dto);
+  }
+
+  @Post('/otp/verify/forgot-password')
+  @Public()
+  @ResponseMessage('Update password seccessfully')
+  @ApiOperation({
+    summary: 'Authenticate otp to update password',
+  })
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  afterForgotPassword(@Body() dto: AfterForgotPasswordDto) {
+    return this.usersService.afterForgotPassword(dto);
   }
 
   @Post('/otp/send/delete')
@@ -167,28 +189,6 @@ export class UsersController {
 
     return this.usersService.afterDelete(user.id, dto.otp);
   }
-
-  @Post('/otp/verify/forgot-password')
-  @Public()
-  @ResponseMessage('Send OTP seccessfully')
-  @ApiOperation({
-    summary: 'Send otp to forgot password',
-  })
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
-  boforeForgotPassword(@Body() dto: SendOtpDto) {
-    return this.usersService.beforeForgotPassword(dto);
-  }
-
-  // @Post('/otp/verify/forgot-password')
-  // @Public()
-  // @ResponseMessage('Update password seccessfully')
-  // @ApiOperation({
-  //   summary: 'Authenticate otp to update password',
-  // })
-  // @Throttle({ default: { limit: 5, ttl: 60000 } })
-  // afterForgotPassword(@Body() dto: AfterForgotPasswordDto) {
-  //   return this.usersService.afterForgotPassword(dto);
-  // }
 }
 
 export interface LoginMetaData {

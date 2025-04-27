@@ -52,8 +52,7 @@ export class UserSearchBody {
 
   @ApiProperty()
   @IsOptional()
-  @IsDate()
-  birthday?: Date;
+  birthday?: string;
 
   @ApiProperty()
   @IsOptional()
