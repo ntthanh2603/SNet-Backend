@@ -10,7 +10,6 @@ import { Repository } from 'typeorm';
 import { IAdmin } from './admin.interface';
 import { AddAdminDto } from './dto/add-admin.dto';
 import { RoleType } from 'src/helper/role.enum';
-import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class AdminsService {
@@ -18,7 +17,6 @@ export class AdminsService {
     @InjectRepository(User)
     private readonly adminRepository: Repository<User>,
     private readonly usersService: UsersService,
-    private readonly logger: LoggerService,
   ) {}
 
   /**
@@ -38,28 +36,12 @@ export class AdminsService {
         user.role = RoleType.ADMIN;
         await this.adminRepository.save(user);
 
-        this.logger.log({
-          message: 'Admin added successfully',
-          userId: admin.id,
-          role: admin.role,
-          deviceId: admin.deviceId,
-          body: dto,
-        });
         return {
           message: 'Admin added successfully',
         };
       }
       throw new BadRequestException('User not found or role user is not user');
     } catch (error) {
-      this.logger.error({
-        message: 'Error adding admin',
-        userId: admin.id,
-        role: admin.role,
-        deviceId: admin.deviceId,
-        body: dto,
-        error: error.message,
-        trace: error.stack,
-      });
       if (error instanceof BadRequestException) {
         throw error;
       }

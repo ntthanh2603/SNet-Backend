@@ -7,7 +7,6 @@ import { CreateNotiSystemDto } from './dto/create-noti-system.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { NotificationType } from 'src/helper/notification.enum';
-import { LoggerService } from 'src/logger/logger.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -16,7 +15,6 @@ export class NotificationService {
     @InjectRepository(Notification)
     private readonly notificationRepo: Repository<Notification>,
     @InjectQueue('noti-system') private notiQueue: Queue,
-    private logger: LoggerService,
   ) {}
 
   /**
@@ -53,13 +51,7 @@ export class NotificationService {
       { removeOnComplete: true },
     );
     // Log
-    this.logger.log({
-      message: 'Create notification system',
-      metadata: {
-        ...notification,
-        adminId: admin.id,
-      },
-    });
+
     return;
   }
 }

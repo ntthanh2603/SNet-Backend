@@ -11,7 +11,6 @@ import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { RedisService } from 'src/redis/redis.service';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { LoggerService } from 'src/logger/logger.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -24,7 +23,6 @@ export class PostsService {
     private readonly redisService: RedisService,
     @InjectQueue('create-posts')
     private mediasPostsQueue: Queue,
-    private readonly loggerServer: LoggerService,
   ) {}
 
   async findPostByID(id: string) {
@@ -77,24 +75,6 @@ export class PostsService {
 
       await this.repository.save(newPost);
 
-      // Log post in elasticsearch
-      this.loggerServer.log(
-        {
-          message: 'Create post successfully',
-          userId: user.id,
-          method: 'POST',
-          role: user.role,
-          deviceId: user.deviceSecssionId,
-          metadata: {
-            id: newPost.id,
-            content: dto.content,
-            medias: medias,
-            privacy: dto.privacy,
-          },
-        },
-        'snet-system-logs-posts',
-      );
-
       // Add job to queue
       this.mediasPostsQueue.add(
         'create-posts',
@@ -110,24 +90,6 @@ export class PostsService {
         message: 'Create post successfully',
       };
     } catch (err) {
-      // Log error in elasticsearch
-      this.loggerServer.error(
-        {
-          message: 'Error when create post',
-          error: err.message,
-          stack: err.stack,
-          userId: user.id,
-          method: 'POST',
-          role: user.role,
-          deviceId: user.deviceSecssionId,
-          metadata: {
-            content: dto.content,
-            medias: medias,
-            privacy: dto.privacy,
-          },
-        },
-        'snet-system-logs-posts',
-      );
       if (err instanceof BadRequestException) throw err;
 
       throw new InternalServerErrorException('Error when create post');

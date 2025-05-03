@@ -2,7 +2,6 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
 import { GatewayGateway } from 'src/gateway/gategate.gateway';
-import { LoggerService } from 'src/logger/logger.service';
 import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { User } from 'src/users/entities/user.entity';
@@ -16,7 +15,6 @@ export class NotiSystemProcessor extends WorkerHost {
     private readonly usersRepository: Repository<User>,
     @InjectRepository(NotificationUser)
     private readonly notiUserRepository: Repository<NotificationUser>,
-    private readonly logger: LoggerService,
     private readonly gatewayGateway: GatewayGateway,
     private readonly redisService: RedisService,
   ) {
@@ -76,13 +74,6 @@ export class NotiSystemProcessor extends WorkerHost {
 
       return;
     } catch (error) {
-      this.logger.error({
-        message: 'Error noti system',
-        metadata: {
-          data: job.data,
-        },
-        trace: error.stack,
-      });
       throw error;
     }
   }

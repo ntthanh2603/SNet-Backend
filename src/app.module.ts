@@ -29,7 +29,6 @@ import { ReactionsModule } from './reactions/reactions.module';
 import { ParentChildCommentsModule } from './parent-child-comments/parent-child-comments.module';
 import { SearchEngineModule } from './search-engine/search-engine.module';
 import { AdminsModule } from './admins/admins.module';
-import { LoggerModule } from './logger/logger.module';
 import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
@@ -117,7 +116,6 @@ import { GatewayModule } from './gateway/gateway.module';
     ParentChildCommentsModule,
     SearchEngineModule,
     AdminsModule,
-    LoggerModule,
     GatewayModule,
   ],
   controllers: [AppController],

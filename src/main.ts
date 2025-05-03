@@ -8,12 +8,9 @@ import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { LoggerMiddleware } from './middleware/logger.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  app.use(new LoggerMiddleware().use);
 
   const configService = app.get(ConfigService);
 

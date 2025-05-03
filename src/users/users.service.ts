@@ -531,6 +531,10 @@ export class UsersService {
           password: hashPassword,
         },
       );
+
+      await this.redisService.del(`otp-code:${dto.email}`);
+
+      return { message: 'Reset password successfully' };
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Error when send OTP');

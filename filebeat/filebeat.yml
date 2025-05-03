@@ -1,0 +1,22 @@
+name: 'nest-app-filebeat'
+logging.metrics.enabled: false
+xpack.monitoring.enabled: false
+setup.template.enabled: false
+
+filebeat.inputs:
+  - type: log
+    scan_frequency: 1s
+    enabled: true
+    paths:
+      - /src/log/*.log
+    fields:
+      service: nestjs-app
+    fields_under_root: true
+    json:
+      keys_under_root: true
+      overwrite_keys: true
+      message_key: 'message'
+
+output.elasticsearch:
+  hosts: ['elasticsearch:9200']
+  index: 'nest-app'

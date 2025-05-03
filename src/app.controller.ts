@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Public, ResponseMessage } from './decorator/customize';
 import { ApiOperation } from '@nestjs/swagger';
+import logger from './logger';
 
 @Controller()
 export class AppController {
@@ -12,6 +13,7 @@ export class AppController {
   @ResponseMessage('Trang chủ')
   @ApiOperation({ summary: 'Trang chủ' })
   home() {
+    logger.info('Home page accessed');
     return this.appService.home();
   }
 

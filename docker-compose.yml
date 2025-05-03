@@ -70,6 +70,26 @@ services:
       - elasticsearch
     restart: unless-stopped
 
+  filebeat:
+    build:
+      context: ./filebeat
+      dockerfile: Dockerfile
+    container_name: filebeat
+    user: root
+    environment:
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME:-elastic}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    env_file: .env
+    volumes:
+      - ./nestjs-log/logs:/src/log:ro
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - app-network
+    command: filebeat -e -strict.perms=false -E output.elasticsearch.password=${ELASTICSEARCH_PASSWORD} -E output.elasticsearch.username=${ELASTICSEARCH_USERNAME}
+    restart: unless-stopped
+
   chromadb:
     image: chromadb/chroma:latest
     container_name: chromadb
@@ -145,6 +165,7 @@ services:
     volumes:
       - .:/usr/src/app:cached
       - /usr/src/app/node_modules
+      - ./nestjs-log/logs:/usr/src/app/logs
     networks:
       - app-network
     restart: unless-stopped
