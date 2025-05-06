@@ -11,6 +11,7 @@ import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import logger from 'src/logger';
+import { DeleteChatRoomDto } from './dto/delete-chat-room.dto';
 
 @Injectable()
 export class ChatRoomsService {
@@ -73,18 +74,23 @@ export class ChatRoomsService {
   }
 
   // Xóa phòng chat
-  async delete(id: string, user: IUser) {
-    const room = await this.findRoomChat(id);
+  async delete(dto: DeleteChatRoomDto, user: IUser) {
+    const room = await this.findRoomChat(dto.id);
 
     if (!room || room.created_by !== user.id) {
       throw new NotFoundException(
-        'Không tìm thấy phòng chat hoặc bạn không có quyền xóa đoạn chat này',
+        'Not found chat room or you do not have permission to delete this chat',
       );
     }
 
-    await this.chatRoomsRepository.delete({ id });
-    await this.redisService.del(`chat-romm:${room.id}`);
+    try {
+      await this.chatRoomsRepository.delete({ id: dto.id });
+      await this.redisService.del(`chat-romm:${room.id}`);
 
-    return { message: 'Xóa phòng chat thành công' };
+      return;
+    } catch (error) {
+      logger.error('Delete chat room failed', error);
+      throw new BadRequestException('Delete chat room failed');
+    }
   }
 }

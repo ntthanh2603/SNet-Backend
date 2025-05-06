@@ -9,12 +9,13 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ChatRoomsService } from './chat-rooms.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import { isUUID } from 'class-validator';
+import { DeleteChatRoomDto } from './dto/delete-chat-room.dto';
 
 @ApiTags('Chat Rooms')
 @Controller('chat-rooms')
@@ -47,22 +48,9 @@ export class ChatRoomsController {
   }
 
   @Delete()
-  @ResponseMessage('Xóa phòng chat thành công')
-  @ApiOperation({ summary: 'Xóa phòng chat' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', example: 'uuid' },
-      },
-      required: ['body'],
-    },
-  })
-  delete(@Body() body: object, @User() user: IUser) {
-    const id = body['id'];
-    console.log(id);
-    if (!isUUID(id)) throw new NotFoundException('Id does not type uuid');
-
-    return this.chatRoomsService.delete(id, user);
+  @ResponseMessage('Delete chat room success')
+  @ApiOperation({ summary: 'Delete chat room' })
+  delete(@Body() dto: DeleteChatRoomDto, @User() user: IUser) {
+    return this.chatRoomsService.delete(dto, user);
   }
 }
