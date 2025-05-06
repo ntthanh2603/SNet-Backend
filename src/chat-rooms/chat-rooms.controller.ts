@@ -15,7 +15,7 @@ import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import { isUUID } from 'class-validator';
-import { DeleteChatRoomDto } from './dto/delete-chat-room.dto';
+import { IDChatRoomDto } from './dto/id-chat-room.dto';
 
 @ApiTags('Chat Rooms')
 @Controller('chat-rooms')
@@ -23,12 +23,12 @@ export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
 
   @Get(':id')
-  @ResponseMessage('Tìm kiếm phòng chat thành công')
-  @ApiOperation({ summary: 'Tìm kiếm phòng chat' })
+  @ResponseMessage('Find chat room success')
+  @ApiOperation({ summary: 'Find chat room' })
   find(@Param('id') id: string) {
     if (!isUUID(id)) throw new NotFoundException('Id does not type uuid');
-    const room = this.chatRoomsService.findRoomChat(id);
-    if (!room) throw new NotFoundException('Không tìm thấy phòng chat');
+    const room = this.chatRoomsService.findRoomChatByID(id);
+    if (!room) throw new NotFoundException('Not found chat room');
 
     return room;
   }
@@ -50,7 +50,7 @@ export class ChatRoomsController {
   @Delete()
   @ResponseMessage('Delete chat room success')
   @ApiOperation({ summary: 'Delete chat room' })
-  delete(@Body() dto: DeleteChatRoomDto, @User() user: IUser) {
+  delete(@Body() dto: IDChatRoomDto, @User() user: IUser) {
     return this.chatRoomsService.delete(dto, user);
   }
 }

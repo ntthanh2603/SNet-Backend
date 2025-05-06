@@ -11,7 +11,7 @@ import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import logger from 'src/logger';
-import { DeleteChatRoomDto } from './dto/delete-chat-room.dto';
+import { IDChatRoomDto } from './dto/id-chat-room.dto';
 
 @Injectable()
 export class ChatRoomsService {
@@ -21,17 +21,16 @@ export class ChatRoomsService {
     private readonly redisService: RedisService,
   ) {}
 
-  // Tìm phòng chat
-  async findRoomChat(id: string): Promise<ChatRoom | null> {
-    const roomCache: ChatRoom = JSON.parse(
-      await this.redisService.get(`chat-romm:${id}`),
+  // Find chat room by id
+  async findRoomChatByID(id: string): Promise<ChatRoom | null> {
+    const roomCache: ChatRoom = await this.redisService.hGetAll(
+      `chat-room:${id}`,
     );
     if (roomCache) return roomCache;
 
     const room = await this.chatRoomsRepository.findOneBy({ id: id });
 
-    if (room)
-      await this.redisService.set(`chat-romm:${id}`, JSON.stringify(room), 600);
+    if (room) await this.redisService.hMSet(`chat-room:${room.id}`, room);
 
     return room;
   }
@@ -45,11 +44,7 @@ export class ChatRoomsService {
     try {
       const roomDb = await this.chatRoomsRepository.save(room);
 
-      await this.redisService.set(
-        `chat-room:${roomDb.id}`,
-        JSON.stringify(roomDb),
-        600,
-      );
+      await this.redisService.hMSet(`chat-room:${roomDb.id}`, roomDb);
       return;
     } catch (error) {
       logger.error('Create chat room failed', error);
@@ -59,7 +54,7 @@ export class ChatRoomsService {
 
   // Cập nhật phòng chat
   async update(dto: UpdateChatRoomDto, user: IUser) {
-    const room = await this.findRoomChat(dto.id);
+    const room = await this.findRoomChatByID(dto.id);
 
     if (!room || room.created_by !== user.id) {
       return {
@@ -73,9 +68,9 @@ export class ChatRoomsService {
     return { message: 'Cập nhật phòng chat thành công' };
   }
 
-  // Xóa phòng chat
-  async delete(dto: DeleteChatRoomDto, user: IUser) {
-    const room = await this.findRoomChat(dto.id);
+  // Delete chat room
+  async delete(dto: IDChatRoomDto, user: IUser) {
+    const room = await this.findRoomChatByID(dto.id);
 
     if (!room || room.created_by !== user.id) {
       throw new NotFoundException(
