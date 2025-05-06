@@ -24,7 +24,6 @@ import { CommentsModule } from './comments/comments.module';
 import { RelationsModule } from './relations/relations.module';
 import { NotificationUsersModule } from './notification-users/notification-users.module';
 import { SaveListsModule } from './save-lists/save-lists.module';
-import { HashtagsModule } from './hashtags/hashtags.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ParentChildCommentsModule } from './parent-child-comments/parent-child-comments.module';
 import { SearchEngineModule } from './search-engine/search-engine.module';
@@ -111,7 +110,6 @@ import { GatewayModule } from './gateway/gateway.module';
     CommentsModule,
     NotificationUsersModule,
     SaveListsModule,
-    HashtagsModule,
     ReactionsModule,
     ParentChildCommentsModule,
     SearchEngineModule,

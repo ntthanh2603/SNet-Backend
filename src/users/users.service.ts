@@ -29,10 +29,10 @@ import { PrivacyType } from 'src/helper/privacy.enum';
 import { RelationsService } from 'src/relations/relations.service';
 import { RelationType } from 'src/helper/relation.enum';
 import { Response } from 'express';
-import { UserSearchBody } from 'src/search-engine/dto/user-search-body.interface';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { AfterForgotPasswordDto } from './dto/after-forgot-password';
 import { format } from 'date-fns';
+import logger from 'src/logger';
 
 @Injectable()
 export class UsersService {
@@ -244,13 +244,6 @@ export class UsersService {
     return user;
   }
 
-  /**
-   * Handles the sign up process.
-   * @param dto - The data transfer object containing the user's information.
-   * @returns The result of UserSearchService#createUser.
-   * @throws BadRequestException if the OTP is not valid.
-   * @throws InternalServerErrorException if an error occurs while saving the user to the database.
-   */
   async afterSignUp(dto: AfterSignUpDto) {
     try {
       const otp = await this.redisService.get(`otp-code:${dto.email}`);
@@ -259,7 +252,7 @@ export class UsersService {
         throw new BadRequestException('OTP code is incorrect or expired');
 
       const hashPassword = await this.getHashPassword(dto.password);
-      console.log('check c');
+
       const newUser = {
         email: dto.email,
         password: hashPassword,
@@ -273,33 +266,7 @@ export class UsersService {
         privacy: PrivacyType.PUBLIC,
       };
 
-      const userDb = await this.usersRepository.save(newUser);
-
-      const formattedBirthday = dto.birthday
-        ? format(new Date(dto.birthday), 'yyyy-MM-dd')
-        : undefined;
-
-      const userSearch: UserSearchBody = {
-        id: userDb.id,
-        email: userDb.email,
-        username: userDb.username,
-        avatar: userDb?.avatar,
-        bio: userDb?.bio,
-        website: userDb?.website,
-        gender: userDb?.gender,
-        address: userDb?.address,
-        birthday: formattedBirthday,
-        company: userDb?.company,
-        education: userDb?.education,
-        last_active: userDb?.last_active,
-        user_category: userDb?.user_category,
-        role: userDb?.role,
-        privacy: userDb.privacy,
-        created_at: userDb.created_at,
-        updated_at: userDb.updated_at,
-      };
-
-      await this.userSearchService.indexUser(userSearch);
+      await this.usersRepository.save(newUser);
 
       await this.sendEmail.add(
         'sendOTP',
@@ -315,6 +282,10 @@ export class UsersService {
 
       return { message: 'sign up successfully' };
     } catch (err) {
+      logger.error(
+        `Error in afterSignUp: ${err.message} - ${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}`,
+        err.stack,
+      );
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Error when sign up');
     }
@@ -382,18 +353,6 @@ export class UsersService {
     }
   }
 
-  /**
-   * @description Updates a user's information in the database.
-   * If a username is provided, checks for its uniqueness.
-   * If a file is provided, updates the user's avatar and deletes the old one.
-   * Clears the user's cache in Redis after updating.
-   * @param dto - The data transfer object containing updated user information.
-   * @param user - The user object representing the current user.
-   * @param file - The uploaded file object, representing the user's new avatar.
-   * @returns A message indicating successful update.
-   * @throws BadRequestException if the username already exists or error occurs when deleting the file.
-   * @throws InternalServerErrorException if an error occurs during the update process.
-   */
   async updateUser(dto: UpdateUserDto, user: IUser, file: Express.Multer.File) {
     try {
       if (dto.username) {
@@ -436,27 +395,6 @@ export class UsersService {
             avatar: file.path,
           },
         );
-        const userSearch: UserSearchBody = {
-          id: userDb.id,
-          email: userDb.email,
-          username: userDb.username,
-          avatar: userDb.avatar,
-          bio: userDb.bio,
-          website: userDb.website,
-          gender: userDb.gender,
-          address: userDb.address,
-          birthday: userDb.birthday.toString(),
-          company: userDb.company,
-          education: userDb.education,
-          last_active: userDb.last_active,
-          user_category: userDb.user_category,
-          role: userDb.role,
-          privacy: userDb.privacy,
-          created_at: userDb.created_at,
-          updated_at: userDb.updated_at,
-        };
-
-        await this.userSearchService.indexUser(userSearch);
       }
 
       await this.redisService.del(`user:${user.id}`);

@@ -32,9 +32,9 @@ export class ChatRoomsController {
     return room;
   }
 
-  @Post('')
-  @ResponseMessage('Tạo phòng chat thành công')
-  @ApiOperation({ summary: 'Tạo đoạn chat' })
+  @Post()
+  @ResponseMessage('Create chat room success')
+  @ApiOperation({ summary: 'Create chat room' })
   create(@Body() dto: CreateChatRoomDto, @User() user: IUser) {
     return this.chatRoomsService.create(dto, user);
   }

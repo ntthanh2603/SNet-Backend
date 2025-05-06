@@ -9,7 +9,8 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: path.join(__dirname, '../logs/app.log'),
+      // filename: path.join(__dirname, '../logs/app.log'),   // Log when backend in docker
+      filename: path.join(__dirname, '../nestjs-log/logs/app.log'),
     }),
   ],
 });

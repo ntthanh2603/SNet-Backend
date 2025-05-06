@@ -7,12 +7,5 @@ export class CreateChatRoomDto {
   @MinLength(3)
   @IsNotEmpty()
   @ApiProperty({ example: 'Group Chat' })
-  roomName: string;
-
-  @IsString()
-  @MaxLength(300)
-  @MinLength(3)
-  @IsNotEmpty()
-  @ApiProperty({ example: 'abc.png' })
-  avatar: string;
+  name: string;
 }

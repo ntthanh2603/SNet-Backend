@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -26,6 +27,9 @@ export class ChatMember {
     default: RoleType.USER,
   })
   role: RoleType;
+
+  @CreateDateColumn()
+  created_at: Date;
 
   @ManyToOne(() => User, (user) => user.chat_members)
   @JoinColumn({ name: 'user_id' })

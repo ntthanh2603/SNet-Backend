@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatRoom } from './entities/chat-room.entity';
@@ -6,6 +10,7 @@ import { RedisService } from 'src/redis/redis.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
+import logger from 'src/logger';
 
 @Injectable()
 export class ChatRoomsService {
@@ -30,17 +35,25 @@ export class ChatRoomsService {
     return room;
   }
 
-  // Tạo phòng chat
+  // Create chat room
   async create(dto: CreateChatRoomDto, user: IUser) {
-    const room = { createdBy: user.id, ...dto };
-    const roomDb = await this.chatRoomsRepository.save(room);
+    const room = new ChatRoom();
+    room.name = dto.name;
+    room.created_by = user.id;
 
-    await this.redisService.set(
-      `chat-romm:${roomDb.id}`,
-      JSON.stringify(roomDb),
-      600,
-    );
-    return roomDb;
+    try {
+      const roomDb = await this.chatRoomsRepository.save(room);
+
+      await this.redisService.set(
+        `chat-room:${roomDb.id}`,
+        JSON.stringify(roomDb),
+        600,
+      );
+      return;
+    } catch (error) {
+      logger.error('Create chat room failed', error);
+      throw new BadRequestException('Create chat room failed');
+    }
   }
 
   // Cập nhật phòng chat

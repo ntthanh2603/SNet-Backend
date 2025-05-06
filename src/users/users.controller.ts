@@ -97,7 +97,7 @@ export class UsersController {
     return await this.usersService.updateUser(dto, user, file);
   }
 
-  @Post('/otp/send/login')
+  @Post('/send-otp/login')
   @Public()
   @ResponseMessage('Send OTP seccessfully')
   @ApiOperation({
@@ -110,7 +110,7 @@ export class UsersController {
 
   @Public()
   @ResponseMessage('Login account successfully')
-  @Post('/otp/verify/login')
+  @Post('/verify-otp/login')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @ApiOperation({ summary: 'Login account' })
@@ -127,7 +127,7 @@ export class UsersController {
     return this.usersService.afterlogin(dto, metaData, response);
   }
 
-  @Post('/otp/send/signup')
+  @Post('/send-otp/signup')
   @Public()
   @ResponseMessage('Send OTP seccessfully')
   @ApiOperation({
@@ -138,7 +138,7 @@ export class UsersController {
     return this.usersService.beforeSignUp(dto.email, dto.username);
   }
 
-  @Post('/otp/verify/signup')
+  @Post('/verify-otp/signup')
   @Public()
   @ResponseMessage('Create user successfully')
   @ApiOperation({
@@ -149,7 +149,7 @@ export class UsersController {
     return this.usersService.afterSignUp(dto);
   }
 
-  @Post('/otp/send/forgot-password')
+  @Post('/send-otp/forgot-password')
   @Public()
   @ResponseMessage('Send OTP seccessfully')
   @ApiOperation({
@@ -160,7 +160,7 @@ export class UsersController {
     return this.usersService.beforeForgotPassword(dto);
   }
 
-  @Post('/otp/verify/forgot-password')
+  @Post('/verify-otp/forgot-password')
   @Public()
   @ResponseMessage('Update password seccessfully')
   @ApiOperation({
@@ -171,7 +171,7 @@ export class UsersController {
     return this.usersService.afterForgotPassword(dto);
   }
 
-  @Post('/otp/send/delete')
+  @Post('/send-otp/delete')
   @ResponseMessage('Send OTP seccessfully')
   @ApiOperation({
     summary: 'Gửi OTP về email',
@@ -181,7 +181,7 @@ export class UsersController {
     return this.usersService.beforeDelete(user);
   }
 
-  @Delete('/otp/verify/delete')
+  @Delete('/verify-otp/delete')
   @ResponseMessage('Delete account seccessfully')
   @ApiOperation({ summary: 'Delete account' })
   afterDelete(@User() user: IUser, @Body() dto: AfterDeleteDto) {

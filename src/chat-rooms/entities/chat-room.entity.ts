@@ -3,6 +3,7 @@ import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -18,11 +19,14 @@ export class ChatRoom {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: 'chat-room.png' })
   avatar: string;
 
   @Column()
   created_by: string;
+
+  @CreateDateColumn()
+  created_at: Date;
 
   @ManyToOne(() => User, (user) => user.chat_rooms)
   @JoinColumn({ name: 'created_by' })
