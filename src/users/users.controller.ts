@@ -10,7 +10,6 @@ import {
   HttpCode,
   HttpStatus,
   UseInterceptors,
-  ParseFilePipeBuilder,
   UploadedFile,
   Res,
 } from '@nestjs/common';
@@ -72,26 +71,14 @@ export class UsersController {
     return result;
   }
 
-  @Patch('/update/profile')
+  @Patch('/profile')
   @ResponseMessage('Update profile user seccessfully')
   @ApiOperation({ summary: 'Update profile user' })
   @UseInterceptors(FileInterceptor('avatar-user'))
   async updateUser(
     @Body() dto: UpdateUserDto,
     @User() user: IUser,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: /(jpg|jpeg|png|gif)$/,
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 * 8,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-          fileIsRequired: false,
-        }),
-    )
+    @UploadedFile()
     file: Express.Multer.File,
   ) {
     return await this.usersService.updateUser(dto, user, file);

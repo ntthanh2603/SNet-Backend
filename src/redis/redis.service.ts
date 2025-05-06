@@ -147,7 +147,9 @@ export class RedisService {
    * @returns Object chứa các cặp trường/giá trị
    */
   async hGetAll(key: string): Promise<any> {
-    return this.redis.hgetall(key);
+    const result = this.redis.hgetall(key);
+    if (Object.keys(result).length === 0) return null;
+    return result;
   }
 
   /**
@@ -282,8 +284,6 @@ export class RedisService {
   }
 
   /**
-
-/**
    * Lấy số lượng thành viên trong set
    * @param key - Khóa của set
    * @returns Số lượng thành viên

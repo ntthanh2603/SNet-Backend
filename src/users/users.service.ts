@@ -355,17 +355,6 @@ export class UsersService {
 
   async updateUser(dto: UpdateUserDto, user: IUser, file: Express.Multer.File) {
     try {
-      if (dto.username) {
-        const userDb = await this.usersRepository.findOne({
-          where: { username: dto.username },
-        });
-
-        if (userDb) {
-          throw new BadRequestException(
-            `Username ${dto.username} has existed.`,
-          );
-        }
-      }
       if (!file) {
         await this.usersRepository.update(
           { id: user.id },

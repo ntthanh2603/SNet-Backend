@@ -7,6 +7,8 @@ import {
   Param,
   NotFoundException,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ChatRoomsService } from './chat-rooms.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -16,6 +18,7 @@ import { ResponseMessage, User } from 'src/decorator/customize';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import { isUUID } from 'class-validator';
 import { IDChatRoomDto } from './dto/id-chat-room.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Chat Rooms')
 @Controller('chat-rooms')
@@ -41,10 +44,16 @@ export class ChatRoomsController {
   }
 
   @Patch()
-  @ResponseMessage('Cập nhật phòng chat thành công')
-  @ApiOperation({ summary: 'Cập nhật phòng chat' })
-  update(@Body() dto: UpdateChatRoomDto, @User() user: IUser) {
-    return this.chatRoomsService.update(dto, user);
+  @ResponseMessage('Update chat room success')
+  @ApiOperation({ summary: 'Update chat room' })
+  @UseInterceptors(FileInterceptor('avatar-chat-room'))
+  update(
+    @Body() dto: UpdateChatRoomDto,
+    @User() user: IUser,
+    @UploadedFile()
+    file: Express.Multer.File,
+  ) {
+    return this.chatRoomsService.update(dto, user, file);
   }
 
   @Delete()

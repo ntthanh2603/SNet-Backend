@@ -12,6 +12,7 @@ import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import logger from 'src/logger';
 import { IDChatRoomDto } from './dto/id-chat-room.dto';
+import deleteFile from 'src/helper/deleteFile';
 
 @Injectable()
 export class ChatRoomsService {
@@ -23,16 +24,22 @@ export class ChatRoomsService {
 
   // Find chat room by id
   async findRoomChatByID(id: string): Promise<ChatRoom | null> {
-    const roomCache: ChatRoom = await this.redisService.hGetAll(
-      `chat-room:${id}`,
-    );
-    if (roomCache) return roomCache;
+    try {
+      const roomCache: ChatRoom = await this.redisService.hGetAll(
+        `chat-room:${id}`,
+      );
 
-    const room = await this.chatRoomsRepository.findOneBy({ id: id });
+      if (roomCache) return roomCache;
 
-    if (room) await this.redisService.hMSet(`chat-room:${room.id}`, room);
+      const room = await this.chatRoomsRepository.findOneBy({ id: id });
 
-    return room;
+      if (room) await this.redisService.hMSet(`chat-room:${room.id}`, room);
+
+      return room;
+    } catch (error) {
+      logger.error('Find chat room failed', error);
+      throw new BadRequestException('Find chat room failed');
+    }
   }
 
   // Create chat room
@@ -52,20 +59,35 @@ export class ChatRoomsService {
     }
   }
 
-  // Cập nhật phòng chat
-  async update(dto: UpdateChatRoomDto, user: IUser) {
+  // Update chat room
+  async update(dto: UpdateChatRoomDto, user: IUser, file: Express.Multer.File) {
     const room = await this.findRoomChatByID(dto.id);
 
-    if (!room || room.created_by !== user.id) {
-      return {
-        message:
-          'Không tìm thấy phòng chat hoặc bạn không có quyền cập nhật đoạn chat này',
-      };
-    }
-    await this.chatRoomsRepository.update({ id: dto.id }, { ...dto });
-    await this.redisService.del(`chat-romm:${room.id}`);
+    if (!room || room.created_by !== user.id)
+      throw new NotFoundException(
+        'Not found chat room or you do not have permission to update this chat',
+      );
 
-    return { message: 'Cập nhật phòng chat thành công' };
+    try {
+      if (!file) {
+        await this.chatRoomsRepository.update(
+          { id: dto.id },
+          { name: dto.name },
+        );
+      } else {
+        deleteFile(room.avatar);
+
+        await this.chatRoomsRepository.update(
+          { id: dto.id },
+          { name: dto.name, avatar: file.path },
+        );
+      }
+      await this.redisService.del(`chat-room:${room.id}`);
+      return;
+    } catch (error) {
+      logger.error('Update chat room failed', error);
+      throw new BadRequestException('Update chat room failed');
+    }
   }
 
   // Delete chat room
