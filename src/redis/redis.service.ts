@@ -14,9 +14,9 @@ export class RedisService {
    */
   async set(key: string, value: string, ttl?: number): Promise<'OK'> {
     if (ttl) {
-      return this.redis.set(key, value, 'EX', ttl);
+      return await this.redis.set(key, value, 'EX', ttl);
     }
-    return this.redis.set(key, value);
+    return await this.redis.set(key, value);
   }
 
   /**
@@ -25,7 +25,7 @@ export class RedisService {
    * @returns Giá trị của khóa, hoặc null nếu không tồn tại
    */
   async get(key: string): Promise<string | null> {
-    return this.redis.get(key);
+    return await this.redis.get(key);
   }
 
   /**
@@ -34,7 +34,7 @@ export class RedisService {
    * @returns Số lượng khóa đã xóa thành công
    */
   async del(...keys: string[]): Promise<number> {
-    return this.redis.del(keys);
+    return await this.redis.del(keys);
   }
 
   /**
@@ -43,7 +43,7 @@ export class RedisService {
    * @returns 1 nếu khóa tồn tại, 0 nếu không
    */
   async exists(key: string): Promise<number> {
-    return this.redis.exists(key);
+    return await this.redis.exists(key);
   }
 
   /**
@@ -53,7 +53,7 @@ export class RedisService {
    * @returns 1 nếu thành công, 0 nếu khóa không tồn tại
    */
   async expire(key: string, seconds: number): Promise<number> {
-    return this.redis.expire(key, seconds);
+    return await this.redis.expire(key, seconds);
   }
 
   /**
@@ -62,7 +62,7 @@ export class RedisService {
    * @returns Giá trị sau khi tăng
    */
   async incr(key: string): Promise<number> {
-    return this.redis.incr(key);
+    return await this.redis.incr(key);
   }
 
   /**
@@ -72,7 +72,7 @@ export class RedisService {
    * @returns Giá trị sau khi tăng
    */
   async incrBy(key: string, increment: number): Promise<number> {
-    return this.redis.incrby(key, increment);
+    return await this.redis.incrby(key, increment);
   }
 
   /**
@@ -81,7 +81,7 @@ export class RedisService {
    * @returns Giá trị sau khi giảm
    */
   async decr(key: string): Promise<number> {
-    return this.redis.decr(key);
+    return await this.redis.decr(key);
   }
 
   /**
@@ -91,7 +91,7 @@ export class RedisService {
    * @returns Giá trị sau khi giảm
    */
   async decrBy(key: string, decrement: number): Promise<number> {
-    return this.redis.decrby(key, decrement);
+    return await this.redis.decrby(key, decrement);
   }
 
   // ------ CÁC PHƯƠNG THỨC LÀM VIỆC VỚI HASH ------
@@ -108,7 +108,7 @@ export class RedisService {
     field: string,
     value: string | number,
   ): Promise<number> {
-    return this.redis.hset(key, field, value.toString());
+    return await this.redis.hset(key, field, value.toString());
   }
 
   /**
@@ -118,7 +118,7 @@ export class RedisService {
    * @returns OK nếu thành công
    */
   async hMSet(key: string, fieldValues: Record<string, any>): Promise<'OK'> {
-    return this.redis.hmset(key, fieldValues);
+    return await this.redis.hmset(key, fieldValues);
   }
 
   /**
@@ -128,7 +128,7 @@ export class RedisService {
    * @returns Giá trị của trường, hoặc null nếu không tồn tại
    */
   async hGet(key: string, field: string): Promise<string | null> {
-    return this.redis.hget(key, field);
+    return await this.redis.hget(key, field);
   }
 
   /**
@@ -138,7 +138,7 @@ export class RedisService {
    * @returns Mảng các giá trị tương ứng
    */
   async hMGet(key: string, ...fields: string[]): Promise<(string | null)[]> {
-    return this.redis.hmget(key, ...fields);
+    return await this.redis.hmget(key, ...fields);
   }
 
   /**
@@ -147,9 +147,9 @@ export class RedisService {
    * @returns Object chứa các cặp trường/giá trị
    */
   async hGetAll(key: string): Promise<any> {
-    const result = this.redis.hgetall(key);
-    if (Object.keys(result).length === 0) return null;
-    return result;
+    const result = await this.redis.hgetall(key);
+
+    return Object.keys(result).length === 0 ? null : result;
   }
 
   /**
@@ -159,7 +159,7 @@ export class RedisService {
    * @returns Số lượng trường đã xóa
    */
   async hDel(key: string, ...fields: string[]): Promise<number> {
-    return this.redis.hdel(key, ...fields);
+    return await this.redis.hdel(key, ...fields);
   }
 
   /**
@@ -169,7 +169,7 @@ export class RedisService {
    * @returns 1 nếu trường tồn tại, 0 nếu không
    */
   async hExists(key: string, field: string): Promise<number> {
-    return this.redis.hexists(key, field);
+    return await this.redis.hexists(key, field);
   }
 
   // ------ CÁC PHƯƠNG THỨC LÀM VIỆC VỚI LIST ------
@@ -180,8 +180,8 @@ export class RedisService {
    * @param values - Các giá trị cần thêm
    * @returns Độ dài của list sau khi thêm
    */
-  async lPush(key: string, ...values: string[]): Promise<number> {
-    return this.redis.lpush(key, ...values);
+  async lPush(key: string, ...values: any[]): Promise<number> {
+    return await this.redis.lpush(key, ...values);
   }
 
   /**
@@ -190,8 +190,8 @@ export class RedisService {
    * @param values - Các giá trị cần thêm
    * @returns Độ dài của list sau khi thêm
    */
-  async rPush(key: string, ...values: string[]): Promise<number> {
-    return this.redis.rpush(key, ...values);
+  async rPush(key: string, ...values: any[]): Promise<number> {
+    return await this.redis.rpush(key, ...values);
   }
 
   /**
@@ -200,7 +200,7 @@ export class RedisService {
    * @returns Phần tử đầu tiên, hoặc null nếu list rỗng
    */
   async lPop(key: string): Promise<string | null> {
-    return this.redis.lpop(key);
+    return await this.redis.lpop(key);
   }
 
   /**
@@ -209,7 +209,7 @@ export class RedisService {
    * @returns Phần tử cuối cùng, hoặc null nếu list rỗng
    */
   async rPop(key: string): Promise<string | null> {
-    return this.redis.rpop(key);
+    return await this.redis.rpop(key);
   }
 
   /**
@@ -219,7 +219,7 @@ export class RedisService {
    * @returns Phần tử tại vị trí đó, hoặc null nếu vị trí không hợp lệ
    */
   async lIndex(key: string, index: number): Promise<string | null> {
-    return this.redis.lindex(key, index);
+    return await this.redis.lindex(key, index);
   }
 
   /**
@@ -230,7 +230,7 @@ export class RedisService {
    * @returns Mảng các phần tử trong phạm vi
    */
   async lRange(key: string, start: number, stop: number): Promise<string[]> {
-    return this.redis.lrange(key, start, stop);
+    return await this.redis.lrange(key, start, stop);
   }
 
   /**
@@ -239,7 +239,7 @@ export class RedisService {
    * @returns Độ dài của list
    */
   async lLen(key: string): Promise<number> {
-    return this.redis.llen(key);
+    return await this.redis.llen(key);
   }
 
   // ------ CÁC PHƯƠNG THỨC LÀM VIỆC VỚI SET ------
@@ -251,7 +251,7 @@ export class RedisService {
    * @returns Số lượng thành viên mới được thêm vào (không tính các thành viên đã tồn tại)
    */
   async sAdd(key: string, ...members: string[]): Promise<number> {
-    return this.redis.sadd(key, ...members);
+    return await this.redis.sadd(key, ...members);
   }
 
   /**
@@ -261,7 +261,7 @@ export class RedisService {
    * @returns Số lượng thành viên đã được xóa
    */
   async sRem(key: string, ...members: string[]): Promise<number> {
-    return this.redis.srem(key, ...members);
+    return await this.redis.srem(key, ...members);
   }
 
   /**
@@ -270,7 +270,7 @@ export class RedisService {
    * @returns Mảng các thành viên
    */
   async sMembers(key: string): Promise<string[]> {
-    return this.redis.smembers(key);
+    return await this.redis.smembers(key);
   }
 
   /**
@@ -280,7 +280,7 @@ export class RedisService {
    * @returns 1 nếu thành viên tồn tại, 0 nếu không
    */
   async sIsMember(key: string, member: string): Promise<number> {
-    return this.redis.sismember(key, member);
+    return await this.redis.sismember(key, member);
   }
 
   /**
@@ -289,7 +289,7 @@ export class RedisService {
    * @returns Số lượng thành viên
    */
   async sCard(key: string): Promise<number> {
-    return this.redis.scard(key);
+    return await this.redis.scard(key);
   }
 
   /**
@@ -298,7 +298,7 @@ export class RedisService {
    * @returns Mảng các phần tử chung giữa các set
    */
   async sInter(...keys: string[]): Promise<string[]> {
-    return this.redis.sinter(...keys);
+    return await this.redis.sinter(...keys);
   }
 
   /**
@@ -307,7 +307,7 @@ export class RedisService {
    * @returns Mảng các phần tử có trong ít nhất một set
    */
   async sUnion(...keys: string[]): Promise<string[]> {
-    return this.redis.sunion(...keys);
+    return await this.redis.sunion(...keys);
   }
 
   /**
@@ -317,7 +317,7 @@ export class RedisService {
    * @returns Mảng các phần tử thuộc phần hiệu
    */
   async sDiff(key1: string, key2: string): Promise<string[]> {
-    return this.redis.sdiff(key1, key2);
+    return await this.redis.sdiff(key1, key2);
   }
 
   // ------ CÁC PHƯƠNG THỨC LÀM VIỆC VỚI SORTED SET ------
@@ -332,7 +332,7 @@ export class RedisService {
     key: string,
     ...scoreMembers: (string | number)[]
   ): Promise<number> {
-    return this.redis.zadd(key, ...scoreMembers);
+    return await this.redis.zadd(key, ...scoreMembers);
   }
 
   /**
@@ -342,7 +342,7 @@ export class RedisService {
    * @returns Điểm số của thành viên, hoặc null nếu thành viên không tồn tại
    */
   async zScore(key: string, member: string): Promise<string | null> {
-    return this.redis.zscore(key, member);
+    return await this.redis.zscore(key, member);
   }
 
   /**
@@ -357,7 +357,7 @@ export class RedisService {
     min: number | string,
     max: number | string,
   ): Promise<string[]> {
-    return this.redis.zrangebyscore(key, min, max);
+    return await this.redis.zrangebyscore(key, min, max);
   }
 
   /**
@@ -368,7 +368,7 @@ export class RedisService {
    * @returns Mảng các thành viên trong phạm vi thứ hạng
    */
   async zRange(key: string, start: number, stop: number): Promise<string[]> {
-    return this.redis.zrange(key, start, stop);
+    return await this.redis.zrange(key, start, stop);
   }
 
   /**
@@ -378,7 +378,7 @@ export class RedisService {
    * @returns Số lượng thành viên đã xóa
    */
   async zRem(key: string, ...members: string[]): Promise<number> {
-    return this.redis.zrem(key, ...members);
+    return await this.redis.zrem(key, ...members);
   }
 
   /**
@@ -387,7 +387,7 @@ export class RedisService {
    * @returns Số lượng thành viên
    */
   async zCard(key: string): Promise<number> {
-    return this.redis.zcard(key);
+    return await this.redis.zcard(key);
   }
 
   /**
@@ -402,7 +402,7 @@ export class RedisService {
     increment: number,
     member: string,
   ): Promise<string> {
-    return this.redis.zincrby(key, increment, member);
+    return await this.redis.zincrby(key, increment, member);
   }
 
   // ------ CÁC PHƯƠNG THỨC KHÁC ------
@@ -413,7 +413,7 @@ export class RedisService {
    * @returns Thời gian sống còn lại (giây), -1 nếu khóa không có thời gian sống, -2 nếu khóa không tồn tại
    */
   async ttl(key: string): Promise<number> {
-    return this.redis.ttl(key);
+    return await this.redis.ttl(key);
   }
 
   /**
@@ -422,7 +422,7 @@ export class RedisService {
    * @returns Mảng các khóa phù hợp
    */
   async keys(pattern: string): Promise<string[]> {
-    return this.redis.keys(pattern);
+    return await this.redis.keys(pattern);
   }
 
   /**
@@ -445,7 +445,7 @@ export class RedisService {
    * @returns Số lượng client đã nhận tin nhắn
    */
   async publish(channel: string, message: string): Promise<number> {
-    return this.redis.publish(channel, message);
+    return await this.redis.publish(channel, message);
   }
 
   /**

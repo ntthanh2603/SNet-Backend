@@ -1,5 +1,5 @@
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
-import { RoleType } from 'src/helper/role.enum';
+import { MemberType } from 'src/helper/member.enum';
 import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
@@ -23,10 +23,10 @@ export class ChatMember {
 
   @Column({
     type: 'enum',
-    enum: RoleType,
-    default: RoleType.USER,
+    enum: MemberType,
+    default: MemberType.MEMBER,
   })
-  role: RoleType;
+  member_type: MemberType;
 
   @CreateDateColumn()
   created_at: Date;

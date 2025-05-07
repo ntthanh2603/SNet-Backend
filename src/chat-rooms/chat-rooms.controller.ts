@@ -17,8 +17,9 @@ import { IUser } from 'src/users/users.interface';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import { isUUID } from 'class-validator';
-import { IDChatRoomDto } from './dto/id-chat-room.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import IdDto from 'src/id.dto';
+import { UpdatePermissionChatRoomDto } from './dto/update-permission-chat-room.dto';
 
 @ApiTags('Chat Rooms')
 @Controller('chat-rooms')
@@ -44,22 +45,32 @@ export class ChatRoomsController {
   }
 
   @Patch()
-  @ResponseMessage('Update chat room success')
-  @ApiOperation({ summary: 'Update chat room' })
+  @ResponseMessage('Update name or avatar chat room success')
+  @ApiOperation({ summary: 'Update name or avatar chat room' })
   @UseInterceptors(FileInterceptor('avatar-chat-room'))
-  update(
+  updateNameOrAvatar(
     @Body() dto: UpdateChatRoomDto,
     @User() user: IUser,
     @UploadedFile()
     file: Express.Multer.File,
   ) {
-    return this.chatRoomsService.update(dto, user, file);
+    return this.chatRoomsService.updateNameOrAvatar(dto, user, file);
+  }
+
+  @Patch('permission')
+  @ResponseMessage('Update permission add member success')
+  @ApiOperation({ summary: 'Update permission add member' })
+  updatePermissionAddMember(
+    @Body() dto: UpdatePermissionChatRoomDto,
+    @User() user: IUser,
+  ) {
+    return this.chatRoomsService.updatePermissionAddMember(dto, user);
   }
 
   @Delete()
   @ResponseMessage('Delete chat room success')
   @ApiOperation({ summary: 'Delete chat room' })
-  delete(@Body() dto: IDChatRoomDto, @User() user: IUser) {
+  delete(@Body() dto: IdDto, @User() user: IUser) {
     return this.chatRoomsService.delete(dto, user);
   }
 }

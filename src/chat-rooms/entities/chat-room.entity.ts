@@ -1,5 +1,6 @@
 import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
 import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
+import { MemberType } from 'src/helper/member.enum';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -24,6 +25,9 @@ export class ChatRoom {
 
   @Column()
   created_by: string;
+
+  @Column({ type: 'enum', enum: MemberType, default: MemberType.MEMBER })
+  permission_add_member: MemberType;
 
   @CreateDateColumn()
   created_at: Date;

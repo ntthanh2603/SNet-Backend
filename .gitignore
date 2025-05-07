@@ -7,3 +7,4 @@ documentation/
 fastapi-ai/venv/
 __pycache__
 package-lock.json
+nestjs-log/

@@ -7,6 +7,7 @@ import { NotificationModule } from 'src/notifications/notifications.module';
 import { RedisModule } from 'src/redis/redis.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
+import { ChatMembersModule } from 'src/chat-members/chat-members.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MulterConfigService } from 'src/core/multer.config';
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),
+    ChatMembersModule,
   ],
   controllers: [ChatRoomsController],
   providers: [ChatRoomsService],

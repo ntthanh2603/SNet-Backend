@@ -11,8 +11,10 @@ import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import logger from 'src/logger';
-import { IDChatRoomDto } from './dto/id-chat-room.dto';
 import deleteFile from 'src/helper/deleteFile';
+import IdDto from 'src/id.dto';
+import { UpdatePermissionChatRoomDto } from './dto/update-permission-chat-room.dto';
+import { ChatMembersService } from 'src/chat-members/chat-members.service';
 
 @Injectable()
 export class ChatRoomsService {
@@ -20,6 +22,7 @@ export class ChatRoomsService {
     @InjectRepository(ChatRoom)
     private chatRoomsRepository: Repository<ChatRoom>,
     private readonly redisService: RedisService,
+    private readonly chatMemberService: ChatMembersService,
   ) {}
 
   // Find chat room by id
@@ -59,8 +62,12 @@ export class ChatRoomsService {
     }
   }
 
-  // Update chat room
-  async update(dto: UpdateChatRoomDto, user: IUser, file: Express.Multer.File) {
+  // Update name or avatar chat room
+  async updateNameOrAvatar(
+    dto: UpdateChatRoomDto,
+    user: IUser,
+    file: Express.Multer.File,
+  ) {
     const room = await this.findRoomChatByID(dto.id);
 
     if (!room || room.created_by !== user.id)
@@ -79,7 +86,10 @@ export class ChatRoomsService {
 
         await this.chatRoomsRepository.update(
           { id: dto.id },
-          { name: dto.name, avatar: file.path },
+          {
+            name: dto.name,
+            avatar: file.path,
+          },
         );
       }
       await this.redisService.del(`chat-room:${room.id}`);
@@ -90,8 +100,16 @@ export class ChatRoomsService {
     }
   }
 
+  async updatePermissionAddMember(
+    dto: UpdatePermissionChatRoomDto,
+    user: IUser,
+  ) {
+    const room = await this.findRoomChatByID(dto.id);
+    return;
+  }
+
   // Delete chat room
-  async delete(dto: IDChatRoomDto, user: IUser) {
+  async delete(dto: IdDto, user: IUser) {
     const room = await this.findRoomChatByID(dto.id);
 
     if (!room || room.created_by !== user.id) {
