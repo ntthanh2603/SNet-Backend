@@ -1,4 +1,5 @@
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
+import { MessageStatusType } from 'src/helper/message-status.enum';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -25,6 +26,13 @@ export class ChatMessage {
 
   @Column('text', { array: true, default: null })
   medias: string[];
+
+  @Column({
+    type: 'enum',
+    enum: MessageStatusType,
+    default: MessageStatusType.NORMAL,
+  })
+  message_status: MessageStatusType;
 
   @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.chat_messages)
   @JoinColumn({ name: 'chat_room_id' })

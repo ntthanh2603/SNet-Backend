@@ -9,6 +9,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { ChatRoomsService } from './chat-rooms.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -18,8 +19,10 @@ import { ResponseMessage, User } from 'src/decorator/customize';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import { isUUID } from 'class-validator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import IdDto from 'src/id.dto';
-import { UpdatePermissionChatRoomDto } from './dto/update-permission-chat-room.dto';
+import IdDto from 'src/helper/id.dto';
+import { PaginationDto } from 'src/helper/pagination.dto';
+import { UpdatePermissionAddMemberDto } from './dto/update-permission-add-member.dto';
+import { UpdatePermissionSendMessageDto } from './dto/update-permission-send-message.dto';
 
 @ApiTags('Chat Rooms')
 @Controller('chat-rooms')
@@ -35,6 +38,13 @@ export class ChatRoomsController {
     if (!room) throw new NotFoundException('Not found chat room');
 
     return room;
+  }
+
+  @Get('list-chat-room')
+  @ResponseMessage('Get list chat room success')
+  @ApiOperation({ summary: 'Get list chat room' })
+  getListChatRoom(@User() user: IUser, @Query() query: PaginationDto) {
+    return this.chatRoomsService.getListChatRoom(user, query);
   }
 
   @Post()
@@ -57,14 +67,24 @@ export class ChatRoomsController {
     return this.chatRoomsService.updateNameOrAvatar(dto, user, file);
   }
 
-  @Patch('permission')
+  @Patch('permission-add-member')
   @ResponseMessage('Update permission add member success')
   @ApiOperation({ summary: 'Update permission add member' })
   updatePermissionAddMember(
-    @Body() dto: UpdatePermissionChatRoomDto,
+    @Body() dto: UpdatePermissionAddMemberDto,
     @User() user: IUser,
   ) {
     return this.chatRoomsService.updatePermissionAddMember(dto, user);
+  }
+
+  @Patch('permission-send-message')
+  @ResponseMessage('Update permission send message success')
+  @ApiOperation({ summary: 'Update permission send message' })
+  updatePermissionSendMessage(
+    @Body() dto: UpdatePermissionSendMessageDto,
+    @User() user: IUser,
+  ) {
+    return this.chatRoomsService.updatePermissionSendMessage(dto, user);
   }
 
   @Delete()

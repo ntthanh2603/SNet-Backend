@@ -15,11 +15,13 @@ import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import logger from 'src/logger';
 import deleteFile from 'src/helper/deleteFile';
-import IdDto from 'src/id.dto';
-import { UpdatePermissionChatRoomDto } from './dto/update-permission-chat-room.dto';
 import { ChatMembersService } from 'src/chat-members/chat-members.service';
 import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
 import { MemberType } from 'src/helper/member.enum';
+import IdDto from 'src/helper/id.dto';
+import { PaginationDto } from 'src/helper/pagination.dto';
+import { UpdatePermissionAddMemberDto } from './dto/update-permission-add-member.dto';
+import { UpdatePermissionSendMessageDto } from './dto/update-permission-send-message.dto';
 
 @Injectable()
 export class ChatRoomsService {
@@ -117,7 +119,7 @@ export class ChatRoomsService {
    * @param user Current user attempting the operation
    */
   async updatePermissionAddMember(
-    dto: UpdatePermissionChatRoomDto,
+    dto: UpdatePermissionAddMemberDto,
     user: IUser,
   ) {
     try {
@@ -159,6 +161,62 @@ export class ChatRoomsService {
       logger.error('Update permission add member failed', error);
       throw new InternalServerErrorException(
         'Update permission add member failed',
+      );
+    }
+  }
+
+  /**
+   * Updates the permission to send message of a chat room
+   *
+   * @param dto the update permission send message dto
+   * @param user the user who is performing the update
+   * @throws {BadRequestException} if the user does not have permission to update or wrong information
+   * @throws {NotFoundException} if the chat room is not found
+   * @throws {InternalServerErrorException} if any other error occurs
+   */
+  async updatePermissionSendMessage(
+    dto: UpdatePermissionSendMessageDto,
+    user: IUser,
+  ) {
+    try {
+      const room = await this.findChatRoomByID(dto.id);
+      if (!room) throw new NotFoundException('Not found chat room');
+
+      const member = await this.chatMemberService.findMemberInChatRoom(
+        room.id,
+        user.id,
+      );
+
+      // Check update permission based on user role
+      const canUpdate = this.canUpdatePermission(
+        room,
+        member,
+        dto.permission_send_message,
+      );
+
+      if (!canUpdate) {
+        throw new BadRequestException(
+          'You do not have permission to update or wrong information',
+        );
+      }
+
+      // Perform the update if user has permission
+      await this.chatRoomsRepository.update(
+        { id: dto.id },
+        { permission_add_member: dto.permission_send_message },
+      );
+
+      return;
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+      logger.error('Update permission send message failed', error);
+      throw new InternalServerErrorException(
+        'Update permission send message failed',
       );
     }
   }
@@ -229,5 +287,20 @@ export class ChatRoomsService {
       logger.error('Delete chat room failed', error);
       throw new BadRequestException('Delete chat room failed');
     }
+  }
+
+  async getListChatRoom(user: IUser, query: PaginationDto) {
+    const { page, limit } = query;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const skip = (page - 1) * limit;
+
+    const chatRooms = ['temp'];
+    return {
+      data: chatRooms,
+      meta: {
+        page: page,
+        limit: limit,
+      },
+    };
   }
 }
