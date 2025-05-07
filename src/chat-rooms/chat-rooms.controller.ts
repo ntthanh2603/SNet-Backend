@@ -31,7 +31,7 @@ export class ChatRoomsController {
   @ApiOperation({ summary: 'Find chat room' })
   find(@Param('id') id: string) {
     if (!isUUID(id)) throw new NotFoundException('Id does not type uuid');
-    const room = this.chatRoomsService.findRoomChatByID(id);
+    const room = this.chatRoomsService.findChatRoomByID(id);
     if (!room) throw new NotFoundException('Not found chat room');
 
     return room;

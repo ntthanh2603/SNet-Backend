@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { IUser } from 'src/users/users.interface';
 import { ChatMember } from './entities/chat-member.entity';
 import { RedisService } from 'src/redis/redis.service';
@@ -7,6 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import logger from 'src/logger';
 import { CreateChatMemberDto } from './dto/create-chat-member.dto';
+import { ChatRoomsService } from 'src/chat-rooms/chat-rooms.service';
 
 @Injectable()
 export class ChatMembersService {
@@ -16,6 +22,8 @@ export class ChatMembersService {
     @InjectRepository(ChatRoom)
     private chatRoomsRepository: Repository<ChatRoom>,
     private readonly redisService: RedisService,
+    @Inject(forwardRef(() => ChatRoomsService))
+    private readonly chatRoomService: ChatRoomsService,
   ) {}
 
   // Add member to chat conversation
