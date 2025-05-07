@@ -29,7 +29,7 @@ export class ChatRoomsController {
   @Get(':id')
   @ResponseMessage('Find chat room success')
   @ApiOperation({ summary: 'Find chat room' })
-  find(@Param('id') id: string) {
+  findChatRoomById(@Param('id') id: string) {
     if (!isUUID(id)) throw new NotFoundException('Id does not type uuid');
     const room = this.chatRoomsService.findChatRoomByID(id);
     if (!room) throw new NotFoundException('Not found chat room');
@@ -40,8 +40,8 @@ export class ChatRoomsController {
   @Post()
   @ResponseMessage('Create chat room success')
   @ApiOperation({ summary: 'Create chat room' })
-  create(@Body() dto: CreateChatRoomDto, @User() user: IUser) {
-    return this.chatRoomsService.create(dto, user);
+  createChatRoom(@Body() dto: CreateChatRoomDto, @User() user: IUser) {
+    return this.chatRoomsService.createChatRoom(dto, user);
   }
 
   @Patch()
@@ -70,7 +70,7 @@ export class ChatRoomsController {
   @Delete()
   @ResponseMessage('Delete chat room success')
   @ApiOperation({ summary: 'Delete chat room' })
-  delete(@Body() dto: IdDto, @User() user: IUser) {
-    return this.chatRoomsService.delete(dto, user);
+  deleteChatRoom(@Body() dto: IdDto, @User() user: IUser) {
+    return this.chatRoomsService.deleteChatRoom(dto, user);
   }
 }

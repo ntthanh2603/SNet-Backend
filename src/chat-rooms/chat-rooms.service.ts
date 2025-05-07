@@ -54,7 +54,7 @@ export class ChatRoomsService {
   }
 
   // Create chat room
-  async create(dto: CreateChatRoomDto, user: IUser) {
+  async createChatRoom(dto: CreateChatRoomDto, user: IUser) {
     try {
       const room = await this.chatRoomsRepository.save({
         name: dto.name,
@@ -211,7 +211,7 @@ export class ChatRoomsService {
   }
 
   // Delete chat room
-  async delete(dto: IdDto, user: IUser) {
+  async deleteChatRoom(dto: IdDto, user: IUser) {
     const room = await this.findChatRoomByID(dto.id);
 
     if (!room || room.created_by !== user.id) {
