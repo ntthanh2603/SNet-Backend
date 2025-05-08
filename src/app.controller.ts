@@ -14,6 +14,9 @@ export class AppController {
   @ApiOperation({ summary: 'Trang chủ' })
   home() {
     logger.info('Home page accessed');
+    logger.warn('Home page accessed');
+    logger.error('Home page accessed');
+    logger.debug('Home page accessed');
     return this.appService.home();
   }
 

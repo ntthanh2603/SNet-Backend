@@ -81,7 +81,7 @@ services:
       - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
     env_file: .env
     volumes:
-      - ./nestjs-log/logs:/src/log:ro
+      - ./nestjs-logs:/nestjs-logs:ro
       - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
     depends_on:
       - elasticsearch
@@ -165,7 +165,7 @@ services:
   #   volumes:
   #     - .:/usr/src/app:cached
   #     - /usr/src/app/node_modules
-  #     - ./nestjs-log/logs:/usr/src/app/logs
+  #     - ./nestjs-logs:/usr/src/appnestjs-logs
   #   networks:
   #     - app-network
   #   restart: unless-stopped

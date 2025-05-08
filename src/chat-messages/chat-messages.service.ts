@@ -15,5 +15,7 @@ export class ChatMessagesService {
     dto: CreateChatMessageDto,
     user: IUser,
     file: Express.Multer.File,
-  ) {}
+  ) {
+    console.log(dto, user, file);
+  }
 }
