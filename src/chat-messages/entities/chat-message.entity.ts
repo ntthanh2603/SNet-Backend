@@ -9,7 +9,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -52,6 +52,6 @@ export class ChatMessage {
   @CreateDateColumn()
   created_at: Date;
 
-  @ManyToOne(() => PinMessage, (pinMessage) => pinMessage.chat_message)
+  @OneToOne(() => PinMessage, (pinMessage) => pinMessage.chat_message)
   pin_messages: PinMessage;
 }

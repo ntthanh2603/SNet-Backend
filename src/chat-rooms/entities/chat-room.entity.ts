@@ -2,7 +2,7 @@ import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
 import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
 import { MemberType } from 'src/helper/member.enum';
 import { ReactionType } from 'src/helper/reaction.enum';
-import { PinChats } from 'src/pin-chats/entities/pin-chat.entity';
+import { PinChat } from 'src/pin-chats/entities/pin-chat.entity';
 import { PinMessage } from 'src/pin-messages/entities/pin-messages.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -61,6 +61,6 @@ export class ChatRoom {
   @ManyToOne(() => PinMessage, (pinMessage) => pinMessage.chat_message)
   pin_messages: PinMessage[];
 
-  @ManyToOne(() => PinChats, (pinChats) => pinChats.chat_room_id)
-  pin_chats: PinChats;
+  @OneToMany(() => PinChat, (pinChat) => pinChat.chat_room)
+  pin_chats: PinChat[];
 }

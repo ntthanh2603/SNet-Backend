@@ -2,13 +2,15 @@ import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
+  Entity,
   Index,
   JoinColumn,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-export class PinChats {
+@Entity()
+export class PinChat {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -20,11 +22,11 @@ export class PinChats {
   @Column()
   user_id: string;
 
-  @OneToMany(() => ChatRoom, (chatRoom) => chatRoom.pin_chats)
+  @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.pin_chats)
   @JoinColumn({ name: 'chat_room_id' })
-  chat_room: PinChats[];
+  chat_room: ChatRoom;
 
-  @OneToMany(() => User, (user) => user.pin_chats)
+  @ManyToOne(() => User, (user) => user.pin_chats)
   @JoinColumn({ name: 'user_id' })
-  user: PinChats[];
+  user: User;
 }
