@@ -1,11 +1,15 @@
 import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
 import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
 import { MemberType } from 'src/helper/member.enum';
+import { ReactionType } from 'src/helper/reaction.enum';
+import { PinChats } from 'src/pin-chats/entities/pin-chat.entity';
+import { PinMessage } from 'src/pin-messages/entities/pin-messages.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -18,8 +22,10 @@ export class ChatRoom {
   id: string;
 
   @Column()
+  @Index()
   name: string;
 
+  @Index()
   @Column({ default: 'chat-room.png' })
   avatar: string;
 
@@ -35,6 +41,13 @@ export class ChatRoom {
   @CreateDateColumn()
   created_at: Date;
 
+  @Index()
+  @Column({ type: 'enum', enum: ReactionType, default: ReactionType.LIKE })
+  reaction_default: ReactionType;
+
+  @Column({ default: false })
+  end_to_end_encryption: boolean;
+
   @ManyToOne(() => User, (user) => user.chat_rooms)
   @JoinColumn({ name: 'created_by' })
   user: User;
@@ -44,4 +57,10 @@ export class ChatRoom {
 
   @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.chat_room)
   chat_messages: ChatMessage[];
+
+  @ManyToOne(() => PinMessage, (pinMessage) => pinMessage.chat_message_id)
+  pin_messages: PinMessage[];
+
+  @ManyToOne(() => PinChats, (pinChats) => pinChats.chat_room_id)
+  pin_chats: PinChats[];
 }

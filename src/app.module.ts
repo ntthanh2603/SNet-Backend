@@ -29,6 +29,8 @@ import { ParentChildCommentsModule } from './parent-child-comments/parent-child-
 import { SearchEngineModule } from './search-engine/search-engine.module';
 import { AdminsModule } from './admins/admins.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { PinMessagesModule } from './pin-messages/pin-messages.module';
+import { PinChatsModule } from './pin-chats/pin-chats.module';
 
 @Module({
   imports: [
@@ -115,6 +117,8 @@ import { GatewayModule } from './gateway/gateway.module';
     SearchEngineModule,
     AdminsModule,
     GatewayModule,
+    PinMessagesModule,
+    PinChatsModule,
   ],
   controllers: [AppController],
   providers: [

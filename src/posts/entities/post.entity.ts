@@ -5,6 +5,7 @@ import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -17,17 +18,17 @@ export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   user_id: string;
 
+  @Index()
   @Column({ default: null })
   content: string;
 
+  @Index()
   @Column('text', { array: true, default: null })
   medias: string[];
-
-  @Column('text', { array: true, default: null })
-  hashtags: string[];
 
   @Column({ default: PrivacyType.PUBLIC, enum: PrivacyType })
   privacy: PrivacyType;

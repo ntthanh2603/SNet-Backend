@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity()
@@ -15,12 +16,15 @@ export class ChatMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   chat_room_id: string;
 
+  @Index()
   @Column()
   user_id: string;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: MemberType,

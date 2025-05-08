@@ -3,6 +3,7 @@ import { SaveList } from 'src/save-lists/entities/save-list.entity';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToOne,
@@ -14,9 +15,11 @@ export class SavePost {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   save_list_id: string;
 
+  @Index()
   @Column()
   post_id: string;
 

@@ -9,6 +9,7 @@ import { PrivacyType } from 'src/helper/privacy.enum';
 import { RoleType } from 'src/helper/role.enum';
 import { UserCategoryType } from 'src/helper/user-category.enum';
 import { NotificationUser } from 'src/notification-users/entities/notification-user.entity';
+import { PinChats } from 'src/pin-chats/entities/pin-chat.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Relation } from 'src/relations/entities/relation.entity';
 import { SaveList } from 'src/save-lists/entities/save-list.entity';
@@ -16,6 +17,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -26,17 +29,21 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column({ unique: true })
   email: string;
 
+  @Index()
   @Column()
   @MinLength(8)
   @MaxLength(15)
   password: string;
 
+  @Index()
   @Column({ nullable: true })
   avatar: string;
 
+  @Index()
   @Column()
   username: string;
 
@@ -115,4 +122,7 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @ManyToOne(() => PinChats, (pinChat) => pinChat.user_id)
+  pin_chats: PinChats[];
 }

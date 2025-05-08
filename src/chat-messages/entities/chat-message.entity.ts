@@ -1,10 +1,12 @@
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import { MessageStatusType } from 'src/helper/message-status.enum';
+import { PinMessage } from 'src/pin-messages/entities/pin-messages.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -15,6 +17,7 @@ export class ChatMessage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   chat_room_id: string;
 
@@ -22,11 +25,14 @@ export class ChatMessage {
   created_by: string;
 
   @Column()
+  @Index()
   message: string;
 
+  @Index()
   @Column('text', { array: true, default: null })
   medias: string[];
 
+  @Index()
   @Column({
     type: 'enum',
     enum: MessageStatusType,
@@ -44,4 +50,7 @@ export class ChatMessage {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @ManyToOne(() => PinMessage, (pinMessage) => pinMessage.chat_message_id)
+  pin_messages: PinMessage[];
 }

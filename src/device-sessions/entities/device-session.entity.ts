@@ -2,6 +2,7 @@ import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -13,18 +14,23 @@ export class DeviceSession {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   device_id: string;
 
+  @Index()
   @Column()
   ip_address: string;
 
+  @Index()
   @Column()
   secret_key: string;
 
+  @Index()
   @Column({ default: null })
   refresh_token: string;
 
+  @Index()
   @Column()
   expired_at: Date;
 
@@ -34,6 +40,7 @@ export class DeviceSession {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @Index()
   @Column()
   user_id: string;
 

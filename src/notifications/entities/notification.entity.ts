@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -13,9 +14,11 @@ export class Notification {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column({ default: null })
   title: string;
 
+  @Index()
   @Column({ default: null })
   message: string;
 

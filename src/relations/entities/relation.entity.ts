@@ -16,9 +16,11 @@ export class Relation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   request_side_id: string;
 
+  @Index()
   @Column()
   accept_side_id: string;
 
@@ -33,6 +35,7 @@ export class Relation {
   @Column({ type: 'enum', enum: RelationType })
   relation_type: RelationType;
 
+  @Index()
   @CreateDateColumn()
   created_at: Date;
 }

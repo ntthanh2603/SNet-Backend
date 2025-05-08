@@ -3,6 +3,7 @@ import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -13,15 +14,19 @@ export class NotificationUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column()
   notification_id: string;
 
+  @Index()
   @Column()
   user_id: string;
 
+  @Index()
   @Column({ default: false })
   is_sent: boolean;
 
+  @Index()
   @Column({ default: false })
   is_read: boolean;
 
