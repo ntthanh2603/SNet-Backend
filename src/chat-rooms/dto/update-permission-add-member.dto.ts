@@ -11,5 +11,5 @@ export class UpdatePermissionAddMemberDto {
   @ApiProperty({
     example: 'member',
   })
-  permission_add_member: MemberType;
+  new_permission_add_member: MemberType;
 }

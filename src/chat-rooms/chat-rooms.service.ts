@@ -21,7 +21,6 @@ import { MemberType } from 'src/helper/member.enum';
 import IdDto from 'src/helper/id.dto';
 import { PaginationDto } from 'src/helper/pagination.dto';
 import { UpdatePermissionAddMemberDto } from './dto/update-permission-add-member.dto';
-import { UpdatePermissionSendMessageDto } from './dto/update-permission-send-message.dto';
 
 @Injectable()
 export class ChatRoomsService {
@@ -65,7 +64,7 @@ export class ChatRoomsService {
       await this.chatMembersRepository.save({
         chat_room_id: room.id,
         user_id: user.id,
-        member_type: MemberType.CREATER,
+        member_type: MemberType.ADMIN,
       });
 
       return;
@@ -83,9 +82,14 @@ export class ChatRoomsService {
   ) {
     const room = await this.findChatRoomByID(dto.id);
 
-    if (!room || room.created_by !== user.id)
+    const member = await this.chatMemberService.findMemberInChatRoom(
+      dto.id,
+      user.id,
+    );
+
+    if (!room || !member)
       throw new NotFoundException(
-        'Not found chat room or you do not have permission to update this chat',
+        'Not found chat room or you do not in this chat',
       );
 
     try {
@@ -113,49 +117,40 @@ export class ChatRoomsService {
     }
   }
 
-  /**
-   * Updates the permission setting for adding members to a chat room
-   * @param dto Data transfer object containing room id and permission level
-   * @param user Current user attempting the operation
-   */
+  // Update permission add member
   async updatePermissionAddMember(
     dto: UpdatePermissionAddMemberDto,
     user: IUser,
   ) {
     try {
       const room = await this.findChatRoomByID(dto.id);
-      if (!room) throw new NotFoundException('Not found chat room');
 
       const member = await this.chatMemberService.findMemberInChatRoom(
-        room.id,
+        dto.id,
         user.id,
       );
 
-      // Check update permission based on user role
-      const canUpdate = this.canUpdatePermission(
-        room,
-        member,
-        dto.permission_add_member,
-      );
+      console.log('room', room);
+      console.log('member', member);
 
-      if (!canUpdate) {
-        throw new BadRequestException(
-          'You do not have permission to update or wrong information',
+      if (
+        room &&
+        member &&
+        room.permission_add_member !== dto.new_permission_add_member &&
+        member.member_type === MemberType.ADMIN
+      ) {
+        await this.chatRoomsRepository.update(
+          { id: room.id },
+          { permission_add_member: dto.new_permission_add_member },
         );
+        return;
       }
 
-      // Perform the update if user has permission
-      await this.chatRoomsRepository.update(
-        { id: dto.id },
-        { permission_add_member: dto.permission_add_member },
+      throw new BadRequestException(
+        'Can not update permission add member because you are not admin or wrong input',
       );
-
-      return;
     } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof NotFoundException
-      ) {
+      if (error instanceof BadRequestException) {
         throw error;
       }
       logger.error('Update permission add member failed', error);
@@ -165,108 +160,7 @@ export class ChatRoomsService {
     }
   }
 
-  /**
-   * Updates the permission to send message of a chat room
-   *
-   * @param dto the update permission send message dto
-   * @param user the user who is performing the update
-   * @throws {BadRequestException} if the user does not have permission to update or wrong information
-   * @throws {NotFoundException} if the chat room is not found
-   * @throws {InternalServerErrorException} if any other error occurs
-   */
-  async updatePermissionSendMessage(
-    dto: UpdatePermissionSendMessageDto,
-    user: IUser,
-  ) {
-    try {
-      const room = await this.findChatRoomByID(dto.id);
-      if (!room) throw new NotFoundException('Not found chat room');
-
-      const member = await this.chatMemberService.findMemberInChatRoom(
-        room.id,
-        user.id,
-      );
-
-      // Check update permission based on user role
-      const canUpdate = this.canUpdatePermission(
-        room,
-        member,
-        dto.permission_send_message,
-      );
-
-      if (!canUpdate) {
-        throw new BadRequestException(
-          'You do not have permission to update or wrong information',
-        );
-      }
-
-      // Perform the update if user has permission
-      await this.chatRoomsRepository.update(
-        { id: dto.id },
-        { permission_add_member: dto.permission_send_message },
-      );
-
-      return;
-    } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof NotFoundException
-      ) {
-        throw error;
-      }
-      logger.error('Update permission send message failed', error);
-      throw new InternalServerErrorException(
-        'Update permission send message failed',
-      );
-    }
-  }
-
-  /**
-   * Checks if the user has permission to update the add member permission level
-   * @param room The chat room to be updated
-   * @param member The chat member attempting the update
-   * @param newPermission The new permission level to be set
-   * @returns Boolean indicating whether the user can perform the update
-   */
-  private canUpdatePermission(
-    room: ChatRoom,
-    member: ChatMember,
-    newPermission: MemberType,
-  ): boolean {
-    // Case 1: Update to CREATOR level - only room creator can do this
-    if (newPermission === MemberType.CREATER) {
-      return (
-        room.permission_add_member !== MemberType.CREATER &&
-        room.created_by === member.user_id
-      );
-    }
-
-    // Case 2: Update to ADMIN level
-    if (newPermission === MemberType.ADMIN) {
-      // From CREATOR down to ADMIN: only room creator can do this
-      if (room.permission_add_member === MemberType.CREATER) {
-        return member.member_type === MemberType.CREATER;
-      }
-      // From MEMBER up to ADMIN: ADMIN or CREATOR can do this
-      if (room.permission_add_member === MemberType.MEMBER) {
-        return member.member_type !== MemberType.MEMBER;
-      }
-    }
-
-    // Case 3: Update to MEMBER level
-    if (newPermission === MemberType.MEMBER) {
-      // From CREATOR down to MEMBER: only room creator can do this
-      if (room.permission_add_member === MemberType.CREATER) {
-        return member.member_type === MemberType.CREATER;
-      }
-      // From ADMIN down to MEMBER: ADMIN or CREATOR can do this
-      if (room.permission_add_member === MemberType.ADMIN) {
-        return member.member_type !== MemberType.MEMBER;
-      }
-    }
-
-    return false;
-  }
+  async updatePermissionSendMessage() {}
 
   // Delete chat room
   async deleteChatRoom(dto: IdDto, user: IUser) {

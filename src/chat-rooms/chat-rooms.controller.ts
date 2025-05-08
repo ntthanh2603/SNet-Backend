@@ -22,7 +22,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import IdDto from 'src/helper/id.dto';
 import { PaginationDto } from 'src/helper/pagination.dto';
 import { UpdatePermissionAddMemberDto } from './dto/update-permission-add-member.dto';
-import { UpdatePermissionSendMessageDto } from './dto/update-permission-send-message.dto';
 
 @ApiTags('Chat Rooms')
 @Controller('chat-rooms')
@@ -76,17 +75,6 @@ export class ChatRoomsController {
   ) {
     return this.chatRoomsService.updatePermissionAddMember(dto, user);
   }
-
-  @Patch('permission-send-message')
-  @ResponseMessage('Update permission send message success')
-  @ApiOperation({ summary: 'Update permission send message' })
-  updatePermissionSendMessage(
-    @Body() dto: UpdatePermissionSendMessageDto,
-    @User() user: IUser,
-  ) {
-    return this.chatRoomsService.updatePermissionSendMessage(dto, user);
-  }
-
   @Delete()
   @ResponseMessage('Delete chat room success')
   @ApiOperation({ summary: 'Delete chat room' })
