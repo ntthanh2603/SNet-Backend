@@ -58,9 +58,9 @@ export class ChatRoom {
   @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.chat_room)
   chat_messages: ChatMessage[];
 
-  @ManyToOne(() => PinMessage, (pinMessage) => pinMessage.chat_message_id)
+  @ManyToOne(() => PinMessage, (pinMessage) => pinMessage.chat_message)
   pin_messages: PinMessage[];
 
   @ManyToOne(() => PinChats, (pinChats) => pinChats.chat_room_id)
-  pin_chats: PinChats[];
+  pin_chats: PinChats;
 }

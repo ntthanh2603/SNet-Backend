@@ -2,12 +2,14 @@ import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import {
   Column,
+  Entity,
   Index,
   JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+@Entity()
 export class PinMessage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
