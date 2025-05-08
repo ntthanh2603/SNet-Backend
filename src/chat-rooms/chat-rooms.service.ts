@@ -160,8 +160,6 @@ export class ChatRoomsService {
     }
   }
 
-  async updatePermissionSendMessage() {}
-
   // Delete chat room
   async deleteChatRoom(dto: IdDto, user: IUser) {
     const room = await this.findChatRoomByID(dto.id);

@@ -35,9 +35,6 @@ export class ChatRoom {
   @Column({ type: 'enum', enum: MemberType, default: MemberType.MEMBER })
   permission_add_member: MemberType;
 
-  @Column({ type: 'enum', enum: MemberType, default: MemberType.MEMBER })
-  permission_send_message: MemberType;
-
   @CreateDateColumn()
   created_at: Date;
 

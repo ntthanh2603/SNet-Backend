@@ -75,6 +75,7 @@ export class ChatRoomsController {
   ) {
     return this.chatRoomsService.updatePermissionAddMember(dto, user);
   }
+
   @Delete()
   @ResponseMessage('Delete chat room success')
   @ApiOperation({ summary: 'Delete chat room' })

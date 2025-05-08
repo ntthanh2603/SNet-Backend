@@ -32,6 +32,12 @@ export class ChatMember {
   })
   member_type: MemberType;
 
+  @Column({ default: '' })
+  nickname: string;
+
+  @Column({ default: true })
+  allow_notification: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 

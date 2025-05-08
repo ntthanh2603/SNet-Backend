@@ -8,6 +8,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import { ChatRoomsModule } from 'src/chat-rooms/chat-rooms.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ChatRoomsModule } from 'src/chat-rooms/chat-rooms.module';
       useClass: MulterConfigService,
     }),
     forwardRef(() => ChatRoomsModule),
+    UsersModule,
   ],
   controllers: [ChatMembersController],
   providers: [ChatMembersService],
