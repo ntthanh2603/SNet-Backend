@@ -1,10 +1,12 @@
 import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
+import { WaitingMembers } from 'src/chat-members/entities/waiting-members.entity';
 import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
 import { MemberType } from 'src/helper/member.enum';
 import { ReactionType } from 'src/helper/reaction.enum';
 import { PinChat } from 'src/pin-chats/entities/pin-chat.entity';
 import { PinMessage } from 'src/pin-messages/entities/pin-messages.entity';
 import { User } from 'src/users/entities/user.entity';
+
 import {
   Column,
   CreateDateColumn,
@@ -60,4 +62,7 @@ export class ChatRoom {
 
   @OneToMany(() => PinChat, (pinChat) => pinChat.chat_room)
   pin_chats: PinChat[];
+
+  @OneToMany(() => WaitingMembers, (waitingMembers) => waitingMembers.chat_room)
+  waiting_members: WaitingMembers[];
 }

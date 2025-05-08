@@ -4,63 +4,68 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { IUser } from 'src/users/users.interface';
 import { ChatMember } from './entities/chat-member.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import logger from 'src/logger';
-import { CreateChatMemberDto } from './dto/create-chat-member.dto';
 import { ChatRoomsService } from 'src/chat-rooms/chat-rooms.service';
 import { UsersService } from 'src/users/users.service';
+import { WaitingMembers } from './entities/waiting-members.entity';
+import { RequestJoinChatRoomDto } from './dto/request-join-chat-room.dto';
+import { MemberType } from 'src/helper/member.enum';
 
 @Injectable()
 export class ChatMembersService {
   constructor(
     @InjectRepository(ChatMember)
     private chatMembersRepository: Repository<ChatMember>,
-    @InjectRepository(ChatRoom)
-    private chatRoomsRepository: Repository<ChatRoom>,
+    @InjectRepository(WaitingMembers)
+    private readonly waitingMembersRepository: Repository<WaitingMembers>,
     private readonly redisService: RedisService,
     @Inject(forwardRef(() => ChatRoomsService))
     private readonly chatRoomService: ChatRoomsService,
     private readonly usersService: UsersService,
   ) {}
 
-  // Add member to chat conversation
-  async addMember(dto: CreateChatMemberDto, user: IUser) {
+  async requestJoinChatRoom(dto: RequestJoinChatRoomDto, user: IUser) {
     try {
       const room = await this.chatRoomService.findChatRoomByID(
         dto.chat_room_id,
       );
 
-      const member = await this.findMemberInChatRoom(
-        dto.chat_room_id,
-        dto.user_id,
-      );
+      if (!room) throw new NotFoundException('Not found chat room');
 
-      if (!room || member)
-        throw new BadRequestException(
-          'Chat room not found or member existed in chat room',
-        );
+      const member = await this.findMemberInChatRoom(dto.chat_room_id, user.id);
 
-      const userDb = await this.usersService.findUserById(user.id);
+      if (member)
+        throw new BadRequestException('You already in this chat room');
 
-      await this.chatMembersRepository.save({
-        chat_room_id: dto.chat_room_id,
-        user_id: user.id,
-        nickname: userDb.username,
-      });
+      if (room.permission_add_member === MemberType.ADMIN) {
+        await this.waitingMembersRepository.save({
+          chat_room_id: dto.chat_room_id,
+          user_id: user.id,
+        });
+      } else {
+        await this.chatMembersRepository.save({
+          chat_room_id: dto.chat_room_id,
+          user_id: user.id,
+          member_type: MemberType.MEMBER,
+        });
+      }
 
       return;
     } catch (error) {
-      if (error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      )
         throw error;
-      }
-      logger.error('Add member to chat room failed', error);
-      throw new InternalServerErrorException('Add member to chat room failed');
+      logger.error('Request join chat room failed', error);
+      throw new InternalServerErrorException('Request join chat room failed');
     }
   }
 

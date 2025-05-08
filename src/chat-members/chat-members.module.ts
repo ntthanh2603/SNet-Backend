@@ -6,14 +6,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from 'src/redis/redis.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
-import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import { ChatRoomsModule } from 'src/chat-rooms/chat-rooms.module';
 import { UsersModule } from 'src/users/users.module';
+import { WaitingMembers } from './entities/waiting-members.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([WaitingMembers]),
     TypeOrmModule.forFeature([ChatMember]),
-    TypeOrmModule.forFeature([ChatRoom]),
     RedisModule,
     MulterModule.registerAsync({
       useClass: MulterConfigService,

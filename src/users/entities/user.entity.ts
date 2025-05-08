@@ -1,5 +1,6 @@
 import { MaxLength, MinLength } from 'class-validator';
 import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
+import { WaitingMembers } from 'src/chat-members/entities/waiting-members.entity';
 import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
 import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
@@ -13,6 +14,7 @@ import { PinChat } from 'src/pin-chats/entities/pin-chat.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Relation } from 'src/relations/entities/relation.entity';
 import { SaveList } from 'src/save-lists/entities/save-list.entity';
+
 import {
   Column,
   CreateDateColumn,
@@ -124,4 +126,7 @@ export class User {
 
   @OneToMany(() => PinChat, (pinChat) => pinChat.user)
   pin_chats: PinChat[];
+
+  @OneToMany(() => WaitingMembers, (waitingMembers) => waitingMembers.user)
+  waiting_members: WaitingMembers[];
 }

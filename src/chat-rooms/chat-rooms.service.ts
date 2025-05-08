@@ -130,9 +130,6 @@ export class ChatRoomsService {
         user.id,
       );
 
-      console.log('room', room);
-      console.log('member', member);
-
       if (
         room &&
         member &&
