@@ -38,8 +38,8 @@ export class UsersController {
   @Get('/account')
   @ResponseMessage('Get account from header successfully')
   @ApiOperation({ summary: 'Get account' })
-  handleGetAccount(@User() user: IUser) {
-    return user;
+  getAccount(@User() user: IUser) {
+    return this.usersService.getAccount(user);
   }
 
   @Get(':user_id')

@@ -49,6 +49,10 @@ export class UsersService {
     private readonly relationsService: RelationsService,
   ) {}
 
+  async getAccount(user: IUser) {
+    return user;
+  }
+
   async getHashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);

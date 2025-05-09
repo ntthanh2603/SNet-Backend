@@ -25,7 +25,7 @@ SELECT
     CASE WHEN i % 2 = 0 THEN ARRAY['Education ' || i]::TEXT[] ELSE ARRAY[]::TEXT[] END AS education,
     'user'::user_role_enum AS role,
     CURRENT_TIMESTAMP AS created_at
-FROM generate_series(1, 200) AS i;
+FROM generate_series(1, 5) AS i;
 
 
 

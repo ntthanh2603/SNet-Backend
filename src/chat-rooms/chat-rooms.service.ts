@@ -183,6 +183,8 @@ export class ChatRoomsService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const skip = (page - 1) * limit;
 
+    console.log('query', query);
+
     const chatRooms = ['temp'];
     return {
       data: chatRooms,
