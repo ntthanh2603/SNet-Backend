@@ -57,18 +57,21 @@ export class UsersController {
       user.id,
       user_id,
     );
-
-    if (!privacySeeProfile) {
-      const { id, email, avatar, username, privacy } = userResult;
-      return {
-        id,
-        email,
-        avatar,
-        username,
-        privacy,
-      };
+    if (user_id === user.id) {
+      return result;
+    } else {
+      if (!privacySeeProfile) {
+        const { id, email, avatar, username, privacy } = userResult;
+        return {
+          id,
+          email,
+          avatar,
+          username,
+          privacy,
+        };
+      }
+      return result;
     }
-    return result;
   }
 
   @Patch('/profile')
@@ -90,7 +93,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Send email to login',
   })
-  @Throttle({ default: { limit: 1, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   beforeLogin(@Body() dto: BeforeLoginDto) {
     return this.usersService.beforeLogin(dto);
   }
@@ -99,7 +102,7 @@ export class UsersController {
   @ResponseMessage('Login account successfully')
   @Post('/verify-otp/login')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Login account' })
   @ApiBody({ type: AfterLoginDto })
   afterlogin(
@@ -142,7 +145,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Send otp to forgot password',
   })
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   boforeForgotPassword(@Body() dto: SendOtpDto) {
     return this.usersService.beforeForgotPassword(dto);
   }
@@ -153,7 +156,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Authenticate otp to update password',
   })
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   afterForgotPassword(@Body() dto: AfterForgotPasswordDto) {
     return this.usersService.afterForgotPassword(dto);
   }
@@ -163,7 +166,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Gửi OTP về email',
   })
-  @Throttle({ default: { limit: 1, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   beforeDelete(@User() user: IUser) {
     return this.usersService.beforeDelete(user);
   }
