@@ -17,6 +17,7 @@ import * as randomatic from 'randomatic';
 import { RoleType } from 'src/helper/role.enum';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from 'src/auth/auth.service';
+import { IPayload } from 'src/auth/payload.interface';
 
 export interface ISession {
   userId: string;
@@ -81,7 +82,7 @@ export class DeviceSessionsService {
 
     const user = await this.usersService.findUserById(session.user.id);
 
-    const payload = {
+    const payload: IPayload = {
       id: user.id,
       deviceSecssionId: session.id,
       role: user.role,
@@ -112,7 +113,7 @@ export class DeviceSessionsService {
 
     const deviceSecssionId = currentDevice?.id || randomUUID();
 
-    const payload = {
+    const payload: IPayload = {
       id: userId,
       deviceSecssionId: deviceSecssionId,
       role: role,

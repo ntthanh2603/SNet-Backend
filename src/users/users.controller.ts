@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
@@ -29,6 +30,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Fingerprint, IFingerprint } from 'nestjs-fingerprint';
 import { Response } from 'express';
 import { AfterForgotPasswordDto } from './dto/after-forgot-password';
+import { GoogleAuthGuard } from 'src/auth/google-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -176,6 +178,16 @@ export class UsersController {
 
     return this.usersService.afterDelete(user.id, dto.otp);
   }
+
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get('google/login')
+  googlelogin() {}
+
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get('google/callback')
+  googleCallback() {}
 }
 
 export interface LoginMetaData {

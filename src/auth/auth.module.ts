@@ -6,9 +6,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
+import { GoogleStrategy } from './google.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { GoogleAuthGuard } from './google-auth.guard';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]),
     forwardRef(() => UsersModule),
     forwardRef(() => DeviceSessionsModule),
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -24,7 +29,7 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, GoogleAuthGuard],
+  exports: [AuthService, GoogleAuthGuard, JwtStrategy],
 })
 export class AuthModule {}

@@ -14,6 +14,7 @@ import { MulterConfigService } from 'src/core/multer.config';
 import { RelationsModule } from 'src/relations/relations.module';
 import { NestjsFingerprintModule } from 'nestjs-fingerprint';
 import { SearchEngineModule } from 'src/search-engine/search-engine.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SearchEngineModule } from 'src/search-engine/search-engine.module';
       useClass: MulterConfigService,
     }),
     RedisModule,
+    forwardRef(() => AuthModule),
     forwardRef(() => RelationsModule),
     forwardRef(() => DeviceSessionsModule),
     BullModule.registerQueue({ name: 'send-email' }),

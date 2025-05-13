@@ -15,7 +15,7 @@ export class AfterSignUpDto {
   @MaxLength(6)
   @MinLength(6)
   @ApiProperty({ example: '123123', description: 'otp' })
-  otp: string;
+  otp?: string;
 
   @IsEmail()
   @IsString()
