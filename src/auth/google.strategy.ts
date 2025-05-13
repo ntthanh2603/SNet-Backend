@@ -37,37 +37,3 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     return await this.authService.validateTokenGoogle(user);
   }
 }
-
-// accessToken ya29.a0AW4XtxhHXhWgEVE2VNiTetMB19o2G2jfKQ2GFkgnOn8Ui6zRSFs1Cxhy7639_TlRY8ajTFVqChbrOOQgkcfho-AcXdLsffs_Zdp21h9UVcqrGDTXSWFTHNYuKt6QsslRScpVADG5IlMev-XqRniyHubPygsHdyHp2BnUGBq-aCgYKAZUSARYSFQHGX2MiGDAKhXVywGjMCYOJGwsojQ0175
-// refreshToken undefined
-// profile {
-//   id: '101044400483186205867',
-//   displayName: 'Thành Tuấn',
-//   name: { familyName: 'Tuấn', givenName: 'Thành' },
-//   emails: [ { value: 'tuanthanh2kk4@gmail.com', verified:
-//  true } ],
-//   photos: [
-//     {
-//       value: 'https://lh3.googleusercontent.com/a/ACg8ocJIJ43GB6PDJpco42Kdp__TcUrIfbwcWiY_xlMugg2BvcORFBo=s96-c'
-//     }
-//   ],
-//   provider: 'google',
-//   _raw: '{\n' +
-//     '  "sub": "101044400483186205867",\n' +
-//     '  "name": "Thành Tuấn",\n' +
-//     '  "given_name": "Thành",\n' +
-//     '  "family_name": "Tuấn",\n' +
-//     '  "picture": "https://lh3.googleusercontent.com/a/ACg8ocJIJ43GB6PDJpco42Kdp__TcUrIfbwcWiY_xlMugg2BvcORFBo\\u003ds96-c",\n' +
-//     '  "email": "tuanthanh2kk4@gmail.com",\n' +
-//     '  "email_verified": true\n' +
-//     '}',
-//   _json: {
-//     sub: '101044400483186205867',
-//     name: 'Thành Tuấn',
-//     given_name: 'Thành',
-//     family_name: 'Tuấn',
-//     picture: 'https://lh3.googleusercontent.com/a/ACg8ocJIJ43GB6PDJpco42Kdp__TcUrIfbwcWiY_xlMugg2BvcORFBo=s96-c',
-//     email: 'tuanthanh2kk4@gmail.com',
-//     email_verified: true
-//   }
-// }
