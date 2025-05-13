@@ -3,7 +3,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { AfterSignUpDto } from 'src/users/dto/after-signup.dto';
+import { CreateAccountWithGoogleDto } from 'src/users/dto/create-account-with-google.dto';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -23,16 +23,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     accessToken: string,
     refreshToken: string,
     profile: any,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     done: VerifyCallback,
   ): Promise<any> {
-    console.log('accessToken', accessToken);
-    console.log('refreshToken', refreshToken);
-    console.log('profile', profile);
-
-    const user = new AfterSignUpDto();
+    const user = new CreateAccountWithGoogleDto();
     user.email = profile.emails[0].value;
     user.username = profile.displayName;
     user.avatar = profile.photos[0].value;
+    user.password = '';
 
     return await this.authService.validateTokenGoogle(user);
   }

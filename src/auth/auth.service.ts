@@ -13,7 +13,7 @@ import { UsersService } from 'src/users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { AfterSignUpDto } from 'src/users/dto/after-signup.dto';
+import { CreateAccountWithGoogleDto } from 'src/users/dto/create-account-with-google.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +34,7 @@ export class AuthService {
     );
   }
 
-  async validateTokenGoogle(googleUser: AfterSignUpDto) {
+  async validateTokenGoogle(googleUser: CreateAccountWithGoogleDto) {
     try {
       const user = await this.userRepository.findOne({
         where: { email: googleUser.email },
