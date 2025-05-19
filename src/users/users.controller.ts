@@ -197,24 +197,3 @@ export interface LoginMetaData {
   deviceId: string;
   ipAddress: string;
 }
-
-// req.user CreateAccountWithGoogleDto {
-//   email: 'tuanthanh2kk4@gmail.com',
-//   username: 'Thành Tuấn',
-//   avatar: 'https://lh3.googleusercontent.com/a/ACg8ocJIJ43GB6PDJpco42Kdp__TcUrIfbwcWiY_xlMugg2BvcORFBo=s96-c',
-//   password: '',
-//   bio: null,
-//   website: null,
-//   birthday: null,
-//   gender: null,
-//   address: null,
-//   last_active: null,
-//   updated_at: 2025-05-13T01:07:00.849Z,
-//   id: '6efe04b9-f304-41a9-bd6e-8ebe061bb513',
-//   privacy: 'public',
-//   user_category: 'casualuser',
-//   company: [],
-//   education: [],
-//   role: 'user',
-//   created_at: 2025-05-13T01:07:00.849Z
-// }
