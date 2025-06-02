@@ -11,7 +11,6 @@ import { ChatMember } from './entities/chat-member.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import logger from 'src/logger';
 import { ChatRoomsService } from 'src/chat-rooms/chat-rooms.service';
 import { UsersService } from 'src/users/users.service';
 import { WaitingMembers } from './entities/waiting-members.entity';
@@ -64,7 +63,7 @@ export class ChatMembersService {
         error instanceof BadRequestException
       )
         throw error;
-      logger.error('Request join chat room failed', error);
+
       throw new InternalServerErrorException('Request join chat room failed');
     }
   }
@@ -92,8 +91,7 @@ export class ChatMembersService {
         });
 
       return allMember;
-    } catch (error) {
-      logger.error('Find all member in chat room failed', error);
+    } catch {
       throw new BadRequestException('Find all member in chat room failed');
     }
   }

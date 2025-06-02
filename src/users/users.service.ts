@@ -31,8 +31,6 @@ import { RelationType } from 'src/helper/relation.enum';
 import { Response } from 'express';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { AfterForgotPasswordDto } from './dto/after-forgot-password';
-import { format } from 'date-fns';
-import logger from 'src/logger';
 
 @Injectable()
 export class UsersService {
@@ -286,10 +284,6 @@ export class UsersService {
 
       return { message: 'sign up successfully' };
     } catch (err) {
-      logger.error(
-        `Error in afterSignUp: ${err.message} - ${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}`,
-        err.stack,
-      );
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Error when sign up');
     }

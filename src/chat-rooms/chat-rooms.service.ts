@@ -13,7 +13,6 @@ import { RedisService } from 'src/redis/redis.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
-import logger from 'src/logger';
 import deleteFile from 'src/helper/deleteFile';
 import { ChatMembersService } from 'src/chat-members/chat-members.service';
 import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
@@ -48,8 +47,7 @@ export class ChatRoomsService {
       if (room) await this.redisService.hMSet(`chat-room:${room.id}`, room);
 
       return room;
-    } catch (error) {
-      logger.error('Find chat room failed', error);
+    } catch {
       throw new BadRequestException('Find chat room failed');
     }
   }
@@ -68,8 +66,7 @@ export class ChatRoomsService {
       });
 
       return;
-    } catch (error) {
-      logger.error('Create chat room failed', error);
+    } catch {
       throw new BadRequestException('Create chat room failed');
     }
   }
@@ -111,8 +108,7 @@ export class ChatRoomsService {
       }
       await this.redisService.del(`chat-room:${room.id}`);
       return;
-    } catch (error) {
-      logger.error('Update chat room failed', error);
+    } catch {
       throw new BadRequestException('Update chat room failed');
     }
   }
@@ -150,7 +146,7 @@ export class ChatRoomsService {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      logger.error('Update permission add member failed', error);
+
       throw new InternalServerErrorException(
         'Update permission add member failed',
       );
@@ -172,8 +168,7 @@ export class ChatRoomsService {
       await this.redisService.del(`chat-romm:${room.id}`);
 
       return;
-    } catch (error) {
-      logger.error('Delete chat room failed', error);
+    } catch {
       throw new BadRequestException('Delete chat room failed');
     }
   }

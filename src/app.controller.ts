@@ -2,22 +2,29 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Public, ResponseMessage } from './decorator/customize';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import logger from './logger';
+import { LogNestService } from './logger/log-nest.service';
 
 @ApiTags('App')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private logNestService: LogNestService,
+  ) {}
 
   @Get()
   @Public()
   @ResponseMessage('Trang chủ')
   @ApiOperation({ summary: 'Trang chủ' })
   home() {
-    logger.info('Home page accessed');
-    logger.warn('Home page accessed');
-    logger.error('Home page accessed');
-    logger.debug('Home page accessed');
+    this.logNestService.log('Home endpoint accessed', 'AppController');
+    this.logNestService.debug('Debugging home endpoint', 'AppController');
+    this.logNestService.warn(
+      'Warning: Home endpoint accessed',
+      'AppController',
+    );
+    this.logNestService.error('Error: Home endpoint accessed', 'AppController');
+
     return this.appService.home();
   }
 

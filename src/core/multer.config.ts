@@ -6,7 +6,6 @@ import {
 import { diskStorage } from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
-import logger from 'src/logger';
 
 @Injectable()
 export class MulterConfigService implements MulterOptionsFactory {
@@ -19,7 +18,6 @@ export class MulterConfigService implements MulterOptionsFactory {
         console.log('Directory successfully created, or it already exists.');
         return;
       } else {
-        logger.error('Directory creation failed', error);
       }
     });
   }

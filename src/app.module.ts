@@ -31,6 +31,7 @@ import { AdminsModule } from './admins/admins.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { PinMessagesModule } from './pin-messages/pin-messages.module';
 import { PinChatsModule } from './pin-chats/pin-chats.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -119,6 +120,7 @@ import { PinChatsModule } from './pin-chats/pin-chats.module';
     GatewayModule,
     PinMessagesModule,
     PinChatsModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [
