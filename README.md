@@ -75,18 +75,6 @@ SNet follows a microservices architecture:
 4. **Search Services**: Elasticsearch for content search, FAISS for AI vector similarity search
 5. **Background Processing**: BullMQ for handling asynchronous tasks
 
-## 🧪 Testing
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-```
 
 ## 🤝 Contributing
 
