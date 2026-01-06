@@ -1,4 +1,0 @@
-[Nest] 4020  - 02/06/2025, 4:17:58 PM     INFO [AppController] Home endpoint accessed
-[Nest] 4020  - 02/06/2025, 4:17:58 PM     DEBUG [AppController] Debugging home endpoint
-[Nest] 4020  - 02/06/2025, 4:17:58 PM     WARN [AppController] Warning: Home endpoint accessed
-[Nest] 4020  - 02/06/2025, 4:17:58 PM     ERROR [AppController] Error: Home endpoint accessed

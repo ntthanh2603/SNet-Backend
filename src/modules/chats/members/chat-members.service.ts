@@ -11,7 +11,7 @@ import { ChatMember } from './entities/chat-member.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChatRoomsService } from 'src/chat-rooms/chat-rooms.service';
+import { ChatRoomsService } from 'src/modules/chats/rooms/chat-rooms.service';
 import { UsersService } from 'src/users/users.service';
 import { WaitingMembers } from './entities/waiting-members.entity';
 import { RequestJoinChatRoomDto } from './dto/request-join-chat-room.dto';

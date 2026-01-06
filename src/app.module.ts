@@ -16,9 +16,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { QueueOptions } from 'bullmq';
 import { AppController } from './app.controller';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
-import { ChatMembersModule } from './chat-members/chat-members.module';
-import { ChatRoomsModule } from './chat-rooms/chat-rooms.module';
-import { ChatMessagesModule } from './chat-messages/chat-messages.module';
+import { ChatModule } from './modules/chats';
 import { SavePostsModule } from './save-posts/save-posts.module';
 import { CommentsModule } from './comments/comments.module';
 import { RelationsModule } from './relations/relations.module';
@@ -106,9 +104,7 @@ import { LoggerModule } from './logger/logger.module';
     PostsModule,
     NotificationModule,
     BullMQModule,
-    ChatMembersModule,
-    ChatRoomsModule,
-    ChatMessagesModule,
+    ChatModule,
     SavePostsModule,
     CommentsModule,
     NotificationUsersModule,

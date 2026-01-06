@@ -1,6 +1,6 @@
-import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
-import { WaitingMembers } from 'src/chat-members/entities/waiting-members.entity';
-import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
+import { ChatMember } from 'src/modules/chats/members/entities/chat-member.entity';
+import { WaitingMembers } from 'src/modules/chats/members/entities/waiting-members.entity';
+import { ChatMessage } from 'src/modules/chats/messages/entities/chat-message.entity';
 import { MemberType } from 'src/helper/member.enum';
 import { ReactionType } from 'src/helper/reaction.enum';
 import { PinChat } from 'src/pin-chats/entities/pin-chat.entity';

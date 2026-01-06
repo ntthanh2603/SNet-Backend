@@ -1,8 +1,8 @@
 import { MaxLength, MinLength } from 'class-validator';
-import { ChatMember } from 'src/chat-members/entities/chat-member.entity';
-import { WaitingMembers } from 'src/chat-members/entities/waiting-members.entity';
-import { ChatMessage } from 'src/chat-messages/entities/chat-message.entity';
-import { ChatRoom } from 'src/chat-rooms/entities/chat-room.entity';
+import { ChatMember } from 'src/modules/chats/members/entities/chat-member.entity';
+import { WaitingMembers } from 'src/modules/chats/members/entities/waiting-members.entity';
+import { ChatMessage } from 'src/modules/chats/messages/entities/chat-message.entity';
+import { ChatRoom } from 'src/modules/chats/rooms/entities/chat-room.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { DeviceSession } from 'src/device-sessions/entities/device-session.entity';
 import { GenderType } from 'src/helper/gender.enum';
