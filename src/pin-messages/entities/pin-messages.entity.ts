@@ -1,5 +1,5 @@
-import { ChatMessage } from 'src/modules/chats/messages/entities/chat-message.entity';
-import { ChatRoom } from 'src/modules/chats/rooms/entities/chat-room.entity';
+import { ChatMessage } from 'src/modules/chats/entities/chat-message.entity';
+import { ChatRoom } from 'src/modules/chats/entities/chat-room.entity';
 import {
   Column,
   Entity,

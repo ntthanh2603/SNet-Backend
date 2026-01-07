@@ -1,4 +1,4 @@
-import { ChatRoom } from 'src/modules/chats/rooms/entities/chat-room.entity';
+import { ChatRoom } from 'src/modules/chats/entities/chat-room.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
