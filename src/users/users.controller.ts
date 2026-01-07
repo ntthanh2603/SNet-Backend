@@ -9,9 +9,6 @@ import {
   Post,
   UseInterceptors,
   UploadedFile,
-  Res,
-  UseGuards,
-  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
@@ -19,20 +16,40 @@ import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
-import { AfterSignUpDto } from './dto/after-signup.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { GoogleAuthGuard } from 'src/auth/google-auth.guard';
+import { LoginDto } from './dto/login.dto';
+import { AfterSignUpDto } from './dto/after-signup.dto';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get()
+  @Public()
+  @ResponseMessage('Fetch all users successfully')
+  @ApiOperation({ summary: 'Get all users' })
+  findAll() {
+    return this.usersService.findAll();
+  }
+
   @Get('/account')
   @ResponseMessage('Get account from header successfully')
   @ApiOperation({ summary: 'Get account' })
   getAccount(@User() user: IUser) {
     return this.usersService.getAccount(user);
+  }
+
+  @Post('/login')
+  @Public()
+  @ResponseMessage('Login successfully')
+  @ApiOperation({ summary: 'Login with email and password' })
+  async login(@Body() loginDto: LoginDto) {
+    const user = await this.usersService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
+    return await this.usersService.login(user, loginDto);
   }
 
   @Get(':user_id')
@@ -92,18 +109,6 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete account' })
   afterDelete(@User() user: IUser) {
     return this.usersService.afterDelete(user.id);
-  }
-
-  @Public()
-  @UseGuards(GoogleAuthGuard)
-  @Get('google/login')
-  googlelogin() {}
-
-  @Public()
-  @UseGuards(GoogleAuthGuard)
-  @Get('google/callback')
-  googleCallback(@Req() req, @Res() res) {
-    res.redirect('http://localhost:5173?accessToken=123');
   }
 }
 

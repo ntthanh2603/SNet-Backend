@@ -18,7 +18,6 @@ import { RedisService } from 'src/redis/redis.service';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
-import { UserSearchService } from 'src/search-engine/user-search.service';
 import { PrivacyType } from 'src/helper/privacy.enum';
 import { RelationsService } from 'src/relations/relations.service';
 import { RelationType } from 'src/helper/relation.enum';
@@ -31,7 +30,6 @@ export class UsersService {
     private redisService: RedisService,
     private diviceSessionsService: DeviceSessionsService,
     private readonly configService: ConfigService,
-    private readonly userSearchService: UserSearchService,
     @Inject(forwardRef(() => RelationsService))
     private readonly relationsService: RelationsService,
   ) {}
@@ -61,6 +59,10 @@ export class UsersService {
     });
   }
 
+  async findAll() {
+    return await this.usersRepository.find();
+  }
+
   /**
    * Check if a user is allowed to see another user's profile based on
    * the privacy setting of the user being viewed.
@@ -69,7 +71,8 @@ export class UsersService {
    * @returns A boolean indicating whether the view is allowed.
    */
   async privacySeeProfile(user_id_see: string, user_id: string) {
-    const privacy = (await this.findUserById(user_id)).privacy;
+    const user = await this.findUserById(user_id);
+    const privacy = user.privacy;
     switch (true) {
       case privacy === PrivacyType.PRIVATE:
         return false;
@@ -88,14 +91,6 @@ export class UsersService {
     }
     return false;
   }
-
-  /**
-   * @description Handles the login process.
-   * @param dto - The login payload.
-   * @param metaData - The login metadata.
-   * @param response - The response object.
-   * @returns A promise containing the access token.
-   */
 
   /**
    * Validates a user's credentials.
@@ -140,6 +135,17 @@ export class UsersService {
     }
   }
 
+  async login(user: User, dto: any) {
+    return await this.diviceSessionsService.handleLogin(
+      user.id,
+      {
+        deviceId: dto.deviceId,
+        ipAddress: '127.0.0.1',
+      },
+      user.role,
+    );
+  }
+
   /**
    * @description Handles the deletion of a user account.
    * @param id - The id of the user to delete.
@@ -150,8 +156,6 @@ export class UsersService {
     await this.usersRepository.delete({ id });
 
     await this.redisService.del(`user:${id}`);
-
-    await this.userSearchService.deleteUser(id);
 
     return { message: 'Delete user successfully' };
   }
@@ -170,7 +174,7 @@ export class UsersService {
       const userCache = await this.redisService.hGetAll(cacheKey);
 
       if (userCache && Object.keys(userCache).length > 0) {
-        return userCache;
+        return userCache as any;
       }
 
       const user = await this.usersRepository.findOne({
