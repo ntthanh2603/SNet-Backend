@@ -1,0 +1,11 @@
+.env
+dist/
+node_modules/
+documentation/
+.idea/
+.tmp.driveupload/
+fastapi-ai/venv/
+__pycache__
+package-lock.json
+nestjs-log/
+.vscode/
