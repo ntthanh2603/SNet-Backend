@@ -7,15 +7,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { IUser } from 'src/users/users.interface';
-import { ChatMember } from './entities/chat-member.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChatRoomsService } from 'src/chat-rooms/chat-rooms.service';
 import { UsersService } from 'src/users/users.service';
-import { WaitingMembers } from './entities/waiting-members.entity';
 import { RequestJoinChatRoomDto } from './dto/request-join-chat-room.dto';
 import { MemberType } from 'src/helper/member.enum';
+import { ChatMember } from './entities/chat-member.entity';
+import { WaitingMembers } from './entities/waiting-members.entity';
+import { ChatRoomsService } from './chat-rooms.service';
 
 @Injectable()
 export class ChatMembersService {

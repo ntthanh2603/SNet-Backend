@@ -12,7 +12,7 @@ export class NotiBirthdayProcessor extends WorkerHost {
       console.log('data', job.data);
       return job.data;
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error processing noti-birthday job:', error);
       throw error;
     }
   }

@@ -7,8 +7,6 @@ import {
   Delete,
   BadRequestException,
   Post,
-  HttpCode,
-  HttpStatus,
   UseInterceptors,
   UploadedFile,
   Res,
@@ -19,18 +17,10 @@ import { UsersService } from './users.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
-import { Throttle } from '@nestjs/throttler';
 import { AfterSignUpDto } from './dto/after-signup.dto';
-import { SendOtpDto } from './dto/send-otp.dto';
-import { AfterDeleteDto } from './dto/after-delete.dto';
-import { BeforeLoginDto } from './dto/before-login.dto';
-import { AfterLoginDto } from './dto/after-login.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Fingerprint, IFingerprint } from 'nestjs-fingerprint';
-import { Response } from 'express';
-import { AfterForgotPasswordDto } from './dto/after-forgot-password';
 import { GoogleAuthGuard } from 'src/auth/google-auth.guard';
 
 @ApiTags('Users')
@@ -87,97 +77,21 @@ export class UsersController {
     return await this.usersService.updateUser(dto, user, file);
   }
 
-  @Post('/send-otp/login')
-  @Public()
-  @ResponseMessage('Send OTP seccessfully')
-  @ApiOperation({
-    summary: 'Send email to login',
-  })
-  @Throttle({ default: { limit: 1, ttl: 60000 } })
-  beforeLogin(@Body() dto: BeforeLoginDto) {
-    return this.usersService.beforeLogin(dto);
-  }
-
-  @Public()
-  @ResponseMessage('Login account successfully')
-  @Post('/verify-otp/login')
-  @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
-  @ApiOperation({ summary: 'Login account' })
-  @ApiBody({ type: AfterLoginDto })
-  afterlogin(
-    @Body() dto: AfterLoginDto,
-    @Fingerprint() fp: IFingerprint,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const metaData: LoginMetaData = {
-      deviceId: fp['id'],
-      ipAddress: fp['ipAddress']['value'],
-    };
-    return this.usersService.afterlogin(dto, metaData, response);
-  }
-
-  @Post('/send-otp/signup')
-  @Public()
-  @ResponseMessage('Send OTP seccessfully')
-  @ApiOperation({
-    summary: 'Send email to sign up',
-  })
-  // @Throttle({ default: { limit: 10, ttl: 60000 } })
-  beforeSignUp(@Body() dto: SendOtpDto) {
-    return this.usersService.beforeSignUp(dto.email, dto.username);
-  }
-
-  @Post('/verify-otp/signup')
+  @Post('/signup')
   @Public()
   @ResponseMessage('Create user successfully')
   @ApiOperation({
-    summary: 'Check OTP on email to sign up',
+    summary: 'Sign up (no OTP required)',
   })
-  // @Throttle({ default: { limit: 5, ttl: 60000 } })
   afterSignUp(@Body() dto: AfterSignUpDto) {
     return this.usersService.afterSignUp(dto);
   }
 
-  @Post('/send-otp/forgot-password')
-  @Public()
-  @ResponseMessage('Send OTP seccessfully')
-  @ApiOperation({
-    summary: 'Send otp to forgot password',
-  })
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
-  boforeForgotPassword(@Body() dto: SendOtpDto) {
-    return this.usersService.beforeForgotPassword(dto);
-  }
-
-  @Post('/verify-otp/forgot-password')
-  @Public()
-  @ResponseMessage('Update password seccessfully')
-  @ApiOperation({
-    summary: 'Authenticate otp to update password',
-  })
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
-  afterForgotPassword(@Body() dto: AfterForgotPasswordDto) {
-    return this.usersService.afterForgotPassword(dto);
-  }
-
-  @Post('/send-otp/delete')
-  @ResponseMessage('Send OTP seccessfully')
-  @ApiOperation({
-    summary: 'Gửi OTP về email',
-  })
-  @Throttle({ default: { limit: 1, ttl: 60000 } })
-  beforeDelete(@User() user: IUser) {
-    return this.usersService.beforeDelete(user);
-  }
-
-  @Delete('/verify-otp/delete')
-  @ResponseMessage('Delete account seccessfully')
+  @Delete('/delete')
+  @ResponseMessage('Delete account successfully')
   @ApiOperation({ summary: 'Delete account' })
-  afterDelete(@User() user: IUser, @Body() dto: AfterDeleteDto) {
-    console.log(user);
-
-    return this.usersService.afterDelete(user.id, dto.otp);
+  afterDelete(@User() user: IUser) {
+    return this.usersService.afterDelete(user.id);
   }
 
   @Public()

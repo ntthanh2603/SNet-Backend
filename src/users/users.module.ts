@@ -33,7 +33,6 @@ import { AuthModule } from 'src/auth/auth.module';
     forwardRef(() => AuthModule),
     forwardRef(() => RelationsModule),
     forwardRef(() => DeviceSessionsModule),
-    BullModule.registerQueue({ name: 'send-email' }),
     BullModule.registerQueue({ name: 'noti-birthday' }),
     ScheduleModule.forRoot(),
     NotificationModule,

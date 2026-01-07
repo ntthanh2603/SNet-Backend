@@ -11,14 +11,9 @@ import { NotificationModule } from './notifications/notifications.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { BullMQModule } from './bullmq/bullmg.module';
-import { join } from 'path';
 import { BullModule } from '@nestjs/bullmq';
 import { QueueOptions } from 'bullmq';
 import { AppController } from './app.controller';
-import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
-import { ChatMembersModule } from './chat-members/chat-members.module';
-import { ChatRoomsModule } from './chat-rooms/chat-rooms.module';
-import { ChatMessagesModule } from './chat-messages/chat-messages.module';
 import { SavePostsModule } from './save-posts/save-posts.module';
 import { CommentsModule } from './comments/comments.module';
 import { RelationsModule } from './relations/relations.module';
@@ -31,7 +26,7 @@ import { AdminsModule } from './admins/admins.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { PinMessagesModule } from './pin-messages/pin-messages.module';
 import { PinChatsModule } from './pin-chats/pin-chats.module';
-import { LoggerModule } from './logger/logger.module';
+import { CombineModule } from './modules/combine.module';
 
 @Module({
   imports: [
@@ -74,30 +69,7 @@ import { LoggerModule } from './logger/logger.module';
       },
       inject: [ConfigService],
     }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        transport: {
-          host: configService.get('MAIL_HOST'),
-          port: configService.get('MAIL_POST'),
-          secure: false,
-          auth: {
-            user: configService.get('MAIL_USER'),
-            pass: configService.get('MAIL_PASSWORD'),
-          },
-        },
-        // transport: configService.get('MAIL_TRANSPORT'),
-        defaults: {
-          from: `"Mạng xã hội SNet"`,
-        },
-        template: {
-          dir: join(__dirname, 'src/templates/email'),
-          adapter: new HandlebarsAdapter(),
-          options: { strict: true },
-        },
-      }),
-      inject: [ConfigService],
-    }),
+
     UsersModule,
     AuthModule,
     RedisModule,
@@ -106,9 +78,6 @@ import { LoggerModule } from './logger/logger.module';
     PostsModule,
     NotificationModule,
     BullMQModule,
-    ChatMembersModule,
-    ChatRoomsModule,
-    ChatMessagesModule,
     SavePostsModule,
     CommentsModule,
     NotificationUsersModule,
@@ -120,7 +89,7 @@ import { LoggerModule } from './logger/logger.module';
     GatewayModule,
     PinMessagesModule,
     PinChatsModule,
-    LoggerModule,
+    CombineModule,
   ],
   controllers: [AppController],
   providers: [

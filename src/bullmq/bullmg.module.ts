@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { BullMQController } from './bullmq.controller';
 import { BullModule } from '@nestjs/bullmq';
 import { BullMQService } from './bullmq.service';
-import { SendEmailProcessor } from './send-email.processor';
 import { NotiSystemProcessor } from './noti-system.processor';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
@@ -17,7 +16,6 @@ import { MediasPostsProcessor } from './medias-post.processor';
   imports: [
     ConfigModule,
     RedisModule,
-    BullModule.registerQueue({ name: 'send-email' }),
     BullModule.registerQueue({ name: 'noti-birthday' }),
     BullModule.registerQueue({ name: 'noti-system' }),
     BullModule.registerQueue({ name: 'create-posts' }),
@@ -26,12 +24,7 @@ import { MediasPostsProcessor } from './medias-post.processor';
     GatewayModule,
   ],
   controllers: [BullMQController],
-  providers: [
-    BullMQService,
-    SendEmailProcessor,
-    NotiSystemProcessor,
-    MediasPostsProcessor,
-  ],
-  exports: [SendEmailProcessor, NotiSystemProcessor],
+  providers: [BullMQService, NotiSystemProcessor, MediasPostsProcessor],
+  exports: [NotiSystemProcessor],
 })
 export class BullMQModule {}

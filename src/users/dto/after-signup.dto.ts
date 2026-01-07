@@ -10,13 +10,6 @@ import {
 import { GenderType } from 'src/helper/gender.enum';
 
 export class AfterSignUpDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(6)
-  @MinLength(6)
-  @ApiProperty({ example: '123123', description: 'otp' })
-  otp?: string;
-
   @IsEmail()
   @IsString()
   @IsNotEmpty()
