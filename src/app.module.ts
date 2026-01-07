@@ -26,17 +26,19 @@ import { GatewayModule } from './gateway/gateway.module';
 import { PinMessagesModule } from './pin-messages/pin-messages.module';
 import { PinChatsModule } from './pin-chats/pin-chats.module';
 import { CombineModule } from './modules/combine.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '...env',
+      envFilePath: '.env',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
     }),
     DatabaseModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

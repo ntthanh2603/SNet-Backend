@@ -8,6 +8,8 @@ import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as fs from 'fs';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -79,6 +81,19 @@ async function bootstrap() {
       persistAuthorization: true,
     },
   });
+
+  const pathOutputOpenApi = path.resolve(
+    __dirname,
+    '../../.open-api/open-api.json',
+  );
+  const directoryPath = path.dirname(pathOutputOpenApi);
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath, { recursive: true });
+  }
+  fs.writeFileSync(
+    pathOutputOpenApi,
+    JSON.stringify(documentFactory(), null, 2),
+  );
 
   const logger = new Logger('Social-Network-SNET');
   await app.listen(configService.get<string>('PORT'), () => {
