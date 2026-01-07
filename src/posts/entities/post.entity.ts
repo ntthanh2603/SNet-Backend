@@ -12,6 +12,9 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+
+import { Reaction } from 'src/reactions/entities/reaction.entity';
 
 @Entity()
 export class Post {
@@ -45,4 +48,17 @@ export class Post {
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
+
+  @OneToMany(() => Reaction, (reaction) => reaction.post)
+  reactions: Reaction[];
+
+  @ApiProperty({
+    example: { likes: 10, comments: 5, reposts: 2 },
+    description: 'Interaction counts',
+  })
+  interactions: {
+    likes: number;
+    comments: number;
+    reposts: number;
+  };
 }

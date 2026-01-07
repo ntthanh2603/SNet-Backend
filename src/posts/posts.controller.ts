@@ -11,24 +11,72 @@ import {
   ParseFilePipeBuilder,
   UploadedFiles,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { IUser } from 'src/users/users.interface';
-import { ResponseMessage, User } from 'src/decorator/customize';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
+import { Doc } from 'src/decorator/doc.decorator';
 
 @ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Get()
+  @Public()
+  @ResponseMessage('Fetch posts feed successfully')
+  @ApiOperation({ summary: 'Get posts feed' })
+  @Doc({
+    summary: 'Get posts feed',
+    request: {
+      queries: [
+        { name: 'page', description: 'Page number', required: false },
+        { name: 'limit', description: 'Limit per page', required: false },
+        { name: 'user_id', description: 'User ID', required: false },
+      ],
+    },
+  })
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('user_id') user_id?: string,
+  ) {
+    return this.postsService.findAll(page || 1, limit || 10, user_id);
+  }
+
   @Post()
+  @Public()
   @ResponseMessage('Create post successfully')
   @ApiOperation({ summary: 'Create post' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string' },
+        privacy: { type: 'string', enum: ['public', 'friend', 'private'] },
+        'medias-posts': {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
+  @Doc({
+    summary: 'Create post',
+    request: {
+      bodyType: 'FORM_DATA',
+    },
+  })
   @UseInterceptors(FilesInterceptor('medias-posts', 10))
   create(
     @User() user: IUser,
@@ -61,11 +109,11 @@ export class PostsController {
     return this.postsService.findOne(user, id);
   }
 
-  @Patch('all')
-  @ResponseMessage('Xóa bài viết thành công')
+  @Patch()
+  @ResponseMessage('Cập nhật bài viết thành công')
   @ApiOperation({ summary: 'Cập nhật bài viết' })
   @ApiBody({ type: UpdatePostDto })
-  update(@User() user: IUser, dto: UpdatePostDto) {
+  update(@User() user: IUser, @Body() dto: UpdatePostDto) {
     return this.postsService.update(user, dto);
   }
 
@@ -73,6 +121,6 @@ export class PostsController {
   @ResponseMessage('Xóa bài viết thành công')
   @ApiOperation({ summary: 'Xóa bài viết' })
   remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+    return this.postsService.remove(id);
   }
 }

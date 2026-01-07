@@ -25,18 +25,35 @@ export class PostsService {
     private mediasPostsQueue: Queue,
   ) {}
 
-  async findPostByID(id: string) {
+  async findPostByID(id: string): Promise<any> {
     try {
       const postCache = await this.redisService.get(`post:${id}`);
 
-      if (postCache) return postCache;
+      if (postCache) return JSON.parse(postCache as string);
 
-      const postDb = await this.repository.findOne({ where: { id } });
+      const postDb = await this.repository.findOne({
+        where: { id },
+        relations: ['user', 'reactions', 'comments'],
+      });
       if (!postDb) throw new NotFoundException(`Post id: ${id} does not exist`);
 
-      await this.redisService.set(`post:${id}`, JSON.stringify(postDb), 300);
+      const postWithInteractions = {
+        ...postDb,
+        interactions: {
+          likes:
+            postDb.reactions?.filter((r) => r.reaction === 'like').length || 0,
+          comments: postDb.comments?.length || 0,
+          reposts: 0,
+        },
+      };
 
-      return postDb;
+      await this.redisService.set(
+        `post:${id}`,
+        JSON.stringify(postWithInteractions),
+        300,
+      );
+
+      return postWithInteractions;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(`Error find post with id: ${id}`);
@@ -96,19 +113,76 @@ export class PostsService {
     }
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll(page: number = 1, limit: number = 10, user_id?: string) {
+    try {
+      const queryOptions: any = {
+        relations: ['user', 'reactions', 'comments'],
+        order: { created_at: 'DESC' },
+        skip: (page - 1) * limit,
+        take: limit,
+      };
+
+      if (user_id) {
+        queryOptions.where = { user_id };
+      }
+
+      const [posts, total] = await this.repository.findAndCount(queryOptions);
+
+      const data = posts.map((post) => ({
+        ...post,
+        interactions: {
+          likes:
+            post.reactions?.filter((r) => r.reaction === 'like').length || 0,
+          comments: post.comments?.length || 0,
+          reposts: 0,
+        },
+      }));
+
+      return {
+        data,
+        meta: {
+          total,
+          page,
+          last_page: Math.ceil(total / limit),
+        },
+      };
+    } catch {
+      throw new InternalServerErrorException('Error when fetching posts');
+    }
   }
 
-  findOne(user: IUser, id: string) {
-    return `This action returns a #${id} post`;
+  async findOne(user: IUser, id: string) {
+    return this.findPostByID(id);
   }
 
   async update(user: IUser, dto: UpdatePostDto) {
-    await this.findPostByID(dto.id);
+    const post = await this.findPostByID(dto.id);
+    if (post.user_id !== user.id) {
+      throw new BadRequestException(
+        'You are not authorized to update this post',
+      );
+    }
+
+    try {
+      await this.repository.update(dto.id, {
+        content: dto.content,
+        privacy: dto.privacy,
+      });
+      await this.redisService.del(`post:${dto.id}`);
+      return { message: 'Update post successfully' };
+    } catch {
+      throw new InternalServerErrorException('Error when updating post');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: string) {
+    try {
+      const post = await this.findPostByID(id);
+      await this.repository.remove(post);
+      await this.redisService.del(`post:${id}`);
+      return { message: 'Delete post successfully' };
+    } catch {
+      throw new InternalServerErrorException('Error when deleting post');
+    }
   }
 }
