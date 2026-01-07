@@ -12,7 +12,7 @@ export class MediasPostsProcessor extends WorkerHost {
       console.log('data create post', job.data);
       return job.data;
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error processing create-posts job:', error);
       throw error;
     }
   }

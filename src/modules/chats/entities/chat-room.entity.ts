@@ -1,5 +1,5 @@
-import { ChatMember } from 'src/modules/chats/members/entities/chat-member.entity';
-import { WaitingMembers } from 'src/modules/chats/members/entities/waiting-members.entity';
+import { ChatMember } from 'src/modules/chats/entities/chat-member.entity';
+import { WaitingMembers } from 'src/modules/chats/entities/waiting-members.entity';
 import { ChatMessage } from 'src/modules/chats/messages/entities/chat-message.entity';
 import { MemberType } from 'src/helper/member.enum';
 import { ReactionType } from 'src/helper/reaction.enum';

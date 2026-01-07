@@ -3,26 +3,29 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
 
-import { ChatRoomsService } from './rooms/chat-rooms.service';
-import { ChatRoomsController } from './rooms/chat-rooms.controller';
-import { ChatRoom } from './rooms/entities/chat-room.entity';
-
-import { ChatMembersService } from './members/chat-members.service';
-import { ChatMembersController } from './members/chat-members.controller';
-import { ChatMember } from './members/entities/chat-member.entity';
-import { WaitingMembers } from './members/entities/waiting-members.entity';
-
-import { ChatMessagesService } from './messages/chat-messages.service';
-import { ChatMessagesController } from './messages/chat-messages.controller';
-import { ChatMessage } from './messages/entities/chat-message.entity';
+import { ChatMember } from './entities/chat-member.entity';
+import { WaitingMembers } from './entities/waiting-members.entity';
 
 import { RedisModule } from 'src/redis/redis.module';
 import { NotificationModule } from 'src/notifications/notifications.module';
 import { UsersModule } from 'src/users/users.module';
+import { ChatMembersService } from './chat-members.service';
+import { ChatRoom } from './entities/chat-room.entity';
+import { ChatMessage } from './entities/chat-message.entity';
+import { ChatRoomsController } from './chat-rooms.controller';
+import { ChatMembersController } from './chat-members.controller';
+import { ChatMessagesController } from './chat-messages.controller';
+import { ChatMessagesService } from './chat-messages.service';
+import { ChatRoomsService } from './chat-rooms.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatRoom, ChatMember, WaitingMembers, ChatMessage]),
+    TypeOrmModule.forFeature([
+      ChatRoom,
+      ChatMember,
+      WaitingMembers,
+      ChatMessage,
+    ]),
     RedisModule,
     NotificationModule,
     MulterModule.registerAsync({
@@ -30,7 +33,11 @@ import { UsersModule } from 'src/users/users.module';
     }),
     UsersModule,
   ],
-  controllers: [ChatRoomsController, ChatMembersController, ChatMessagesController],
+  controllers: [
+    ChatRoomsController,
+    ChatMembersController,
+    ChatMessagesController,
+  ],
   providers: [ChatRoomsService, ChatMembersService, ChatMessagesService],
   exports: [ChatRoomsService, ChatMembersService, ChatMessagesService],
 })

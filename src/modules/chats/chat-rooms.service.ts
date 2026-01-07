@@ -14,12 +14,12 @@ import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { IUser } from 'src/users/users.interface';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import deleteFile from 'src/helper/deleteFile';
-import { ChatMembersService } from 'src/modules/chats/members/chat-members.service';
-import { ChatMember } from 'src/modules/chats/members/entities/chat-member.entity';
+import { ChatMember } from 'src/modules/chats/entities/chat-member.entity';
 import { MemberType } from 'src/helper/member.enum';
 import IdDto from 'src/helper/id.dto';
 import { PaginationDto } from 'src/helper/pagination.dto';
 import { UpdatePermissionAddMemberDto } from './dto/update-permission-add-member.dto';
+import { ChatMembersService } from './chat-members.service';
 
 @Injectable()
 export class ChatRoomsService {

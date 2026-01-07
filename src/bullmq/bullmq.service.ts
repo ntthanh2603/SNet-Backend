@@ -1,12 +1,12 @@
-import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
-import { Queue } from 'bullmq';
 
 @Injectable()
 export class BullMQService {
-  constructor(@InjectQueue('send-email') private readonly queue: Queue) {}
+  constructor() {}
 
-  async push(name: string, data: any, opts?: any): Promise<void> {
-    await this.queue.add(name, data, opts);
+  // 'send-email' queue has been removed. This method is kept as a noop for other queues.
+  async push(): Promise<void> {
+    // No-op: queueing for email/send-otp removed.
+    return Promise.resolve();
   }
 }

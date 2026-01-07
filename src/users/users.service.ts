@@ -15,22 +15,13 @@ import * as bcrypt from 'bcrypt';
 import { IUser } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RedisService } from 'src/redis/redis.service';
-import { LoginMetaData } from './users.controller';
-import { randomInt } from 'crypto';
 import { AfterSignUpDto } from './dto/after-signup.dto';
 import { ConfigService } from '@nestjs/config';
-import { BeforeLoginDto } from './dto/before-login.dto';
-import { AfterLoginDto } from './dto/after-login.dto';
-import { Queue } from 'bullmq';
-import { InjectQueue } from '@nestjs/bullmq';
 import * as fs from 'fs';
 import { UserSearchService } from 'src/search-engine/user-search.service';
 import { PrivacyType } from 'src/helper/privacy.enum';
 import { RelationsService } from 'src/relations/relations.service';
 import { RelationType } from 'src/helper/relation.enum';
-import { Response } from 'express';
-import { SendOtpDto } from './dto/send-otp.dto';
-import { AfterForgotPasswordDto } from './dto/after-forgot-password';
 
 @Injectable()
 export class UsersService {
@@ -40,8 +31,6 @@ export class UsersService {
     private redisService: RedisService,
     private diviceSessionsService: DeviceSessionsService,
     private readonly configService: ConfigService,
-    @InjectQueue('send-email')
-    private sendEmail: Queue,
     private readonly userSearchService: UserSearchService,
     @Inject(forwardRef(() => RelationsService))
     private readonly relationsService: RelationsService,
@@ -101,133 +90,12 @@ export class UsersService {
   }
 
   /**
-   * @description Send OTP to email when sign up
-   * @param email
-   * @param username
-   * @returns
-   */
-  async beforeSignUp(email: string, username: string) {
-    const userDb = await this.usersRepository.findOneBy({ email });
-
-    if (userDb) {
-      throw new BadRequestException(`Email ${email} has existed.`);
-    }
-
-    const otp = randomInt(100000, 999999).toString();
-
-    await this.sendEmail.add(
-      'sendOTP',
-      {
-        email: email,
-        username: username,
-        otp: otp,
-        template: 'otp-signup-account',
-      },
-      { removeOnComplete: true },
-    );
-
-    await this.redisService.set(
-      `otp-code:${email}`,
-      otp,
-      this.configService.get('TIME_OTP'),
-    );
-
-    return;
-  }
-
-  /**
-   * @description Sends an OTP to the user's email for login verification.
-   * @param dto - Data transfer object containing user's email and password.
-   * @returns void
-   * @throws BadRequestException if the email or password is invalid.
-   */
-  async beforeLogin(dto: BeforeLoginDto) {
-    const userDb = await this.validateUser(dto.email, dto.password);
-
-    const otp = randomInt(100000, 999999).toString();
-
-    await this.sendEmail.add(
-      'sendOTP',
-      {
-        email: userDb.email,
-        username: userDb.username,
-        otp: otp,
-        template: 'otp-login-account',
-      },
-      { removeOnComplete: true },
-    );
-
-    await this.redisService.set(
-      `otp-code:${userDb.email}`,
-      otp,
-      this.configService.get('TIME_OTP'),
-    );
-    return;
-  }
-
-  /**
-   * @description Sends an OTP to the user's email for account deletion.
-   * @param user - The user to delete.
-   * @returns void
-   * @throws NotFoundException if the user is not found.
-   */
-  async beforeDelete(user: IUser) {
-    const userDb = await this.findUserById(user.id);
-
-    const otp = randomInt(100000, 999999).toString();
-
-    await this.sendEmail.add(
-      'sendOTP',
-      {
-        email: userDb.email,
-        username: userDb.username,
-        otp: otp,
-        template: 'otp-delete-account',
-      },
-      { removeOnComplete: true },
-    );
-
-    await this.redisService.set(
-      `otp-code:${userDb.email}`,
-      otp,
-      this.configService.get('TIME_OTP'),
-    );
-    return;
-  }
-
-  /**
    * @description Handles the login process.
    * @param dto - The login payload.
    * @param metaData - The login metadata.
    * @param response - The response object.
    * @returns A promise containing the access token.
-   * @throws BadRequestException if OTP code is incorrect or expired.
    */
-  async afterlogin(
-    dto: AfterLoginDto,
-    metaData: LoginMetaData,
-    response: Response,
-  ) {
-    const user = await this.validateUser(dto.email, dto.password);
-
-    const otp = await this.redisService.get(`otp-code:${dto.email}`);
-
-    if (otp !== dto.otp)
-      throw new BadRequestException('OTP code is incorrect or expired');
-
-    await this.redisService.del(`otp-code:${dto.email}`);
-
-    const handleLogin = await this.diviceSessionsService.handleLogin(
-      user.id,
-      metaData,
-      user.role,
-    );
-    response.cookie('refreshToken', handleLogin.refreshToken, {
-      httpOnly: true,
-      maxAge: handleLogin.expiredAt.getTime(),
-    });
-    return { accessToken: handleLogin.accessToken };
-  }
 
   /**
    * Validates a user's credentials.
@@ -248,11 +116,6 @@ export class UsersService {
 
   async afterSignUp(dto: AfterSignUpDto) {
     try {
-      const otp = await this.redisService.get(`otp-code:${dto.email}`);
-
-      if (otp !== dto.otp)
-        throw new BadRequestException('OTP code is incorrect or expired');
-
       const hashPassword = await this.getHashPassword(dto.password);
 
       const newUser = {
@@ -270,18 +133,6 @@ export class UsersService {
 
       await this.usersRepository.save(newUser);
 
-      await this.sendEmail.add(
-        'sendOTP',
-        {
-          email: dto.email,
-          username: dto.username,
-          template: 'signup-success',
-        },
-        { removeOnComplete: true },
-      );
-
-      await this.redisService.del(`otp-code:${dto.email}`);
-
       return { message: 'sign up successfully' };
     } catch (err) {
       if (err instanceof BadRequestException) throw err;
@@ -292,24 +143,15 @@ export class UsersService {
   /**
    * @description Handles the deletion of a user account.
    * @param id - The id of the user to delete.
-   * @param otp - The OTP code sent to the user's email.
    * @returns The result of the deletion.
-   * @throws BadRequestException if the OTP is not valid.
    * @throws NotFoundException if the user is not found.
    */
-  async afterDelete(id: string, otp: string) {
-    const user = await this.findUserById(id);
-    const otpCache = await this.redisService.get(`otp-code:${user.email}`);
-
-    if (otp !== otpCache) throw new BadRequestException('OTP is incorrect');
-
+  async afterDelete(id: string) {
     await this.usersRepository.delete({ id });
 
     await this.redisService.del(`user:${id}`);
 
     await this.userSearchService.deleteUser(id);
-
-    await this.redisService.del(`otp-code:${user.email}`);
 
     return { message: 'Delete user successfully' };
   }
@@ -394,75 +236,6 @@ export class UsersService {
         throw err;
       }
       throw new InternalServerErrorException('Error updating user');
-    }
-  }
-
-  /**
-   * Sends an OTP to the user's email for password reset verification.
-   * @param dto - Data transfer object containing the user's email and username.
-   * @returns A promise containing a success message if the OTP is sent successfully.
-   * @throws BadRequestException if the email or username is incorrect.
-   * @throws InternalServerErrorException if an error occurs when sending the OTP.
-   */
-  async beforeForgotPassword(dto: SendOtpDto) {
-    try {
-      const user = await this.findUserByEmail(dto.email);
-
-      if (!user || user.username !== dto.username)
-        throw new BadRequestException('Email or username is incorrect');
-
-      const otp = randomInt(100000, 999999).toString();
-
-      await this.redisService.set(`otp-code:${dto.email}`, otp, 120);
-
-      await this.sendEmail.add(
-        'sendOTP',
-        {
-          email: user.email,
-          username: user.username,
-          otp: otp,
-          template: 'otp-forgot-password-account',
-        },
-        { removeOnComplete: true },
-      );
-
-      return { message: 'Send OTP successfully' };
-    } catch (err) {
-      if (err instanceof BadRequestException) throw err;
-      throw new InternalServerErrorException('Error when send OTP');
-    }
-  }
-
-  /**
-   * Resets the user's password using the provided OTP.
-   *
-   * @param dto - Data transfer object containing the user's email, username, OTP, and new password.
-   * @throws BadRequestException if the email, username, or OTP is incorrect.
-   * @throws InternalServerErrorException if an error occurs during the password reset process.
-   */
-  async afterForgotPassword(dto: AfterForgotPasswordDto) {
-    try {
-      const user = await this.findUserByEmail(dto.email);
-      const otp = await this.redisService.get(`otp-code:${dto.email}`);
-
-      if (!user || user.username !== dto.username || otp !== dto.otp)
-        throw new BadRequestException('Email or username or OTP is incorrect');
-
-      const hashPassword = await this.getHashPassword(dto.password);
-
-      await this.usersRepository.update(
-        { id: user.id },
-        {
-          password: hashPassword,
-        },
-      );
-
-      await this.redisService.del(`otp-code:${dto.email}`);
-
-      return { message: 'Reset password successfully' };
-    } catch (err) {
-      if (err instanceof BadRequestException) throw err;
-      throw new InternalServerErrorException('Error when send OTP');
     }
   }
 }

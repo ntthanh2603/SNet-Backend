@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -20,7 +20,7 @@ services:
     container_name: redis
     image: redis:alpine
     ports:
-      - '6379:6379'
+      - "6379:6379"
     networks:
       - app-network
     environment:
@@ -35,7 +35,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
     container_name: elasticsearch
     ports:
-      - '9200:9200'
+      - "9200:9200"
     networks:
       - app-network
     environment:
@@ -59,7 +59,7 @@ services:
     image: docker.elastic.co/kibana/kibana:7.15.0
     container_name: kibana
     ports:
-      - '5601:5601'
+      - "5601:5601"
     networks:
       - app-network
     environment:
@@ -94,7 +94,7 @@ services:
     image: chromadb/chroma:latest
     container_name: chromadb
     ports:
-      - '8001:8000'
+      - "8001:8000"
     volumes:
       - chromadb_data:/chroma/index
     networks:
@@ -147,9 +147,6 @@ services:
   #     JWT_REFRESH_EXPIRE_DAY: ${JWT_REFRESH_EXPIRE_DAY}
   #     THROTTLE_TTL: ${THROTTLE_TTL}
   #     THROTTLE_LIMIT: ${THROTTLE_LIMIT}
-  #     MAIL_HOST: ${MAIL_HOST}
-  #     MAIL_USER: ${MAIL_USER}
-  #     MAIL_PASSWORD: ${MAIL_PASSWORD}
   #     NODE_ENV: ${NODE_ENV:-development}
   #     PORT: ${PORT:-3000}
   #   ports:
