@@ -1,24 +1,15 @@
 import { JwtService } from '@nestjs/jwt';
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeviceSessionsService } from 'src/device-sessions/device-sessions.service';
-import { OAuth2Client } from 'google-auth-library';
 import { IPayload } from './payload.interface';
 import { UsersService } from 'src/users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateAccountWithGoogleDto } from 'src/users/dto/create-account-with-google.dto';
 
 @Injectable()
 export class AuthService {
-  private googleClient: OAuth2Client;
-
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -28,23 +19,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {
-    this.googleClient = new OAuth2Client(
-      this.configService.get<string>('GOOGLE_CLIENT_ID'),
-    );
-  }
-
-  async validateTokenGoogle(googleUser: CreateAccountWithGoogleDto) {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { email: googleUser.email },
-      });
-      if (user) return user;
-      return await this.userRepository.save(googleUser);
-    } catch {
-      throw new UnauthorizedException('Invalid token');
-    }
-  }
+  ) {}
 
   async verify(token: string) {
     try {

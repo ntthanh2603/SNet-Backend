@@ -6,10 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { GoogleStrategy } from './google.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { GoogleAuthGuard } from './google-auth.guard';
 
 @Module({
   imports: [
@@ -29,7 +27,7 @@ import { GoogleAuthGuard } from './google-auth.guard';
     }),
   ],
   controllers: [],
-  providers: [AuthService, JwtStrategy, GoogleStrategy, GoogleAuthGuard],
-  exports: [AuthService, GoogleAuthGuard, JwtStrategy],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService, JwtStrategy],
 })
 export class AuthModule {}
