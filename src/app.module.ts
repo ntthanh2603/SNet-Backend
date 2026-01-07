@@ -21,7 +21,6 @@ import { NotificationUsersModule } from './notification-users/notification-users
 import { SaveListsModule } from './save-lists/save-lists.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { ParentChildCommentsModule } from './parent-child-comments/parent-child-comments.module';
-import { SearchEngineModule } from './search-engine/search-engine.module';
 import { AdminsModule } from './admins/admins.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { PinMessagesModule } from './pin-messages/pin-messages.module';
@@ -84,7 +83,6 @@ import { CombineModule } from './modules/combine.module';
     SaveListsModule,
     ReactionsModule,
     ParentChildCommentsModule,
-    SearchEngineModule,
     AdminsModule,
     GatewayModule,
     PinMessagesModule,

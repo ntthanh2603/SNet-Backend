@@ -13,7 +13,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/core/multer.config';
 import { RelationsModule } from 'src/relations/relations.module';
 import { NestjsFingerprintModule } from 'nestjs-fingerprint';
-import { SearchEngineModule } from 'src/search-engine/search-engine.module';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
@@ -36,7 +35,6 @@ import { AuthModule } from 'src/auth/auth.module';
     BullModule.registerQueue({ name: 'noti-birthday' }),
     ScheduleModule.forRoot(),
     NotificationModule,
-    SearchEngineModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, BirthdayJob],

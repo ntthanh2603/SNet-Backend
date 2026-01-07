@@ -31,65 +31,6 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 200mb --maxmemory-policy noeviction
     restart: unless-stopped
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
-    container_name: elasticsearch
-    ports:
-      - "9200:9200"
-    networks:
-      - app-network
-    environment:
-      - node.name=elasticsearch
-      - cluster.name=elasticsearch
-      - bootstrap.memory_lock=true
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms2g -Xmx2g
-      - logger.level=error
-      - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-    restart: unless-stopped
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.15.0
-    container_name: kibana
-    ports:
-      - "5601:5601"
-    networks:
-      - app-network
-    environment:
-      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS:-http://elasticsearch:9200}
-      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME:-elastic}
-      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
-    depends_on:
-      - elasticsearch
-    restart: unless-stopped
-
-  filebeat:
-    build:
-      context: ./filebeat
-      dockerfile: Dockerfile
-    container_name: filebeat
-    user: root
-    environment:
-      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME:-elastic}
-      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
-    env_file: .env
-    volumes:
-      - ./nestjs-logs:/nestjs-logs:ro
-      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-    depends_on:
-      - elasticsearch
-    networks:
-      - app-network
-    command: filebeat -e -strict.perms=false -E output.elasticsearch.password=${ELASTICSEARCH_PASSWORD} -E output.elasticsearch.username=${ELASTICSEARCH_USERNAME}
-    restart: unless-stopped
-
   chromadb:
     image: chromadb/chroma:latest
     container_name: chromadb
@@ -123,7 +64,6 @@ services:
   #   environment:
   #     # Database
   #     DATABASE_HOST: ${DATABASE_HOST:-postgres}
-  #     DATABASE_PORT: ${DATABASE_PORT:-5432}
   #     DATABASE_USERNAME: ${DATABASE_USERNAME}
   #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
   #     DATABASE_NAME: ${DATABASE_NAME}
@@ -137,10 +77,6 @@ services:
   #     BULLMQ_PORT: ${BULLMQ_PORT:-6379}
   #     BULLMQ_PASSWORD: ${BULLMQ_PASSWORD}
   #     BULLMQ_DB: ${BULLMQ_DB}
-  #     # Elasticsearch
-  #     ELASTICSEARCH_HOSTS: ${ELASTICSEARCH_HOSTS:-http://elasticsearch:9200}
-  #     ELASTICSEARCH_USERNAME: ${ELASTICSEARCH_USERNAME:-elastic}
-  #     ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
   #     # Other
   #     JWT_ACCESS_EXPIRE: ${JWT_ACCESS_EXPIRE}
   #     JWT_REFRESH_EXPIRE: ${JWT_REFRESH_EXPIRE}
@@ -153,7 +89,6 @@ services:
   #     - '${PORT:-3000}:${PORT:-3000}'
   #   env_file: .env
   #   depends_on:
-  #     - elasticsearch
   #     - postgres
   #     - redis
   #   dns:
@@ -162,7 +97,6 @@ services:
   #   volumes:
   #     - .:/usr/src/app:cached
   #     - /usr/src/app/node_modules
-  #     - ./nestjs-logs:/usr/src/appnestjs-logs
   #   networks:
   #     - app-network
   #   restart: unless-stopped
@@ -179,4 +113,3 @@ volumes:
   chromadb_data:
   postgres_data:
   redis_data:
-  esdata:

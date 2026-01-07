@@ -21,7 +21,6 @@ SNet is a powerful social networking platform built on modern technologies. The 
 - **[PostgreSQL](https://www.postgresql.org/)**: Main database
 - **[Redis](https://redis.io/)**: In-memory database for caching and real-time features
 - **[BullMQ](https://docs.bullmq.io/)**: Queue system for background job processing
-- **[Elasticsearch](https://www.elastic.co/)**: Search engine for content indexing
 - **[FAISS](https://github.com/facebookresearch/faiss)**: Vector similarity search for AI features
 
 ## 🗂️ Project Structure
@@ -72,7 +71,7 @@ SNet follows a microservices architecture:
 1. **NestJS Backend**: Handles core application logic, authentication, and main API endpoints
 2. **FastAPI Services**: Process AI-related tasks and specialized API endpoints
 3. **Database Layer**: PostgreSQL for persistent storage, Redis for caching
-4. **Search Services**: Elasticsearch for content search, FAISS for AI vector similarity search
+4. **Search Services**: FAISS for AI vector similarity search
 5. **Background Processing**: BullMQ for handling asynchronous tasks
 
 ## 🤝 Contributing
