@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  background-color: #444444;
+}
+
+body {
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  /* background-color: var(--surface-bg); */
+
+  /* Card shadow/Stack shadow */
+
+  /* border: 1px solid var(--stroke-15-card, rgba(255, 255, 255, 0.4)); */
+  box-shadow:
+    2px 4px 16px 0px rgba(248, 248, 248, 0.06) inset,
+    0px 54px 32px -16px rgba(5, 5, 5, 0.05),
+    0px 24px 24px -16px rgba(5, 5, 5, 0.09),
+    0px 6px 12px 0px rgba(5, 5, 5, 0.1),
+    0px 4px 4px -4px rgba(5, 5, 5, 0.1),
+    0px 0.5px 1.5px -4px rgba(5, 5, 5, 0.5);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+input:focus {
+  outline: none;
+}
+
+input {
+  background-color: transparent;
+}
+
+.bg-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.047);
+  background: var(--surface-bg, #282828b3);
+  /* Blur */
+  box-shadow: 2px 4px 16px 0px rgba(248, 248, 248, 0.06) inset;
+  backdrop-filter: blur(50px) !important;
+  -webkit-backdrop-filter: blur(50px);
+}

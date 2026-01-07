@@ -1,0 +1,2209 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_home",
+        "summary": "Trang chủ",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/chatbot/new": {
+      "post": {
+        "operationId": "AppController_chatbot",
+        "summary": "Tạo prompt với Chatbot AI",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UsersController_findAll",
+        "summary": "Get all users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/account": {
+      "get": {
+        "operationId": "UsersController_getAccount",
+        "summary": "Get account",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/login": {
+      "post": {
+        "operationId": "UsersController_login",
+        "summary": "Login with email and password",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "operationId": "UsersController_getProfile",
+        "summary": "Find user by ID",
+        "parameters": [
+          {
+            "name": "user_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/profile": {
+      "patch": {
+        "operationId": "UsersController_updateUser",
+        "summary": "Update profile user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "operationId": "UsersController_afterSignUp",
+        "summary": "Sign up (no OTP required)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AfterSignUpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/delete": {
+      "delete": {
+        "operationId": "UsersController_afterDelete",
+        "summary": "Delete account",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/relations/friends/{user_id}": {
+      "get": {
+        "operationId": "RelationsController_getListRelation",
+        "summary": "Get list relation ['friend', 'following', 'block'] of user",
+        "parameters": [
+          {
+            "name": "user_id",
+            "required": true,
+            "in": "path",
+            "description": "user_id",
+            "schema": {
+              "example": "123123123123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "relation",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "friend",
+                "following",
+                "block",
+                "none"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Relations"
+        ]
+      }
+    },
+    "/relations/{user_id}": {
+      "get": {
+        "operationId": "RelationsController_getRelation",
+        "summary": "Get relation between 2 users",
+        "parameters": [
+          {
+            "name": "user_id",
+            "required": true,
+            "in": "path",
+            "description": "user_id",
+            "schema": {
+              "example": "123123123123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "relation",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "friend",
+                "following",
+                "block",
+                "none"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Relations"
+        ]
+      }
+    },
+    "/relations/update": {
+      "post": {
+        "operationId": "RelationsController_updateRelation",
+        "summary": "Update relation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRelationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Relations"
+        ]
+      }
+    },
+    "/device-sessions/logout": {
+      "post": {
+        "operationId": "DeviceSessionsController_hendleLogout",
+        "summary": "Đăng xuất tài khoản",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DeviceSessions"
+        ]
+      }
+    },
+    "/device-sessions/refresh-token": {
+      "get": {
+        "operationId": "DeviceSessionsController_reAuth",
+        "summary": "Cấp lại access token",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DeviceSessions"
+        ]
+      }
+    },
+    "/notifications": {
+      "post": {
+        "operationId": "NotificationController_createNotiSystem",
+        "summary": "Admin: Create notification system",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNotiSystemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/posts": {
+      "get": {
+        "operationId": "PostsController_findAll",
+        "summary": "Get posts feed",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limit per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "user_id",
+            "required": false,
+            "in": "query",
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/AppResponseSerialization"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Posts"
+        ]
+      },
+      "post": {
+        "operationId": "PostsController_create",
+        "summary": "Create post",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "enum": [
+                      "public",
+                      "friend",
+                      "private"
+                    ]
+                  },
+                  "medias-posts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/AppResponseSerialization"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Posts"
+        ]
+      },
+      "patch": {
+        "operationId": "PostsController_update",
+        "summary": "Cập nhật bài viết",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "operationId": "PostsController_findOne",
+        "summary": "Find post by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Posts"
+        ]
+      },
+      "delete": {
+        "operationId": "PostsController_remove",
+        "summary": "Xóa bài viết",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/notification-users": {
+      "delete": {
+        "operationId": "NotificationUsersController_deleteNoti",
+        "summary": "Delete notification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteNotificationUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notification Users"
+        ]
+      }
+    },
+    "/notification-users/all": {
+      "delete": {
+        "operationId": "NotificationUsersController_deleteAllNoti",
+        "summary": "Delete all notification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notification Users"
+        ]
+      }
+    },
+    "/comments": {
+      "post": {
+        "operationId": "CommentsController_create",
+        "summary": "Create comment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Comments"
+        ]
+      }
+    },
+    "/reactions": {
+      "post": {
+        "operationId": "ReactionsController_create",
+        "summary": "Toggle reaction (Like/Unlike)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReactionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reactions"
+        ]
+      }
+    },
+    "/admins/add-admin": {
+      "post": {
+        "operationId": "AdminsController_addAdmin",
+        "summary": "Admin: Add Admin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admins"
+        ]
+      }
+    },
+    "/chat-rooms/{id}": {
+      "get": {
+        "operationId": "ChatRoomsController_findChatRoomById",
+        "summary": "Find chat room",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatRoom"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Chat Rooms"
+        ]
+      }
+    },
+    "/chat-rooms/list-chat-room": {
+      "get": {
+        "operationId": "ChatRoomsController_getListChatRoom",
+        "summary": "Get list chat room",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Chat Rooms"
+        ]
+      }
+    },
+    "/chat-rooms": {
+      "post": {
+        "operationId": "ChatRoomsController_createChatRoom",
+        "summary": "Create chat room",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChatRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Chat Rooms"
+        ]
+      },
+      "patch": {
+        "operationId": "ChatRoomsController_updateNameOrAvatar",
+        "summary": "Update name or avatar chat room",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateChatRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Chat Rooms"
+        ]
+      },
+      "delete": {
+        "operationId": "ChatRoomsController_deleteChatRoom",
+        "summary": "Delete chat room",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Chat Rooms"
+        ]
+      }
+    },
+    "/chat-rooms/permission-add-member": {
+      "patch": {
+        "operationId": "ChatRoomsController_updatePermissionAddMember",
+        "summary": "Update permission add member",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePermissionAddMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Chat Rooms"
+        ]
+      }
+    },
+    "/chat-members": {
+      "post": {
+        "operationId": "ChatMembersController_requestJoinChatRoom",
+        "summary": "Request join chat room for user not exits in chat room",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestJoinChatRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Chat Members"
+        ]
+      }
+    },
+    "/chat-messages": {
+      "post": {
+        "operationId": "ChatMessagesController_createMessage",
+        "summary": "Create message to chat",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChatMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Chat Messages"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Project social spaces",
+    "description": "All Module API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "token": {
+        "scheme": "Bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "Relation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "request_side_id": {
+            "type": "string"
+          },
+          "accept_side_id": {
+            "type": "string"
+          },
+          "request_side": {
+            "$ref": "#/components/schemas/User"
+          },
+          "accept_side": {
+            "$ref": "#/components/schemas/User"
+          },
+          "relation_type": {
+            "type": "string",
+            "enum": [
+              "friend",
+              "following",
+              "block",
+              "none"
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "request_side_id",
+          "accept_side_id",
+          "request_side",
+          "accept_side",
+          "relation_type",
+          "created_at"
+        ]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "notification_type": {
+            "type": "string",
+            "enum": [
+              "like",
+              "comment",
+              "follow",
+              "reaction",
+              "system"
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "notification_user": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationUser"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "message",
+          "notification_type",
+          "created_at",
+          "notification_user"
+        ]
+      },
+      "NotificationUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "notification_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "is_sent": {
+            "type": "boolean"
+          },
+          "is_read": {
+            "type": "boolean"
+          },
+          "notification": {
+            "$ref": "#/components/schemas/Notification"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "notification_id",
+          "user_id",
+          "is_sent",
+          "is_read",
+          "notification",
+          "user"
+        ]
+      },
+      "ChatMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "chat_room_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "member_type": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "member"
+            ]
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "allow_notification": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "chat_room": {
+            "$ref": "#/components/schemas/ChatRoom"
+          }
+        },
+        "required": [
+          "id",
+          "chat_room_id",
+          "user_id",
+          "member_type",
+          "nickname",
+          "allow_notification",
+          "created_at",
+          "user",
+          "chat_room"
+        ]
+      },
+      "PinMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "chat_room_id": {
+            "type": "string"
+          },
+          "chat_message_id": {
+            "type": "string"
+          },
+          "chat_message": {
+            "$ref": "#/components/schemas/ChatMessage"
+          },
+          "chat_room": {
+            "$ref": "#/components/schemas/ChatRoom"
+          }
+        },
+        "required": [
+          "id",
+          "chat_room_id",
+          "chat_message_id",
+          "chat_message",
+          "chat_room"
+        ]
+      },
+      "ChatMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "chat_room_id": {
+            "type": "string"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "medias": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "message_status": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "edited",
+              "deleted"
+            ]
+          },
+          "chat_room": {
+            "$ref": "#/components/schemas/ChatRoom"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "pin_messages": {
+            "$ref": "#/components/schemas/PinMessage"
+          }
+        },
+        "required": [
+          "id",
+          "chat_room_id",
+          "created_by",
+          "message",
+          "medias",
+          "message_status",
+          "chat_room",
+          "user",
+          "created_at",
+          "pin_messages"
+        ]
+      },
+      "PinChat": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "chat_room_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "chat_room": {
+            "$ref": "#/components/schemas/ChatRoom"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "chat_room_id",
+          "user_id",
+          "chat_room",
+          "user"
+        ]
+      },
+      "WaitingMembers": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "chat_room_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "chat_room": {
+            "$ref": "#/components/schemas/ChatRoom"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "chat_room_id",
+          "user_id",
+          "chat_room",
+          "user"
+        ]
+      },
+      "ChatRoom": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "permission_add_member": {
+            "enum": [
+              "admin",
+              "member"
+            ],
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reaction_default": {
+            "enum": [
+              "like",
+              "love",
+              "haha",
+              "wow",
+              "sad",
+              "angry"
+            ],
+            "type": "string"
+          },
+          "end_to_end_encryption": {
+            "type": "boolean"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "chat_members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMember"
+            }
+          },
+          "chat_messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            }
+          },
+          "pin_messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PinMessage"
+            }
+          },
+          "pin_chats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PinChat"
+            }
+          },
+          "waiting_members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WaitingMembers"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "avatar",
+          "created_by",
+          "permission_add_member",
+          "created_at",
+          "reaction_default",
+          "end_to_end_encryption",
+          "user",
+          "chat_members",
+          "chat_messages",
+          "pin_messages",
+          "pin_chats",
+          "waiting_members"
+        ]
+      },
+      "SaveList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "save_posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SavePost"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "name",
+          "user",
+          "save_posts"
+        ]
+      },
+      "SavePost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "save_list_id": {
+            "type": "string"
+          },
+          "post_id": {
+            "type": "string"
+          },
+          "save_list": {
+            "$ref": "#/components/schemas/SaveList"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          }
+        },
+        "required": [
+          "id",
+          "save_list_id",
+          "post_id",
+          "save_list",
+          "post"
+        ]
+      },
+      "ParentChildComment": {
+        "type": "object",
+        "properties": {
+          "parent_comment": {
+            "type": "string"
+          },
+          "child_comment": {
+            "type": "string"
+          },
+          "parentComment": {
+            "$ref": "#/components/schemas/Comment"
+          },
+          "childComment": {
+            "$ref": "#/components/schemas/Comment"
+          }
+        },
+        "required": [
+          "parent_comment",
+          "child_comment",
+          "parentComment",
+          "childComment"
+        ]
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "post_id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "medias": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "childComments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParentChildComment"
+            }
+          },
+          "parentComments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParentChildComment"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "post_id",
+          "content",
+          "medias",
+          "created_at",
+          "user",
+          "post",
+          "childComments",
+          "parentComments"
+        ]
+      },
+      "Reaction": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "post_comment_id": {
+            "type": "string"
+          },
+          "reaction": {
+            "type": "string",
+            "enum": [
+              "like",
+              "love",
+              "haha",
+              "wow",
+              "sad",
+              "angry"
+            ]
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          }
+        },
+        "required": [
+          "user_id",
+          "post_comment_id",
+          "reaction",
+          "post"
+        ]
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "interactions": {
+            "type": "object",
+            "properties": {
+              "likes": {
+                "required": true,
+                "type": "number"
+              },
+              "comments": {
+                "required": true,
+                "type": "number"
+              },
+              "reposts": {
+                "required": true,
+                "type": "number"
+              }
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "medias": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "public",
+              "friend",
+              "private"
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "save_posts": {
+            "$ref": "#/components/schemas/SavePost"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          },
+          "reactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reaction"
+            }
+          }
+        },
+        "required": [
+          "interactions",
+          "id",
+          "user_id",
+          "content",
+          "medias",
+          "privacy",
+          "created_at",
+          "user",
+          "save_posts",
+          "comments",
+          "reactions"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 15
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "birthday": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ]
+          },
+          "address": {
+            "type": "string"
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "public",
+              "friend",
+              "private"
+            ]
+          },
+          "last_active": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user_category": {
+            "type": "string",
+            "enum": [
+              "idol",
+              "casualuser",
+              "block"
+            ]
+          },
+          "company": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "education": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "device_sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceSession"
+            }
+          },
+          "sent_relations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Relation"
+            }
+          },
+          "received_relations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Relation"
+            }
+          },
+          "notification_users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationUser"
+            }
+          },
+          "chat_rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatRoom"
+            }
+          },
+          "chat_members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMember"
+            }
+          },
+          "chat_messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            }
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Post"
+            }
+          },
+          "save_lists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaveList"
+            }
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          },
+          "pin_chats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PinChat"
+            }
+          },
+          "waiting_members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WaitingMembers"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "password",
+          "avatar",
+          "username",
+          "bio",
+          "website",
+          "birthday",
+          "gender",
+          "address",
+          "privacy",
+          "last_active",
+          "user_category",
+          "company",
+          "education",
+          "role",
+          "created_at",
+          "updated_at",
+          "device_sessions",
+          "sent_relations",
+          "received_relations",
+          "notification_users",
+          "chat_rooms",
+          "chat_members",
+          "chat_messages",
+          "posts",
+          "save_lists",
+          "comments",
+          "pin_chats",
+          "waiting_members"
+        ]
+      },
+      "DeviceSession": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "ip_address": {
+            "type": "string"
+          },
+          "secret_key": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expired_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "device_id",
+          "ip_address",
+          "secret_key",
+          "refresh_token",
+          "expired_at",
+          "created_at",
+          "updated_at",
+          "user_id",
+          "user"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "test@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "123456"
+          },
+          "deviceId": {
+            "type": "string",
+            "example": "unique-device-id"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "deviceId"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20,
+            "example": "Thành",
+            "description": "Your last username"
+          },
+          "bio": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "example": "Good boy",
+            "description": "bio"
+          },
+          "website": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "example": "https://github.com/ntthanh2603",
+            "description": "website"
+          },
+          "birthday": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-02-11 08:14:57.142000",
+            "description": "Birthday"
+          },
+          "gender": {
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ],
+            "type": "string",
+            "example": "male",
+            "description": "gender"
+          },
+          "address": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "example": "Cau Giay, Ha Noi",
+            "description": "address"
+          },
+          "privacy": {
+            "enum": [
+              "public",
+              "friend",
+              "private"
+            ],
+            "type": "string",
+            "example": "public",
+            "description": "privacy"
+          }
+        },
+        "required": [
+          "username",
+          "bio",
+          "website",
+          "birthday",
+          "gender",
+          "address",
+          "privacy"
+        ]
+      },
+      "AfterSignUpDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@gmail.com",
+            "description": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 15,
+            "example": "12345678",
+            "description": "password"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "abc.jpg",
+            "description": "Your avatar"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20,
+            "example": "Nguyễn Tuấn Thành",
+            "description": "Your last username"
+          },
+          "bio": {
+            "type": "string",
+            "example": "Good boy",
+            "description": "bio"
+          },
+          "website": {
+            "type": "string",
+            "example": "https://github.com/ntthanh2603",
+            "description": "website"
+          },
+          "birthday": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-02-11 08:14:57.142000",
+            "description": "birthday"
+          },
+          "gender": {
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ],
+            "type": "string",
+            "example": "male",
+            "description": "gender"
+          },
+          "address": {
+            "type": "string",
+            "example": "Cau Giay, Ha Noi",
+            "description": "address"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "avatar",
+          "username",
+          "bio",
+          "website",
+          "birthday",
+          "gender",
+          "address"
+        ]
+      },
+      "UpdateRelationDto": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "example": "123123123123",
+            "description": "ID user other"
+          },
+          "relation": {
+            "type": "string",
+            "example": "following"
+          }
+        },
+        "required": [
+          "user_id",
+          "relation"
+        ]
+      },
+      "CreateNotiSystemDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "example": "Thông báo hệ thống"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "example": "Hệ thống quá tốt"
+          }
+        },
+        "required": [
+          "title",
+          "message"
+        ]
+      },
+      "AppResponseSerialization": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdatePostDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "452a1e21-d4eb-4f14-a52f-fbfaf0bb7d99",
+            "description": "id"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 256,
+            "example": "Hello world",
+            "description": "content"
+          },
+          "medias": {
+            "example": [
+              "img1.jpg",
+              "img2.jpg",
+              "img3.jpg"
+            ],
+            "description": "medias",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "privacy": {
+            "enum": [
+              "public",
+              "friend",
+              "private"
+            ],
+            "type": "string",
+            "example": "public",
+            "description": "privacy"
+          }
+        },
+        "required": [
+          "id",
+          "content",
+          "medias",
+          "privacy"
+        ]
+      },
+      "DeleteNotificationUserDto": {
+        "type": "object",
+        "properties": {
+          "noti_user_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "noti_user_id"
+        ]
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Content of the comment"
+          },
+          "post_id": {
+            "type": "string",
+            "description": "ID of the post to comment on"
+          }
+        },
+        "required": [
+          "content",
+          "post_id"
+        ]
+      },
+      "CreateReactionDto": {
+        "type": "object",
+        "properties": {
+          "post_comment_id": {
+            "type": "string",
+            "example": "post-id-123",
+            "description": "Post or Comment ID"
+          }
+        },
+        "required": [
+          "post_comment_id"
+        ]
+      },
+      "AddAdminDto": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id"
+        ]
+      },
+      "CreateChatRoomDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "example": "Group Chat"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateChatRoomDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "example": "Group Chat"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "id"
+        ]
+      },
+      "UpdatePermissionAddMemberDto": {
+        "type": "object",
+        "properties": {
+          "new_permission_add_member": {
+            "enum": [
+              "admin",
+              "member"
+            ],
+            "type": "string",
+            "example": "member"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "new_permission_add_member",
+          "id"
+        ]
+      },
+      "IdDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "RequestJoinChatRoomDto": {
+        "type": "object",
+        "properties": {
+          "chat_room_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chat_room_id"
+        ]
+      },
+      "CreateChatMessageDto": {
+        "type": "object",
+        "properties": {
+          "chat_room_id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "medias": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chat_room_id",
+          "message",
+          "medias"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "token": []
+    }
+  ]
+}
