@@ -14,24 +14,28 @@ export class ReactionsService {
   ) {}
 
   async toggle(createReactionDto: CreateReactionDto, user: IUser) {
-    const { post_comment_id } = createReactionDto;
+    const { postId, commentId } = createReactionDto;
+
+    if (!postId && !commentId) {
+      throw new Error('Either postId or commentId must be provided');
+    }
+
+    const query: any = { user_id: user.id };
+    if (postId) query.post_id = postId;
+    if (commentId) query.comment_id = commentId;
+
     const existingReaction = await this.reactionRepository.findOne({
-      where: {
-        user_id: user.id,
-        post_comment_id,
-      },
+      where: query,
     });
 
     if (existingReaction) {
-      await this.reactionRepository.delete({
-        user_id: user.id,
-        post_comment_id,
-      });
+      await this.reactionRepository.delete(existingReaction.id);
       return { message: 'Unliked' };
     } else {
       await this.reactionRepository.save({
         user_id: user.id,
-        post_comment_id,
+        post_id: postId || null,
+        comment_id: commentId || null,
         reaction: ReactionType.LIKE,
       });
       return { message: 'Liked' };

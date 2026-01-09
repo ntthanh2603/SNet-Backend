@@ -12,6 +12,7 @@ export interface Comment {
     likes: number;
     reposts: number;
     comments: number;
+    is_liked?: boolean;
   };
 }
 
@@ -30,6 +31,7 @@ export interface Post {
     likes: number;
     reposts: number;
     comments: number;
+    is_liked?: boolean;
   };
   comments: Comment[];
   cateId?: string;

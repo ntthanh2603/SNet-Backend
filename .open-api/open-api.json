@@ -18,9 +18,7 @@
             }
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/chatbot/new": {
@@ -33,9 +31,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/users": {
@@ -58,9 +54,7 @@
             }
           }
         },
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/users/account": {
@@ -80,9 +74,7 @@
             }
           }
         },
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/users/login": {
@@ -105,9 +97,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/users/{user_id}": {
@@ -136,9 +126,7 @@
             }
           }
         },
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/users/profile": {
@@ -161,9 +149,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/users/signup": {
@@ -186,9 +172,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/users/delete": {
@@ -201,9 +185,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/relations/friends/{user_id}": {
@@ -226,12 +208,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "enum": [
-                "friend",
-                "following",
-                "block",
-                "none"
-              ],
+              "enum": ["friend", "following", "block", "none"],
               "type": "string"
             }
           },
@@ -257,9 +234,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Relations"
-        ]
+        "tags": ["Relations"]
       }
     },
     "/relations/{user_id}": {
@@ -282,12 +257,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "enum": [
-                "friend",
-                "following",
-                "block",
-                "none"
-              ],
+              "enum": ["friend", "following", "block", "none"],
               "type": "string"
             }
           }
@@ -297,9 +267,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Relations"
-        ]
+        "tags": ["Relations"]
       }
     },
     "/relations/update": {
@@ -322,9 +290,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Relations"
-        ]
+        "tags": ["Relations"]
       }
     },
     "/device-sessions/logout": {
@@ -337,9 +303,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "DeviceSessions"
-        ]
+        "tags": ["DeviceSessions"]
       }
     },
     "/device-sessions/refresh-token": {
@@ -352,9 +316,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "DeviceSessions"
-        ]
+        "tags": ["DeviceSessions"]
       }
     },
     "/notifications": {
@@ -377,9 +339,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       }
     },
     "/posts": {
@@ -431,9 +391,7 @@
             }
           }
         },
-        "tags": [
-          "Posts"
-        ]
+        "tags": ["Posts"]
       },
       "post": {
         "operationId": "PostsController_create",
@@ -451,11 +409,7 @@
                   },
                   "privacy": {
                     "type": "string",
-                    "enum": [
-                      "public",
-                      "friend",
-                      "private"
-                    ]
+                    "enum": ["public", "friend", "private"]
                   },
                   "medias-posts": {
                     "type": "array",
@@ -488,9 +442,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Posts"
-        ]
+        "tags": ["Posts"]
       },
       "patch": {
         "operationId": "PostsController_update",
@@ -511,9 +463,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Posts"
-        ]
+        "tags": ["Posts"]
       }
     },
     "/posts/{id}": {
@@ -542,9 +492,7 @@
             }
           }
         },
-        "tags": [
-          "Posts"
-        ]
+        "tags": ["Posts"]
       },
       "delete": {
         "operationId": "PostsController_remove",
@@ -564,9 +512,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Posts"
-        ]
+        "tags": ["Posts"]
       }
     },
     "/notification-users": {
@@ -589,9 +535,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Notification Users"
-        ]
+        "tags": ["Notification Users"]
       }
     },
     "/notification-users/all": {
@@ -604,9 +548,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Notification Users"
-        ]
+        "tags": ["Notification Users"]
       }
     },
     "/comments": {
@@ -629,9 +571,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Comments"
-        ]
+        "tags": ["Comments"]
       }
     },
     "/reactions": {
@@ -654,9 +594,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Reactions"
-        ]
+        "tags": ["Reactions"]
       }
     },
     "/admins/add-admin": {
@@ -679,9 +617,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Admins"
-        ]
+        "tags": ["Admins"]
       }
     },
     "/chat-rooms/{id}": {
@@ -710,9 +646,7 @@
             }
           }
         },
-        "tags": [
-          "Chat Rooms"
-        ]
+        "tags": ["Chat Rooms"]
       }
     },
     "/chat-rooms/list-chat-room": {
@@ -746,9 +680,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Chat Rooms"
-        ]
+        "tags": ["Chat Rooms"]
       }
     },
     "/chat-rooms": {
@@ -771,9 +703,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Chat Rooms"
-        ]
+        "tags": ["Chat Rooms"]
       },
       "patch": {
         "operationId": "ChatRoomsController_updateNameOrAvatar",
@@ -794,9 +724,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Chat Rooms"
-        ]
+        "tags": ["Chat Rooms"]
       },
       "delete": {
         "operationId": "ChatRoomsController_deleteChatRoom",
@@ -817,9 +745,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Chat Rooms"
-        ]
+        "tags": ["Chat Rooms"]
       }
     },
     "/chat-rooms/permission-add-member": {
@@ -842,9 +768,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Chat Rooms"
-        ]
+        "tags": ["Chat Rooms"]
       }
     },
     "/chat-members": {
@@ -867,9 +791,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Chat Members"
-        ]
+        "tags": ["Chat Members"]
       }
     },
     "/chat-messages": {
@@ -892,9 +814,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Chat Messages"
-        ]
+        "tags": ["Chat Messages"]
       }
     }
   },
@@ -936,12 +856,7 @@
           },
           "relation_type": {
             "type": "string",
-            "enum": [
-              "friend",
-              "following",
-              "block",
-              "none"
-            ]
+            "enum": ["friend", "following", "block", "none"]
           },
           "created_at": {
             "format": "date-time",
@@ -972,13 +887,7 @@
           },
           "notification_type": {
             "type": "string",
-            "enum": [
-              "like",
-              "comment",
-              "follow",
-              "reaction",
-              "system"
-            ]
+            "enum": ["like", "comment", "follow", "reaction", "system"]
           },
           "created_at": {
             "format": "date-time",
@@ -1049,10 +958,7 @@
           },
           "member_type": {
             "type": "string",
-            "enum": [
-              "admin",
-              "member"
-            ]
+            "enum": ["admin", "member"]
           },
           "nickname": {
             "type": "string"
@@ -1133,11 +1039,7 @@
           },
           "message_status": {
             "type": "string",
-            "enum": [
-              "normal",
-              "edited",
-              "deleted"
-            ]
+            "enum": ["normal", "edited", "deleted"]
           },
           "chat_room": {
             "$ref": "#/components/schemas/ChatRoom"
@@ -1185,13 +1087,7 @@
             "$ref": "#/components/schemas/User"
           }
         },
-        "required": [
-          "id",
-          "chat_room_id",
-          "user_id",
-          "chat_room",
-          "user"
-        ]
+        "required": ["id", "chat_room_id", "user_id", "chat_room", "user"]
       },
       "WaitingMembers": {
         "type": "object",
@@ -1212,13 +1108,7 @@
             "$ref": "#/components/schemas/User"
           }
         },
-        "required": [
-          "id",
-          "chat_room_id",
-          "user_id",
-          "chat_room",
-          "user"
-        ]
+        "required": ["id", "chat_room_id", "user_id", "chat_room", "user"]
       },
       "ChatRoom": {
         "type": "object",
@@ -1236,10 +1126,7 @@
             "type": "string"
           },
           "permission_add_member": {
-            "enum": [
-              "admin",
-              "member"
-            ],
+            "enum": ["admin", "member"],
             "type": "string"
           },
           "created_at": {
@@ -1247,14 +1134,7 @@
             "type": "string"
           },
           "reaction_default": {
-            "enum": [
-              "like",
-              "love",
-              "haha",
-              "wow",
-              "sad",
-              "angry"
-            ],
+            "enum": ["like", "love", "haha", "wow", "sad", "angry"],
             "type": "string"
           },
           "end_to_end_encryption": {
@@ -1333,13 +1213,7 @@
             }
           }
         },
-        "required": [
-          "id",
-          "user_id",
-          "name",
-          "user",
-          "save_posts"
-        ]
+        "required": ["id", "user_id", "name", "user", "save_posts"]
       },
       "SavePost": {
         "type": "object",
@@ -1360,13 +1234,7 @@
             "$ref": "#/components/schemas/Post"
           }
         },
-        "required": [
-          "id",
-          "save_list_id",
-          "post_id",
-          "save_list",
-          "post"
-        ]
+        "required": ["id", "save_list_id", "post_id", "save_list", "post"]
       },
       "ParentChildComment": {
         "type": "object",
@@ -1459,25 +1327,13 @@
           },
           "reaction": {
             "type": "string",
-            "enum": [
-              "like",
-              "love",
-              "haha",
-              "wow",
-              "sad",
-              "angry"
-            ]
+            "enum": ["like", "love", "haha", "wow", "sad", "angry"]
           },
           "post": {
             "$ref": "#/components/schemas/Post"
           }
         },
-        "required": [
-          "user_id",
-          "post_comment_id",
-          "reaction",
-          "post"
-        ]
+        "required": ["user_id", "post_comment_id", "reaction", "post"]
       },
       "Post": {
         "type": "object",
@@ -1516,11 +1372,7 @@
           },
           "privacy": {
             "type": "string",
-            "enum": [
-              "public",
-              "friend",
-              "private"
-            ]
+            "enum": ["public", "friend", "private"]
           },
           "created_at": {
             "format": "date-time",
@@ -1591,22 +1443,14 @@
           },
           "gender": {
             "type": "string",
-            "enum": [
-              "male",
-              "female",
-              "other"
-            ]
+            "enum": ["male", "female", "other"]
           },
           "address": {
             "type": "string"
           },
           "privacy": {
             "type": "string",
-            "enum": [
-              "public",
-              "friend",
-              "private"
-            ]
+            "enum": ["public", "friend", "private"]
           },
           "last_active": {
             "format": "date-time",
@@ -1614,11 +1458,7 @@
           },
           "user_category": {
             "type": "string",
-            "enum": [
-              "idol",
-              "casualuser",
-              "block"
-            ]
+            "enum": ["idol", "casualuser", "block"]
           },
           "company": {
             "type": "array",
@@ -1634,10 +1474,7 @@
           },
           "role": {
             "type": "string",
-            "enum": [
-              "user",
-              "admin"
-            ]
+            "enum": ["user", "admin"]
           },
           "created_at": {
             "format": "date-time",
@@ -1820,11 +1657,7 @@
             "example": "unique-device-id"
           }
         },
-        "required": [
-          "email",
-          "password",
-          "deviceId"
-        ]
+        "required": ["email", "password", "deviceId"]
       },
       "UpdateUserDto": {
         "type": "object",
@@ -1857,11 +1690,7 @@
             "description": "Birthday"
           },
           "gender": {
-            "enum": [
-              "male",
-              "female",
-              "other"
-            ],
+            "enum": ["male", "female", "other"],
             "type": "string",
             "example": "male",
             "description": "gender"
@@ -1874,11 +1703,7 @@
             "description": "address"
           },
           "privacy": {
-            "enum": [
-              "public",
-              "friend",
-              "private"
-            ],
+            "enum": ["public", "friend", "private"],
             "type": "string",
             "example": "public",
             "description": "privacy"
@@ -1938,11 +1763,7 @@
             "description": "birthday"
           },
           "gender": {
-            "enum": [
-              "male",
-              "female",
-              "other"
-            ],
+            "enum": ["male", "female", "other"],
             "type": "string",
             "example": "male",
             "description": "gender"
@@ -1978,10 +1799,7 @@
             "example": "following"
           }
         },
-        "required": [
-          "user_id",
-          "relation"
-        ]
+        "required": ["user_id", "relation"]
       },
       "CreateNotiSystemDto": {
         "type": "object",
@@ -1999,10 +1817,7 @@
             "example": "Hệ thống quá tốt"
           }
         },
-        "required": [
-          "title",
-          "message"
-        ]
+        "required": ["title", "message"]
       },
       "AppResponseSerialization": {
         "type": "object",
@@ -2024,11 +1839,7 @@
             "description": "content"
           },
           "medias": {
-            "example": [
-              "img1.jpg",
-              "img2.jpg",
-              "img3.jpg"
-            ],
+            "example": ["img1.jpg", "img2.jpg", "img3.jpg"],
             "description": "medias",
             "type": "array",
             "items": {
@@ -2036,22 +1847,13 @@
             }
           },
           "privacy": {
-            "enum": [
-              "public",
-              "friend",
-              "private"
-            ],
+            "enum": ["public", "friend", "private"],
             "type": "string",
             "example": "public",
             "description": "privacy"
           }
         },
-        "required": [
-          "id",
-          "content",
-          "medias",
-          "privacy"
-        ]
+        "required": ["id", "content", "medias", "privacy"]
       },
       "DeleteNotificationUserDto": {
         "type": "object",
@@ -2060,9 +1862,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "noti_user_id"
-        ]
+        "required": ["noti_user_id"]
       },
       "CreateCommentDto": {
         "type": "object",
@@ -2076,23 +1876,20 @@
             "description": "ID of the post to comment on"
           }
         },
-        "required": [
-          "content",
-          "post_id"
-        ]
+        "required": ["content", "post_id"]
       },
       "CreateReactionDto": {
         "type": "object",
         "properties": {
-          "post_comment_id": {
+          "postId": {
             "type": "string",
-            "example": "post-id-123",
-            "description": "Post or Comment ID"
+            "description": "Post ID"
+          },
+          "commentId": {
+            "type": "string",
+            "description": "Comment ID"
           }
-        },
-        "required": [
-          "post_comment_id"
-        ]
+        }
       },
       "AddAdminDto": {
         "type": "object",
@@ -2101,9 +1898,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "user_id"
-        ]
+        "required": ["user_id"]
       },
       "CreateChatRoomDto": {
         "type": "object",
@@ -2115,9 +1910,7 @@
             "example": "Group Chat"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "UpdateChatRoomDto": {
         "type": "object",
@@ -2132,19 +1925,13 @@
             "type": "string"
           }
         },
-        "required": [
-          "name",
-          "id"
-        ]
+        "required": ["name", "id"]
       },
       "UpdatePermissionAddMemberDto": {
         "type": "object",
         "properties": {
           "new_permission_add_member": {
-            "enum": [
-              "admin",
-              "member"
-            ],
+            "enum": ["admin", "member"],
             "type": "string",
             "example": "member"
           },
@@ -2152,10 +1939,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "new_permission_add_member",
-          "id"
-        ]
+        "required": ["new_permission_add_member", "id"]
       },
       "IdDto": {
         "type": "object",
@@ -2164,9 +1948,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "RequestJoinChatRoomDto": {
         "type": "object",
@@ -2175,9 +1957,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "chat_room_id"
-        ]
+        "required": ["chat_room_id"]
       },
       "CreateChatMessageDto": {
         "type": "object",
@@ -2193,11 +1973,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "chat_room_id",
-          "message",
-          "medias"
-        ]
+        "required": ["chat_room_id", "message", "medias"]
       }
     }
   },

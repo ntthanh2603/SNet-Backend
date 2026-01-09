@@ -25,35 +25,80 @@ export class PostsService {
     private mediasPostsQueue: Queue,
   ) {}
 
-  async findPostByID(id: string): Promise<any> {
+  async findPostByID(id: string, currentUser?: IUser): Promise<any> {
     try {
       const postCache = await this.redisService.get(`post:${id}`);
 
-      if (postCache) return JSON.parse(postCache as string);
+      let postData: any;
+      if (postCache) {
+        postData = JSON.parse(postCache as string);
+      } else {
+        const postDb = await this.repository.findOne({
+          where: { id },
+          relations: [
+            'user',
+            'reactions',
+            'comments',
+            'comments.user',
+            'comments.reactions',
+          ],
+          order: {
+            comments: {
+              created_at: 'ASC',
+            },
+          },
+        });
+        if (!postDb)
+          throw new NotFoundException(`Post id: ${id} does not exist`);
 
-      const postDb = await this.repository.findOne({
-        where: { id },
-        relations: ['user', 'reactions', 'comments'],
-      });
-      if (!postDb) throw new NotFoundException(`Post id: ${id} does not exist`);
+        postData = {
+          ...postDb,
+          comments: postDb.comments?.map((comment) => ({
+            ...comment,
+            interactions: {
+              likes:
+                comment.reactions?.filter((r) => r.reaction === 'like').length ||
+                0,
+              recomments: 0,
+              comments: 0,
+            },
+          })),
+          interactions: {
+            likes:
+              postDb.reactions?.filter((r) => r.reaction === 'like').length ||
+              0,
+            comments: postDb.comments?.length || 0,
+            reposts: 0,
+          },
+        };
 
-      const postWithInteractions = {
-        ...postDb,
-        interactions: {
-          likes:
-            postDb.reactions?.filter((r) => r.reaction === 'like').length || 0,
-          comments: postDb.comments?.length || 0,
-          reposts: 0,
-        },
-      };
+        await this.redisService.set(
+          `post:${id}`,
+          JSON.stringify(postData),
+          300,
+        );
+      }
 
-      await this.redisService.set(
-        `post:${id}`,
-        JSON.stringify(postWithInteractions),
-        300,
-      );
+      // Calculate is_liked runtime (after cache retrieval)
+      if (currentUser) {
+        postData.interactions.is_liked =
+          postData.reactions?.some(
+            (r) => r.user_id === currentUser.id && r.reaction === 'like',
+          ) || false;
 
-      return postWithInteractions;
+        postData.comments = postData.comments.map((comment) => ({
+          ...comment,
+          interactions: {
+            ...comment.interactions,
+            is_liked:
+              comment.reactions?.some(
+                (r) => r.user_id === currentUser.id && r.reaction === 'like',
+              ) || false,
+          },
+        }));
+      }
+
+      return postData;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(`Error find post with id: ${id}`);
@@ -113,7 +158,12 @@ export class PostsService {
     }
   }
 
-  async findAll(page: number = 1, limit: number = 10, user_id?: string) {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    user_id?: string,
+    currentUser?: IUser,
+  ) {
     try {
       const queryOptions: any = {
         relations: ['user', 'reactions', 'comments'],
@@ -135,6 +185,11 @@ export class PostsService {
             post.reactions?.filter((r) => r.reaction === 'like').length || 0,
           comments: post.comments?.length || 0,
           reposts: 0,
+          is_liked: currentUser
+            ? post.reactions?.some(
+                (r) => r.user_id === currentUser.id && r.reaction === 'like',
+              ) || false
+            : false,
         },
       }));
 
@@ -152,7 +207,7 @@ export class PostsService {
   }
 
   async findOne(user: IUser, id: string) {
-    return this.findPostByID(id);
+    return this.findPostByID(id, user);
   }
 
   async update(user: IUser, dto: UpdatePostDto) {

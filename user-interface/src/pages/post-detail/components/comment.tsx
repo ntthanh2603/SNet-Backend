@@ -10,15 +10,37 @@ import {
 import { Typography } from '@components/typography';
 import LineComment from './line-comment';
 import { ReactItem } from '@components/post/react-item';
+import { useReactionsControllerCreate } from '@services/apis/gen/queries';
+import { useQueryClient } from '@tanstack/react-query';
 
 //--------------------------------------------------------------------------------------------------------
 
 export default function Comment({ comment, isLast }: any) {
-  const [isLiked, setIsLiked] = React.useState(false);
+  const [isLiked, setIsLiked] = React.useState(
+    comment.interactions?.is_liked || false,
+  );
   const [isRecommented, setIsRecommented] = React.useState(false);
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    setIsLiked(comment.interactions?.is_liked || false);
+  }, [comment.interactions?.is_liked]);
+
+  const { mutate: toggleLike } = useReactionsControllerCreate({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [`/posts/${comment.post_id}`] as const,
+        });
+      },
+    },
+  });
 
   const handleLikeClick = () => {
     setIsLiked(!isLiked);
+    toggleLike({
+      data: { comment_id: comment.id },
+    });
   };
 
   const handleRecommentClick = () => {

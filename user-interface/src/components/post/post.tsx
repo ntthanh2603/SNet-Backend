@@ -16,17 +16,23 @@ import { MoreOptions } from '@components/more-options';
 import { useReactionsControllerCreate } from '@services/apis/gen/queries';
 
 export default function Post({ post }: any) {
-  const [isLiked, setIsLiked] = React.useState(false);
+  const [isLiked, setIsLiked] = React.useState(
+    post.interactions?.is_liked || false,
+  );
   const [isReposted, setIsReposted] = React.useState(false);
   const navigate = useNavigate();
   const [isMoreOptions, setIsMoreOptions] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsLiked(post.interactions?.is_liked || false);
+  }, [post.interactions?.is_liked]);
 
   const { mutate: toggleLike } = useReactionsControllerCreate();
 
   const handleLikeClick = () => {
     setIsLiked(!isLiked);
     toggleLike({
-      data: { post_comment_id: post.id },
+      data: { post_id: post.id },
     });
   };
 

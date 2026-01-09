@@ -16,20 +16,25 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
-    if (isPublic) {
-      return true;
-    }
-    return super.canActivate(context);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Luôn chạy AuthService để parse token nếu có
+    const canActivate = await super.canActivate(context);
+    
+    // Nếu AuthGuard trả về false (do lỗi gì đó bên trong mà không throw), chúng ta vẫn cần check Public
+    // Tuy nhiên AuthGuard('jwt') thường throw hoặc return true.
+    return canActivate as boolean;
   }
 
-  handleRequest(err, user) {
+  handleRequest(err, user, info, context) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+        context.getHandler(),
+        context.getClass(),
+    ]);
+
     if (err || !user) {
+      if (isPublic) {
+        return null;
+      }
       throw err || new UnauthorizedException('Token invalid');
     }
     return user;

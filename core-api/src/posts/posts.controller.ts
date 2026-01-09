@@ -46,8 +46,9 @@ export class PostsController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('user_id') user_id?: string,
+    @User() user?: IUser,
   ) {
-    return this.postsService.findAll(page || 1, limit || 10, user_id);
+    return this.postsService.findAll(page || 1, limit || 10, user_id, user);
   }
 
   @Post()

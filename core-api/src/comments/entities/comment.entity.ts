@@ -11,6 +11,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Reaction } from 'src/reactions/entities/reaction.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Comment {
@@ -55,4 +57,17 @@ export class Comment {
     (parentChildComment) => parentChildComment.childComment,
   )
   parentComments: ParentChildComment[];
+
+  @OneToMany(() => Reaction, (reaction) => reaction.comment)
+  reactions: Reaction[];
+
+  @ApiProperty({
+    example: { likes: 10, recomments: 5, comments: 2 },
+    description: 'Interaction counts',
+  })
+  interactions: {
+    likes: number;
+    recomments: number;
+    comments: number;
+  };
 }

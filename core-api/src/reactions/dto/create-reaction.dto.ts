@@ -1,9 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsOptional, IsString, ValidateIf } from 'class-validator';
 
 export class CreateReactionDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ example: 'post-id-123', description: 'Post or Comment ID' })
-  post_comment_id: string;
+  @ApiProperty({ required: false, description: 'Post ID' })
+  postId?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Comment ID' })
+  commentId?: string;
 }
